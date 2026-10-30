@@ -5,17 +5,17 @@ import org.json.JSONObject
 import java.io.InputStream
 
 enum class BackupCategory(val label: String) {
-    NOTES("Notes"), LINKS("Quicklinks"), CLIPS("Saved clips"), PREFERENCES("Pins and aliases"), LEARNING("Usage ranking")
+    NOTES("Notes"), LINKS("Quicklinks"), CLIPS("Saved clips"), PREFERENCES("Pins and aliases"), LEARNING("Usage ranking"), SHORTCUTS("Keyboard shortcuts")
 }
 
 data class BackupData(
     val notes: List<SavedItem> = emptyList(), val links: List<SavedItem> = emptyList(),
     val clips: List<SavedItem> = emptyList(), val pins: Set<String> = emptySet(),
-    val aliases: Map<String, String> = emptyMap(), val usage: Map<String, Int> = emptyMap()
+    val aliases: Map<String, String> = emptyMap(), val usage: Map<String, Int> = emptyMap(), val shortcuts: ShortcutConfiguration = ShortcutConfiguration()
 ) {
     fun count(category: BackupCategory): Int = when (category) {
         BackupCategory.NOTES -> notes.size; BackupCategory.LINKS -> links.size; BackupCategory.CLIPS -> clips.size
-        BackupCategory.PREFERENCES -> pins.size + aliases.size; BackupCategory.LEARNING -> usage.size
+        BackupCategory.PREFERENCES -> pins.size + aliases.size; BackupCategory.LEARNING -> usage.size; BackupCategory.SHORTCUTS -> shortcuts.bindings.size
     }
 }
 
@@ -135,7 +135,9 @@ object BackupCodec {
                     map.getInt(id)
                 }
             }
-            return BackupDocument(BackupData(items(BackupCategory.NOTES, "notes"), items(BackupCategory.LINKS, "links"), items(BackupCategory.CLIPS, "clips"), pins, aliases, usage), categories)
+            val shortcuts = if (BackupCategory.SHORTCUTS in categories) ShortcutCodec.decode(sections.getJSONObject("SHORTCUTS")) else ShortcutConfiguration()
+            require(shortcuts.bindings.keys.none { it.startsWith("files:") }) { "Document shortcuts cannot be imported" }
+            return BackupDocument(BackupData(items(BackupCategory.NOTES, "notes"), items(BackupCategory.LINKS, "links"), items(BackupCategory.CLIPS, "clips"), pins, aliases, usage, shortcuts), categories)
         } catch (e: IllegalArgumentException) { throw e }
         catch (_: Exception) { throw IllegalArgumentException("Invalid DroidCast backup") }
     }
@@ -152,6 +154,7 @@ object BackupCodec {
                 }
                 BackupCategory.PREFERENCES -> sections.put(category.name, JSONObject().put("pins", JSONArray(data.pins.filterNot { it.startsWith("files:") }.sorted())).put("aliases", JSONObject(data.aliases.filterKeys { !it.startsWith("files:") })))
                 BackupCategory.LEARNING -> sections.put(category.name, JSONObject(data.usage.filterKeys { !it.startsWith("files:") }))
+                BackupCategory.SHORTCUTS -> sections.put(category.name, ShortcutCodec.encode(ShortcutConfiguration(data.shortcuts.bindings.filterKeys { !it.startsWith("files:") })))
             }
         }
         val text = JSONObject().put("format", "dev.droidcast.backup").put("version", 1).put("categories", sections).toString(2)
@@ -162,7 +165,7 @@ object BackupCodec {
 
 object BackupPlanner {
     /** Merge preserves existing identities/content. Replacement affects only selected categories. */
-    fun plan(current: BackupData, document: BackupDocument, selected: Set<BackupCategory>, policy: RestorePolicy, defaults: Map<String, String>): RestorePlan {
+    fun plan(current: BackupData, document: BackupDocument, selected: Set<BackupCategory>, policy: RestorePolicy, defaults: Map<String, String>, preservedShortcuts: Map<String, KeyChord> = emptyMap()): RestorePlan {
         require(selected.isNotEmpty() && document.categories.containsAll(selected)) { "Select available categories" }
         var added = 0; var skipped = 0; var removed = 0
         val remap = mutableMapOf<String, String>()
@@ -197,6 +200,16 @@ object BackupPlanner {
         val usage = if (BackupCategory.LEARNING !in selected) current.usage else if (policy == RestorePolicy.MERGE) importedUsage + current.usage else importedUsage
         val effective = defaults + links.associate { it.id to it.alias } + aliases
         require(effective.values.filter { it.isNotEmpty() }.groupingBy { it }.eachCount().values.none { it > 1 }) { "Alias conflict: exclude pins and aliases or quicklinks, or change the conflicting alias first" }
-        return RestorePlan(BackupData(notes, links, clips, pins, aliases, usage), added, skipped, removed)
+        val shortcuts = if (BackupCategory.SHORTCUTS !in selected) current.shortcuts else {
+            val incoming = mutableMapOf<String, KeyChord>()
+            document.data.shortcuts.bindings.forEach { (id, chord) ->
+                val target = ref(id)
+                require(target !in incoming || incoming[target] == chord) { "Duplicate content has conflicting keyboard shortcuts" }
+                incoming[target] = chord
+            }
+            ShortcutConfiguration(if (policy == RestorePolicy.MERGE) incoming + current.shortcuts.bindings else incoming.toMap())
+        }
+        ShortcutRules.validate(ShortcutConfiguration(shortcuts.bindings + preservedShortcuts))
+        return RestorePlan(BackupData(notes, links, clips, pins, aliases, usage, shortcuts), added, skipped, removed)
     }
 }

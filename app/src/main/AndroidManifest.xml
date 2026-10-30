@@ -12,7 +12,7 @@
             <intent-filter><action android:name="android.intent.action.SEND"/><category android:name="android.intent.category.DEFAULT"/><data android:mimeType="text/plain"/></intent-filter>
             <intent-filter><action android:name="android.intent.action.PROCESS_TEXT"/><category android:name="android.intent.category.DEFAULT"/><data android:mimeType="text/plain"/></intent-filter>
         </activity>
-        <service android:name=".PaletteShortcutService" android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" android:exported="true" android:label="DroidCast keyboard shortcut">
+        <service android:name=".PaletteShortcutService" android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" android:exported="true" android:label="DroidCast keyboard shortcuts">
             <intent-filter><action android:name="android.accessibilityservice.AccessibilityService"/></intent-filter>
             <meta-data android:name="android.accessibilityservice" android:resource="@xml/keyboard_service"/>
         </service>

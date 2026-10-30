@@ -8,5 +8,5 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:backgroundDimEnabled">false</item>
     </style>
-    <string name="shortcut_description">Optional keyboard shortcut: Ctrl + Space opens DroidCast from other apps. This service filters hardware key events to recognize that shortcut. It does not retrieve window content, inspect screen text, or store keystrokes. Enable only if you want the global shortcut.</string>
+    <string name="shortcut_description">Optional keyboard shortcuts: show or hide DroidCast and run commands with the combinations you configure. This service filters matching hardware key pairs. It does not retrieve window content, inspect screen text, or store keystrokes. Enable only if you want shortcuts from other apps.</string>
 </resources>
