@@ -1,0 +1,148 @@
+package dev.tinycast.android
+
+import android.accessibilityservice.AccessibilityService
+import android.app.Application
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.ComponentName
+import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import android.provider.OpenableColumns
+import android.provider.Settings
+import android.view.KeyEvent
+import android.view.KeyboardShortcutGroup
+import android.view.KeyboardShortcutInfo
+import android.view.Menu
+import android.view.WindowManager
+import android.view.accessibility.AccessibilityEvent
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.SystemBarStyle
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.compose.runtime.*
+
+class MainActivity : ComponentActivity() {
+    val store: PaletteStore by viewModels()
+    var shortcutEnabled by mutableStateOf(false)
+    private var sharedText by mutableStateOf<String?>(null)
+    private val openDocument = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            runCatching { contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+            val title = runCatching {
+                contentResolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)?.use { cursor -> if (cursor.moveToFirst()) cursor.getString(0) else null }
+            }.getOrNull() ?: uri.lastPathSegment ?: "Document"
+            val existing = store.files.firstOrNull { it.body == uri.toString() }
+            store.save("files", title, uri.toString(), id = existing?.id)
+            store.message = "Document added to recent files"
+        }
+    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
+        if (resources.configuration.smallestScreenWidthDp >= 600) window.setSoftInputMode((window.attributes.softInputMode and WindowManager.LayoutParams.SOFT_INPUT_MASK_STATE.inv()) or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+        receive(intent)
+        setContent {
+            LaunchedEffect(sharedText) {
+                sharedText?.let {
+                    store.editing = SavedItem("", "Shared text", it)
+                    store.dialog = "clip"
+                    sharedText = null
+                }
+            }
+            TinycastApp(store, shortcutEnabled, ::execute, ::copyText, ::enableShortcut, { finish() })
+        }
+    }
+    override fun onResume() {
+        super.onResume()
+        shortcutEnabled = Settings.Secure.getString(contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
+            ?.split(':')?.any { it == ComponentName(this, PaletteShortcutService::class.java).flattenToString() } == true
+    }
+    public override fun onNewIntent(intent: Intent) { super.onNewIntent(intent); store.reset(); receive(intent) }
+    private fun receive(intent: Intent) {
+        sharedText = when (intent.action) {
+            Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT)
+            Intent.ACTION_PROCESS_TEXT -> intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)?.toString()
+            else -> null
+        }
+    }
+    override fun onProvideKeyboardShortcuts(data: MutableList<KeyboardShortcutGroup>?, menu: Menu?, deviceId: Int) {
+        data?.add(KeyboardShortcutGroup("DroidCast", listOf(
+            KeyboardShortcutInfo("Focus search", KeyEvent.KEYCODE_L, KeyEvent.META_CTRL_ON),
+            KeyboardShortcutInfo("Actions", KeyEvent.KEYCODE_K, KeyEvent.META_CTRL_ON),
+            KeyboardShortcutInfo("New note", KeyEvent.KEYCODE_N, KeyEvent.META_CTRL_ON),
+            KeyboardShortcutInfo("Pin or unpin", KeyEvent.KEYCODE_D, KeyEvent.META_CTRL_ON)
+        )))
+        super.onProvideKeyboardShortcuts(data, menu, deviceId)
+    }
+    private fun enableShortcut() { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
+    fun copyText(text: String) {
+        getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("DroidCast", text))
+        store.message = "Copied to clipboard"
+    }
+    private fun open(intent: Intent) {
+        runCatching { startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); finish() }.onFailure { store.message = "No available app can open this item" }
+    }
+    fun execute(command: Command) {
+        store.used(command.id)
+        when (command.kind) {
+            Kind.CALC, Kind.CLIP -> copyText(command.payload)
+            Kind.APP -> open(Intent.makeMainActivity(ComponentName.unflattenFromString(command.payload)))
+            Kind.NOTE -> { store.editing = store.notes.firstOrNull { it.id == command.id }; store.dialog = "note" }
+            Kind.LINK -> {
+                if (command.payload.contains("{query}")) { store.editing = store.links.firstOrNull { it.id == command.id }; store.dialog = "link-query" }
+                else open(Intent(Intent.ACTION_VIEW, Uri.parse(command.payload)))
+            }
+            Kind.FILE -> {
+                val uri = Uri.parse(command.payload)
+                runCatching { contentResolver.getType(uri) ?: "*/*" }
+                    .onSuccess { type -> open(Intent(Intent.ACTION_VIEW).setDataAndType(uri, type).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)) }
+                    .onFailure { store.message = "Document access expired. Choose it again with Open a document." }
+            }
+            Kind.EXTENSION -> {
+                val parts = command.payload.split('/', limit = 2)
+                val extension = store.extensions.installed.firstOrNull { it.listing.id == parts[0] }
+                val entry = extension?.commands?.firstOrNull { it.name == parts.getOrNull(1) }
+                if (extension != null && entry != null) openExtension(extension, entry) else store.message = "This extension is no longer installed"
+            }
+            Kind.COMMAND -> when (command.id) {
+                "extensions" -> store.dialog = "extensions"
+                "calculator" -> { store.category = "All"; store.search("= "); store.focusEpoch++ }
+                "new-note" -> { store.editing = null; store.dialog = "note" }
+                "new-link" -> { store.editing = null; store.dialog = "link" }
+                "browse-files" -> openDocument.launch(arrayOf("*/*"))
+                "save-clip" -> {
+                    val manager = getSystemService(ClipboardManager::class.java)
+                    val text = manager.primaryClip?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.coerceToText(this)?.toString()
+                    if (text.isNullOrBlank()) store.message = "No clipboard text available. Copy some text first."
+                    else { store.editing = SavedItem("", text.take(60).lineSequence().first(), text); store.dialog = "clip" }
+                }
+                "shortcuts" -> store.dialog = "shortcuts"
+                "settings" -> open(Intent(Settings.ACTION_SETTINGS))
+                "app-settings" -> store.dialog = "preferences"
+                "web" -> open(Intent(Intent.ACTION_VIEW, Uri.parse(command.payload)))
+            }
+        }
+    }
+    private fun openExtension(extension: dev.tinycast.android.extensions.InstalledExtension, command: dev.tinycast.android.extensions.ExtensionCommand) { store.openExtension(extension, command) }
+}
+
+class PaletteShortcutService : AccessibilityService() {
+    private var consumedSpace = false
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) = Unit
+    override fun onInterrupt() = Unit
+    override fun onKeyEvent(event: KeyEvent): Boolean {
+        if (event.keyCode != KeyEvent.KEYCODE_SPACE) return false
+        if (event.action == KeyEvent.ACTION_UP && consumedSpace) { consumedSpace = false; return true }
+        if (event.action == KeyEvent.ACTION_DOWN && event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed) {
+            consumedSpace = true
+            if (event.repeatCount == 0) startActivity(Intent(this, MainActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
+                .putExtra("summon", true))
+            return true
+        }
+        return false
+    }
+}

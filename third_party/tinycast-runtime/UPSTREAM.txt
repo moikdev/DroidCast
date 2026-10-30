@@ -1,0 +1,5 @@
+Vendored from https://github.com/abue-ammar/tinycast
+Commit: 37e6043f3f550febb64bdb3cff3ac29a30caad5a
+AGPL-3.0. Runtime source and build instructions are retained here.
+Android host adapter is app/src/main/assets/android-runtime.js and extensions/ExtensionRuntime.kt.
+The generated upstream JavaScript is copied unchanged.

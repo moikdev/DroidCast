@@ -1,0 +1,11 @@
+Tinycast palette visual port
+https://github.com/abue-ammar/tinycast
+Commit: 37e6043f3f550febb64bdb3cff3ac29a30caad5a
+License: AGPL-3.0 (see project LICENSE).
+
+Retained Swift reference sources are not compiled into Android.
+PaletteTheme.kt and PaletteUi.kt adapt Theme tokens, AppRow/SectionHeader,
+outlined keycaps, the search header and floating action capsule, and the
+two-column CalculatorCard into native Jetpack Compose.
+Android keeps Ctrl shortcuts, accessible touch targets and its own fonts.
+macOS Liquid Glass material is not available on Android.

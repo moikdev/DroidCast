@@ -1,0 +1,212 @@
+package dev.tinycast.android
+
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.*
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
+
+private val ink = PaletteTheme.ink
+private val muted = PaletteTheme.secondary
+private val line = PaletteTheme.separator
+
+@Composable
+fun PaletteDialogs(store: PaletteStore, selected: Command?, globalEnabled: Boolean, enableGlobal: () -> Unit,
+                   run: (Command) -> Unit, copy: (String) -> Unit, close: () -> Unit) {
+    val dialog = store.dialog ?: return
+    if (dialog.startsWith("extension")) { dev.tinycast.android.extensions.ExtensionDialogs(store, close); return }
+    when (dialog) {
+        "note", "link", "clip" -> Editor(store, dialog, close)
+        "shortcuts" -> Shell("Keyboard shortcuts", "Less reaching. More doing.", close) {
+            Text("IN DROIDCAST", color = ink, fontSize = 10.sp, letterSpacing = 1.sp, modifier = Modifier.padding(bottom = 8.dp))
+            listOf("Focus search" to "Ctrl + L", "Open actions" to "Ctrl + K", "Navigate results" to "↑ / ↓", "Run selected command" to "Enter", "Pin / unpin selected" to "Ctrl + D", "Create a note" to "Ctrl + N", "Switch category" to "Ctrl + 1…8", "Save an editor" to "Ctrl + S / Ctrl + Enter", "Clear, go back, dismiss" to "Esc").forEach { ShortcutRow(it.first, it.second) }
+            HorizontalDivider(color = line, modifier = Modifier.padding(vertical = 14.dp))
+            ShortcutRow("Summon from another app", "Ctrl + Space")
+            Text(if (globalEnabled) "Global shortcut is enabled." else "Enable the optional keyboard service in Preferences for the global shortcut.", color = muted, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(top = 10.dp))
+            Spacer(Modifier.height(16.dp)); Button(onClick = close, modifier = Modifier.fillMaxWidth()) { Text("Got it") }
+        }
+        "preferences" -> Shell("Preferences", "DroidCast · 0.4.0-preview", close) {
+            Row(verticalAlignment = Alignment.CenterVertically) { Glyph("keyboard", ink, 26); Spacer(Modifier.width(12.dp)); Column { Text("Global keyboard shortcut", fontSize = 16.sp, fontWeight = FontWeight.Medium); Text(if (globalEnabled) "Enabled · Ctrl + Space" else "Optional · Ctrl + Space", color = ink, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp)) } }
+            Text("Open the palette from another app with your hardware keyboard. Android requires you to enable the DroidCast keyboard shortcut accessibility service.", color = muted, fontSize = 13.sp, lineHeight = 20.sp, modifier = Modifier.padding(top = 18.dp))
+            Text("The service receives hardware key events only to recognize Ctrl + Space. It does not retrieve screen content or save keystrokes. You can turn it off in Android settings at any time.", color = muted, fontSize = 12.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 12.dp))
+            Button(onClick = enableGlobal, modifier = Modifier.fillMaxWidth().padding(top = 20.dp).testTag("enable-global")) { Text(if (globalEnabled) "Manage keyboard service" else "Open accessibility settings") }
+            HorizontalDivider(color = line, modifier = Modifier.padding(vertical = 22.dp))
+            Text("Your data stays on your device", fontWeight = FontWeight.Medium, fontSize = 15.sp)
+            Text("No account, analytics or background clipboard monitoring. Your collections stay local. Store searches and downloads contact Raycast; extensions can make HTTPS requests when you run them. Files are limited to documents you choose and each extension's own data folder.", color = muted, fontSize = 12.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 10.dp))
+            Text("Raycast Store extensions run with a subset of the Raycast API. Desktop automation, native Mac helpers and OAuth are unavailable. AI commands are not included.", color = muted, fontSize = 12.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 12.dp))
+            TextButton(onClick = { store.refreshApps(); store.message = "Application list refreshed" }, modifier = Modifier.padding(top = 12.dp)) { Text("Refresh installed apps") }
+            TextButton(onClick = { run(Command("web", "Source code", "", payload = "https://github.com/moikdev/DroidCast")) }) { Text("Source code") }
+            TextButton(onClick = { store.dialog = "licenses" }) { Text("License and attribution") }
+        }
+        "licenses" -> Shell("License and attribution", "DroidCast · Android adaptation of Tinycast", close) {
+            Text("Tinycast Copyright (C) 2026 Abue Ammar. Android implementation and modifications: DroidCast contributors, 2026.", fontSize = 13.sp, lineHeight = 20.sp)
+            Text("Licensed under the GNU Affero General Public License, version 3 or later. Distributed without warranty. React is distributed under the MIT license. Full notices and corresponding source are included in the source repository.", color = muted, fontSize = 12.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 12.dp))
+            TextButton(onClick = { run(Command("web", "License", "", payload = "https://github.com/moikdev/DroidCast/blob/main/LICENSE")) }) { Text("View full license") }
+            TextButton(onClick = { run(Command("web", "Source code", "", payload = "https://github.com/moikdev/DroidCast")) }) { Text("Get source code") }
+        }
+        "alias" -> if (selected != null) {
+            var alias by remember(selected.id) { mutableStateOf(selected.alias) }
+            var error by remember { mutableStateOf<String?>(null) }
+            Shell("Set an alias", "${selected.title} · a shorter way to find it", close) {
+                Field("Alias", alias, { alias = it; error = null }, "e.g. calc", "alias-field")
+                Text("Use one lowercase word. Leave empty to remove the alias.", color = muted, fontSize = 12.sp, modifier = Modifier.padding(top = 10.dp))
+                error?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp) }
+                Button(onClick = { runCatching { store.setAlias(selected.id, alias) }.onSuccess { close() }.onFailure { error = it.message } }, modifier = Modifier.fillMaxWidth().padding(top = 18.dp).testTag("save-alias")) { Text("Save alias") }
+            }
+        }
+        "delete" -> if (selected != null) Shell("Delete ${selected.kind.label.lowercase().removeSuffix("s")}?", selected.title, close) {
+            Text("This removes the item from DroidCast. Original documents are kept on your device.", color = muted, fontSize = 13.sp, lineHeight = 20.sp)
+            Row(Modifier.fillMaxWidth().padding(top = 20.dp), horizontalArrangement = Arrangement.End) {
+                TextButton(onClick = close) { Text("Cancel") }; Spacer(Modifier.width(10.dp))
+                Button(onClick = { store.delete(selected.id); close() }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEBABAA)), modifier = Modifier.testTag("confirm-delete")) { Text("Delete") }
+            }
+        }
+        "link-query" -> {
+            val link = store.editing
+            var argument by remember { mutableStateOf("") }
+            Shell(link?.title ?: "Quicklink", "What would you like to search for?", close) {
+                Field("Search terms", argument, { argument = it }, "Type your query", "link-query-field")
+                Button(onClick = { link?.let { run(Command(it.id, it.title, it.body, Kind.LINK, "link", payload = it.body.replace("{query}", android.net.Uri.encode(argument)))) }; close() }, enabled = argument.isNotBlank(), modifier = Modifier.fillMaxWidth().padding(top = 16.dp)) { Text("Open quicklink") }
+            }
+        }
+    }
+}
+
+@Composable
+private fun Editor(store: PaletteStore, kind: String, close: () -> Unit) {
+    val old = store.editing
+    var title by remember { mutableStateOf(old?.title.orEmpty()) }
+    var body by remember { mutableStateOf(old?.body.orEmpty()) }
+    var alias by remember { mutableStateOf(old?.alias.orEmpty()) }
+    var error by remember { mutableStateOf<String?>(null) }
+    val focus = remember { FocusRequester() }
+    var fieldReady by remember { mutableStateOf(false) }
+    val type = when (kind) { "note" -> "note"; "link" -> "quicklink"; else -> "clip" }
+    fun save() {
+        runCatching { store.save(when (kind) { "note" -> "notes"; "link" -> "links"; else -> "clips" }, title, body, alias, old?.id?.takeIf { it.isNotEmpty() }) }
+            .onSuccess { store.message = "${type.replaceFirstChar { it.uppercase() }} saved"; close() }
+            .onFailure { error = it.message ?: "Could not save" }
+    }
+    Shell(if (old?.id.isNullOrEmpty()) "Create a $type" else "Edit $type", when (kind) { "note" -> "A place for the thought you don't want to lose."; "link" -> "Your favorite destination, one command away."; else -> "Keep useful text close. Stored only on this device." }, close,
+        Modifier.onPreviewKeyEvent {
+            if (it.type == KeyEventType.KeyDown && (it.isCtrlPressed || it.isMetaPressed) && (it.key == Key.S || it.key == Key.Enter)) { save(); true } else false
+        }) {
+        LaunchedEffect(fieldReady) { if (fieldReady) focus.requestFocus() }
+        Field("Title", title, { title = it; error = null }, "Give it a name", "editor-title", modifier = Modifier.focusRequester(focus).onGloballyPositioned { fieldReady = true })
+        Spacer(Modifier.height(16.dp))
+        if (kind == "link") {
+            Field("URL", body, { body = it; error = null }, "https://example.com/search?q={query}", "editor-body")
+            Text("Add {query} for a search command. Use an alias like g, then type g android tablets in the palette.", color = muted, fontSize = 11.sp, lineHeight = 17.sp, modifier = Modifier.padding(top = 10.dp))
+            Spacer(Modifier.height(16.dp)); Field("Alias (optional)", alias, { alias = it; error = null }, "e.g. g", "editor-alias")
+        } else {
+            OutlinedTextField(body, { body = it }, label = { Text(if (kind == "note") "Note" else "Text") }, placeholder = { Text(if (kind == "note") "Start writing…" else "Your saved text") },
+                modifier = Modifier.fillMaxWidth().heightIn(min = 160.dp, max = 260.dp).testTag("editor-body"), textStyle = androidx.compose.ui.text.TextStyle(fontSize = 14.sp, lineHeight = 22.sp), shape = RoundedCornerShape(10.dp), keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences))
+        }
+        error?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp, modifier = Modifier.padding(top = 10.dp)) }
+        Row(Modifier.fillMaxWidth().padding(top = 22.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text("Ctrl + S to save", color = muted, fontSize = 11.sp)
+            Spacer(Modifier.weight(1f)); TextButton(onClick = close) { Text("Cancel", color = muted) }
+            Spacer(Modifier.width(8.dp)); Button(onClick = ::save, modifier = Modifier.testTag("save-editor")) { Text("Save $type") }
+        }
+    }
+}
+
+@Composable
+internal fun ActionsMenu(store: PaletteStore, command: Command, run: (Command) -> Unit, copy: (String) -> Unit, close: () -> Unit) {
+    data class Action(val label: String, val key: String, val perform: () -> Unit)
+    val actions = buildList {
+        add(Action(if (command.kind in listOf(Kind.CLIP, Kind.CALC)) "Copy to clipboard" else "Open command", "Enter") { close(); run(command) })
+        if (command.id !in listOf("result", "web")) {
+            add(Action(if (command.id in store.pins) "Unpin command" else "Pin command", "Ctrl D") { store.togglePin(command.id); close() })
+            add(Action("Set alias", "") { store.dialog = "alias" })
+        }
+        if (command.kind in listOf(Kind.NOTE, Kind.LINK, Kind.CLIP)) {
+            add(Action("Edit ${command.kind.label.lowercase().removeSuffix("s")}", "") {
+                store.editing = (store.notes + store.links + store.clips).first { it.id == command.id }
+                store.dialog = when (command.kind) { Kind.NOTE -> "note"; Kind.LINK -> "link"; else -> "clip" }
+            })
+            add(Action("Copy content", "") { copy(command.payload); close() })
+        }
+        if (command.kind in listOf(Kind.NOTE, Kind.LINK, Kind.CLIP, Kind.FILE)) add(Action("Delete from DroidCast", "") { store.dialog = "delete" })
+    }
+    var index by remember { mutableIntStateOf(0) }
+    val focus = remember { FocusRequester() }
+    var actionsReady by remember { mutableStateOf(false) }
+    val offset=with(LocalDensity.current){52.dp.roundToPx()}
+    val width=minOf(320.dp,LocalConfiguration.current.screenWidthDp.dp-24.dp)
+    Popup(alignment=Alignment.BottomEnd,offset=IntOffset(0,-offset),onDismissRequest=close,properties=PopupProperties(focusable=true)) {
+      Surface(shape=RoundedCornerShape(16.dp),color=PaletteTheme.surface,border=BorderStroke(1.dp,PaletteTheme.border),shadowElevation=12.dp,
+        modifier=Modifier.width(width).focusRequester(focus).onGloballyPositioned{actionsReady=true}.onPreviewKeyEvent {
+            if(it.type!=KeyEventType.KeyDown)false else when(it.key){
+                Key.DirectionDown->{index=(index+1).coerceAtMost(actions.lastIndex);true}
+                Key.DirectionUp->{index=(index-1).coerceAtLeast(0);true}
+                Key.Enter->{actions[index].perform();true}
+                Key.Escape->{close();true}
+                Key.D->if(it.isCtrlPressed){store.togglePin(command.id);close();true}else false
+                else->false
+            }
+        }.focusable()) {
+        Column(Modifier.heightIn(max=360.dp).verticalScroll(rememberScrollState()).padding(6.dp)) {
+            Text(command.title,color=muted,fontSize=11.sp,maxLines=1,modifier=Modifier.padding(10.dp,8.dp))
+            LaunchedEffect(actionsReady){if(actionsReady)focus.requestFocus()}
+            actions.forEachIndexed{i,action->
+                Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).background(if(index==i)PaletteTheme.selection else Color.Transparent)
+                    .clickable(onClick=action.perform).padding(10.dp,12.dp).testTag("action-${action.label}"),verticalAlignment=Alignment.CenterVertically){
+                    Text(action.label,fontSize=13.sp,color=if(action.label.startsWith("Delete"))Color(0xFFEBABAA)else PaletteTheme.ink,modifier=Modifier.weight(1f))
+                    if(action.key.isNotEmpty())KeyCap(action.key)
+                }
+            }
+        }
+      }
+    }
+}
+
+@Composable
+private fun Shell(title: String, subtitle: String, close: () -> Unit, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Dialog(onDismissRequest = close, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        Surface(shape = RoundedCornerShape(20.dp), color = PaletteTheme.surface, border = BorderStroke(1.dp, line), modifier = Modifier.widthIn(max = 540.dp).fillMaxWidth(.94f).padding(vertical = 20.dp).then(modifier)
+            .onPreviewKeyEvent { if (it.type == KeyEventType.KeyDown && it.key == Key.Escape) { close(); true } else false }) {
+            Column(Modifier.verticalScroll(rememberScrollState()).padding(28.dp)) {
+                Text(title, fontSize = 24.sp, fontWeight = FontWeight.SemiBold, letterSpacing = (-.5).sp)
+                Text(subtitle, fontSize = 12.sp, color = muted, lineHeight = 18.sp, modifier = Modifier.padding(top = 8.dp, bottom = 24.dp))
+                content()
+            }
+        }
+    }
+}
+
+@Composable
+private fun Field(label: String, value: String, change: (String) -> Unit, placeholder: String, tag: String, modifier: Modifier = Modifier) {
+    OutlinedTextField(value, change, label = { Text(label, fontSize = 12.sp) }, placeholder = { Text(placeholder, fontSize = 13.sp) }, singleLine = true,
+        shape = RoundedCornerShape(10.dp), textStyle = androidx.compose.ui.text.TextStyle(fontSize = 14.sp), modifier = modifier.fillMaxWidth().testTag(tag))
+}
+
+@Composable
+private fun ShortcutRow(label: String, key: String) {
+    Row(Modifier.fillMaxWidth().padding(vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(label, color = PaletteTheme.ink, fontSize = 12.sp, modifier = Modifier.weight(1f))
+        Text(key, color = muted, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
+    }
+}

@@ -1,0 +1,12 @@
+<resources>
+    <style name="AppTheme" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowActionModeOverlay">true</item>
+        <item name="android:colorAccent">#9CEBC8</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+    <string name="shortcut_description">Optional keyboard shortcut: Ctrl + Space opens DroidCast from other apps. This service filters hardware key events to recognize that shortcut. It does not retrieve window content, inspect screen text, or store keystrokes. Enable only if you want the global shortcut.</string>
+</resources>
