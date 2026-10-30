@@ -8,7 +8,6 @@ import android.provider.DocumentsContract
 import android.util.AtomicFile
 import androidx.compose.runtime.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.json.JSONArray
 import org.json.JSONObject
@@ -66,11 +65,16 @@ private object FolderProviderQueries {
     }
 }
 
-class FolderSearch(private val app: Application, private val scope: CoroutineScope) {
+class FolderSearch internal constructor(
+    private val app: Application,
+    private val scope: CoroutineScope,
+    atomicFile: (File) -> AtomicFile = { AtomicFile(it) },
+    private val initialReadDispatcher: CoroutineDispatcher = Dispatchers.IO
+) {
     private val directory = File(app.filesDir, "folder-search")
-    private val configFile = AtomicFile(File(directory, "config.json"))
-    private val indexFile = AtomicFile(File(directory, "index.json"))
-    private val disk = Mutex()
+    private val configFile = atomicFile(File(directory, "config.json"))
+    private val indexFile = atomicFile(File(directory, "index.json"))
+    private val disk = FolderStorageCoordinator.disk
     private val scanRevision = AtomicLong()
     private val searchRevision = AtomicLong()
     private var scanJob: Job? = null
@@ -98,7 +102,7 @@ class FolderSearch(private val app: Application, private val scope: CoroutineSco
 
     init { scope.launch {
         try {
-            val loaded = withContext(Dispatchers.IO) { disk.withLock {
+            val loaded = withContext(initialReadDispatcher) { disk.withLock {
                 val config = read(configFile, 65536)
                 val roots = config?.getJSONArray("folders")?.let { values ->
                     require(values.length() <= FolderIndexRules.MAX_FOLDERS)
@@ -125,13 +129,16 @@ class FolderSearch(private val app: Application, private val scope: CoroutineSco
 
     private data class Loaded(val folders: List<SearchFolder>, val enabled: Boolean, val launcher: Boolean, val grants: Set<String>, val entries: List<IndexedDocument>, val cacheFailed: Boolean)
     private fun grants() = app.contentResolver.persistedUriPermissions.filter { it.isReadPermission }.map { it.uri.toString() }.toSet()
+    private suspend fun readGrants() = withContext(Dispatchers.IO) { disk.withLock { grants() } }
     private fun validTree(value: String): Boolean = runCatching {
         val uri = Uri.parse(value)
         value.length <= 8192 && uri.scheme == "content" && !uri.authority.isNullOrBlank() && DocumentsContract.isTreeUri(uri) && DocumentsContract.getTreeDocumentId(uri).isNotEmpty()
     }.getOrDefault(false)
     private fun read(file: AtomicFile, limit: Int): JSONObject? {
         if (!file.baseFile.exists() && !File(file.baseFile.path + ".bak").exists()) return null
-        val bytes = file.openRead().use { input ->
+        return JSONObject(readBytes(file, limit).toString(Charsets.UTF_8)).also { require(it.getInt("version") == 1) }
+    }
+    private fun readBytes(file: AtomicFile, limit: Int): ByteArray = file.openRead().use { input ->
             val output = ByteArrayOutputStream(); val buffer = ByteArray(8192)
             while (true) {
                 val count = input.read(buffer, 0, minOf(buffer.size, limit + 1 - output.size()))
@@ -140,8 +147,6 @@ class FolderSearch(private val app: Application, private val scope: CoroutineSco
                 output.write(buffer, 0, count)
             }
             output.toByteArray()
-        }
-        return JSONObject(bytes.toString(Charsets.UTF_8)).also { require(it.getInt("version") == 1) }
     }
     private fun deleteIndex() {
         indexFile.delete()
@@ -152,11 +157,16 @@ class FolderSearch(private val app: Application, private val scope: CoroutineSco
         if (!current()) return false
         check(directory.isDirectory || directory.mkdirs()) { "Cannot create private index folder" }
         val stream = file.startWrite()
+        var finished = false
         try {
             stream.write(bytes)
             if (!current()) { file.failWrite(stream); return false }
-            file.finishWrite(stream); return true
-        } catch (error: Exception) { file.failWrite(stream); throw error }
+            file.finishWrite(stream); finished = true
+            // AtomicFile can log a failed rename without throwing. Do not transfer
+            // permission ownership until the saved bytes have been verified.
+            check(readBytes(file, limit).contentEquals(bytes)) { "Folder storage write could not be verified" }
+            return true
+        } catch (error: Exception) { if (!finished) file.failWrite(stream); throw error }
     }
     private fun config(roots: List<SearchFolder>, on: Boolean, launcher: Boolean) = JSONObject().put("version", 1).put("enabled", on).put("launcher", launcher)
         .put("folders", JSONArray().also { a -> roots.forEach { a.put(JSONObject().put("uri", it.uri).put("title", it.title).put("ownsGrant", it.ownsGrant)) } })
@@ -216,7 +226,8 @@ class FolderSearch(private val app: Application, private val scope: CoroutineSco
             val ownership = FolderGrantTransaction(
                 hasReadGrant = { value in grants() },
                 takeReadGrant = { app.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) },
-                releaseReadGrant = { app.contentResolver.releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+                releaseReadGrant = { app.contentResolver.releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) },
+                storageMutex = disk
             )
             try {
                 ownership.acquire()
@@ -227,7 +238,7 @@ class FolderSearch(private val app: Application, private val scope: CoroutineSco
                 val added = SearchFolder(value, root.title, existing?.ownsGrant == true || ownership.newlyAcquired)
                 val next = folders.filterNot { it.uri == value } + added
                 ownership.commit(disk) { check(write(configFile, config(next, true, includeInLauncher), 65536)) }
-                folders = next; enabled = true; readable = withContext(Dispatchers.IO) { grants() }; errors = errors - value; error = null
+                folders = next; enabled = true; readable = readGrants(); errors = errors - value; error = null
                 refresh()
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (_: Exception) { error = "Folder access could not be kept. Choose an available folder from a provider that supports persistent access." }
@@ -255,7 +266,7 @@ class FolderSearch(private val app: Application, private val scope: CoroutineSco
                         }
                     })
                 folders = next; enabled = on; includeInLauncher = launcher
-                readable = withContext(Dispatchers.IO) { grants() }
+                readable = readGrants()
                 publish(if (on) entries.filter { it.folder in next.map(SearchFolder::uri) && it.folder in readable } else emptyList())
                 errors = errors.filterKeys { key -> next.any { it.uri == key } }; error = if (cacheCleared) null else "Settings saved, but the old private index could not be cleared. Try disabling again."
                 status = if (on) "${entries.size} indexed items · Refresh to check for changes." else "Folder search is off; cached index removed."
@@ -270,7 +281,7 @@ class FolderSearch(private val app: Application, private val scope: CoroutineSco
         if (loading || changing) return
         val requestedRevision = scanRevision.get()
         scope.launch {
-            val permissions = withContext(Dispatchers.IO) { grants() }
+            val permissions = readGrants()
             if (scanRevision.get() != requestedRevision || changing) return@launch
             if (permissions != readable) {
                 stopScan(); readable = permissions
@@ -289,7 +300,7 @@ class FolderSearch(private val app: Application, private val scope: CoroutineSco
         busy = true; error = null; status = "Indexing selected folders…"
         scanJob = scope.launch {
             try {
-                val permissions = withContext(Dispatchers.IO) { grants() }; val result = ArrayList<IndexedDocument>(); val problems = linkedMapOf<String, String>()
+                val permissions = readGrants(); val result = ArrayList<IndexedDocument>(); val problems = linkedMapOf<String, String>()
                 var limited = false; var remainingBytes = FolderIndexRules.MAX_CACHE_BYTES - 128 * 1024
                 withTimeout(60000) {
                     for (root in roots) {

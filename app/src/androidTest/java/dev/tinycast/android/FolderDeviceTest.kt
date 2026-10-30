@@ -8,6 +8,8 @@ import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
+import androidx.test.runner.lifecycle.Stage
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.Until
@@ -16,6 +18,12 @@ import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
 import java.io.File
+import java.io.FileOutputStream
+import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
+import kotlin.coroutines.CoroutineContext
+import android.util.AtomicFile
 
 /** Real ExternalStorageProvider grants, not simulated picker responses. */
 @androidx.test.filters.SdkSuppress(minSdkVersion = 31)
@@ -110,6 +118,122 @@ class FolderDeviceTest {
         compose.runOnUiThread { result = FolderSearch(context.applicationContext as android.app.Application, scope) }
         compose.waitUntil(10000) { !result.loading }
         return result
+    }
+    private class QueuedIo : CoroutineDispatcher() {
+        private val tasks = ConcurrentLinkedQueue<Runnable>()
+        override fun dispatch(context: CoroutineContext, block: Runnable) { tasks.add(block) }
+        fun runOne(): Boolean { val task = tasks.poll() ?: return false; task.run(); return true }
+        fun drain() { repeat(32) { if (!runOne()) return } }
+    }
+    private class PausedConfig(file: File) : AtomicFile(file) {
+        @Volatile var pause = false
+        val opened = CountDownLatch(1)
+        val finish = CountDownLatch(1)
+        override fun startWrite(): FileOutputStream {
+            val stream = super.startWrite()
+            if (pause) {
+                opened.countDown()
+                if (!finish.await(15, TimeUnit.SECONDS)) {
+                    super.failWrite(stream)
+                    throw java.io.IOException("Test writer was not released")
+                }
+            }
+            return stream
+        }
+    }
+    private class FailedRenameConfig(file: File) : AtomicFile(file) {
+        @Volatile var fail = false
+        override fun finishWrite(stream: FileOutputStream?) {
+            if (!fail) super.finishWrite(stream)
+            else stream?.close() // Model AtomicFile's logged-but-not-thrown rename failure.
+        }
+    }
+    @Test fun replacementControllerWaitsForCancelledOutgoingAtomicWriteAndGrantRelease() {
+        authorize()
+        val writerScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).also { scopes += it }
+        val readerScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).also { scopes += it }
+        val config = PausedConfig(File(directory, "config.json"))
+        val readerIo = QueuedIo()
+        var paletteOpened = false
+        lateinit var outgoing: FolderSearch
+        lateinit var replacement: FolderSearch
+        compose.runOnUiThread {
+            outgoing = FolderSearch(context.applicationContext as android.app.Application, writerScope,
+                atomicFile = { if (it.name == "config.json") config else AtomicFile(it) })
+        }
+        compose.waitUntil(10000) { !outgoing.loading }
+        val folder = outgoing.folders.single()
+        assertTrue("Fixture grant must belong to folder search", folder.ownsGrant)
+        config.pause = true
+        try {
+            compose.runOnUiThread { outgoing.remove(folder) }
+            assertTrue("Writer must pause after startWrite", config.opened.await(5, TimeUnit.SECONDS))
+            val pending = File(config.baseFile.path + ".new")
+            assertTrue(pending.exists())
+            compose.runOnUiThread {
+                replacement = FolderSearch(context.applicationContext as android.app.Application, readerScope,
+                    initialReadDispatcher = readerIo)
+            }
+            // Execute the replacement's actual IO entry, rather than relying on a sleep.
+            assertTrue(readerIo.runOne())
+            val readerWaited = replacement.loading
+            val pendingPreserved = pending.exists()
+            File(context.filesDir, "folder-evidence/storage-race-observation.json").writeText(org.json.JSONObject()
+                .put("replacement_waited", readerWaited).put("pending_write_preserved", pendingPreserved).toString(2))
+            assertTrue("Replacement must wait for outgoing storage", readerWaited)
+            assertTrue("Reader must not delete the pending AtomicFile write", pendingPreserved)
+            assertTrue(context.contentResolver.persistedUriPermissions.any { it.uri.toString() == folder.uri && it.isReadPermission })
+            writerScope.cancel() // Settings was closed while its synchronous write was in flight.
+            config.finish.countDown()
+            compose.waitUntil(10000) { readerIo.drain(); !replacement.loading && !outgoing.changing }
+            assertTrue(replacement.folders.isEmpty())
+            assertEquals(0, replacement.count)
+            assertFalse(pending.exists())
+            assertEquals(0, org.json.JSONObject(config.baseFile.readText()).getJSONArray("folders").length())
+            assertFalse(context.contentResolver.persistedUriPermissions.any { it.uri.toString() == folder.uri && it.isReadPermission })
+            File(context.filesDir, "folder-evidence/storage-replacement.json").writeText(org.json.JSONObject()
+                .put("reader_attempted_while_write_pending", true).put("pending_write_preserved", true)
+                .put("outgoing_scope_cancelled", true).put("replacement_loaded_committed_removal", true)
+                .put("owned_read_grant_released", true).toString(2))
+            compose.activityRule.scenario.onActivity { it.openFileSearch() }
+            paletteOpened = true
+            compose.waitUntil(5000) {
+                runCatching { compose.onNodeWithTag("file-search-status", useUnmergedTree = true).assertTextEquals("0 indexed items") }.isSuccess
+            }
+            assertTrue(device.wait(Until.hasObject(By.text("0 indexed items")), 5000))
+            device.waitForIdle()
+            assertTrue(device.takeScreenshot(File(context.filesDir, "folder-evidence/replacement-palette.png")))
+        } finally {
+            config.finish.countDown(); writerScope.cancel()
+            compose.waitUntil(10000) { readerIo.drain(); writerScope.coroutineContext[Job]!!.children.none() }
+            if (paletteOpened) compose.runOnUiThread {
+                ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
+                    .filterIsInstance<MainActivity>().toList().forEach { it.finish() }
+            }
+        }
+    }
+    @Test fun silentAtomicRenameFailureDoesNotCommitRemovalOrReleaseItsGrant() {
+        authorize()
+        val writerScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).also { scopes += it }
+        val config = FailedRenameConfig(File(directory, "config.json"))
+        val originalConfig = config.baseFile.readText()
+        lateinit var outgoing: FolderSearch
+        compose.runOnUiThread {
+            outgoing = FolderSearch(context.applicationContext as android.app.Application, writerScope,
+                atomicFile = { if (it.name == "config.json") config else AtomicFile(it) })
+        }
+        compose.waitUntil(10000) { !outgoing.loading }
+        val folder = outgoing.folders.single()
+        config.fail = true
+        compose.runOnUiThread { outgoing.remove(folder) }
+        compose.waitUntil(10000) { !outgoing.changing }
+        assertNotNull(outgoing.error)
+        assertEquals(originalConfig, config.baseFile.readText())
+        assertFalse(File(config.baseFile.path + ".new").exists())
+        assertTrue(context.contentResolver.persistedUriPermissions.any { it.uri.toString() == folder.uri && it.isReadPermission })
+        val replacement = reopened()
+        assertEquals(listOf(folder), replacement.folders)
+        assertEquals(4, replacement.count)
     }
     @Test fun scopedSearchIndexesMetadataFiltersAndReopensWithoutExportingGrants() {
         authorize()

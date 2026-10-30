@@ -10,7 +10,7 @@ The application runs under its normal Android app UID. Only the separately guard
 
 The build identity and final results are in [settings-checks.json](settings-checks.json). Local raw build/instrumentation logs, native XML and private restoration snapshots remain under ignored `artifacts/`; private snapshots are not published.
 
-Final targeted runs pass 15/15 on tablet and 15/15 on phone; the preceding complete suites pass 71/71 on each. Final source build/lint and 64 JVM tests pass. Hardware delivery passes 16 cases on the pre-correction APK, with restoration verified. APK identities are explicitly separated in the JSON.
+Final targeted runs pass 17/17 on tablet and 17/17 on phone; the preceding complete suites pass 71/71 on each. Final source build/lint and 64 JVM tests pass. Hardware delivery passes 16 cases on the pre-correction APK, with restoration verified. APK identities are explicitly separated in the JSON.
 
 A separate manual tablet rotation check changes landscape → portrait (1200×1920) → landscape, preserves the selected global-shortcut inspector and Ctrl+Space value, and verifies the stored shortcuts are unchanged. The original free-rotation mode is restored. Its portrait PNG is included; this is an emulator check, not physical-device certification.
 
@@ -36,6 +36,12 @@ Eleven deterministic JVM tests use queued coroutine dispatchers to cancel at the
 
 Alias Clear now uses the successful-save path, clears validation feedback only after the store accepts the change and displays “Alias cleared.” The native regression covers conflict → Clear, empty editable value despite its placeholder, no error, persisted empty alias, and a subsequent successful save. Tablet/phone `alias-cleared.png` captures show that state. Final focused settings/route/folder runs exercise these review corrections; the earlier full-suite and hardware binaries retain their separate identities.
 
+A second correctness audit at `26d09f6` found that instance-local mutexes did not serialize file access across replacement Settings/palette controllers. Android AtomicFile readers can delete an in-progress `.new` write, while `finishWrite` can log a rename failure without throwing. The process-wide folder storage coordinator now gates configuration/index reads, writes, deletion and permission acquisition/cleanup. A successful write is also read back and compared before configuration ownership transfers or an owned grant is released.
+
+Two native regressions use real Android AtomicFile instances. One pauses removal after `startWrite`, explicitly starts the replacement reader, cancels the outgoing controller and then allows the write to finish. It requires the replacement to wait, the pending write to survive, the saved removal to load and the owned grant to be released. Its real palette smoke capture shows zero indexed items. Restoring the instance-local lock deterministically deletes the pending write and fails this test. A second test simulates a silent rename failure and requires the old configuration and grant to remain intact, with an error and successful reopening of the old scope. These checks cover the tested interleavings; process death remains unverified.
+
+The published [2026-10-30 nightly checkpoint](https://github.com/moikdev/DroidCast/releases/tag/nightly-2026-10-30) deliberately retains source `26d09f6` and APK `b512ba18…988b46e`. Its notes disclose this storage issue and advise keeping selected-folder indexing off. It is not the corrected APK recorded here.
+
 ## Screenshot provenance
 
 All committed images are unedited, real Android PNGs. PR image URLs pin the implementation commit.
@@ -44,7 +50,7 @@ All committed images are unedited, real Android PNGs. PR image URLs pin the impl
 - `parity-settings/before-tablet.png`: the earlier, uncommitted settings layout captured during this branch, before the user's tablet refinement request. It is explicitly WIP history, not a released build or the final implementation.
 - `parity-folders/before-search.png`: baseline palette before folder commands/indexing, captured from PR #33's verified APK (same production source as the base).
 - `parity-settings/tablet/` and `phone/`: final settings configuration, filtered commands, recording/conflict, alias error and backup states. Saved UI/model assertions precede capture.
-- `parity-folders/`: actual folder chooser, configured scope, verified query/results, external viewer, expired access and removed scope. Viewer title/body are personally checked in the full-resolution PNG, in addition to the automated URI/title checks described above.
+- `parity-folders/`: actual folder chooser, configured scope, verified query/results, external viewer, expired access, removed scope and the replacement-controller palette smoke state. Viewer title/body are personally checked in the full-resolution PNG, in addition to the automated URI/title checks described above.
 
 ## Iteration findings and limits
 

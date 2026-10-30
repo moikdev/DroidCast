@@ -27,19 +27,20 @@ internal class FolderGrantTransaction(
     private val hasReadGrant: () -> Boolean,
     private val takeReadGrant: () -> Unit,
     private val releaseReadGrant: () -> Unit,
-    private val io: CoroutineDispatcher = Dispatchers.IO
+    private val io: CoroutineDispatcher = Dispatchers.IO,
+    private val storageMutex: Mutex = FolderStorageCoordinator.disk
 ) {
     var newlyAcquired = false; private set
     private var releaseOnFailure = false
 
-    suspend fun acquire() = withContext(io) {
+    suspend fun acquire() = withContext(io) { storageMutex.withLock {
         val preexisting = hasReadGrant()
         ensureActive()
         takeReadGrant()
         // No suspension between successful acquisition and recording our responsibility.
         newlyAcquired = !preexisting
         releaseOnFailure = newlyAcquired
-    }
+    } }
 
     suspend fun commit(disk: Mutex, writeConfiguration: () -> Unit) = commitFolderConfiguration(
         disk, io, writeConfiguration,
@@ -49,7 +50,9 @@ internal class FolderGrantTransaction(
 
     suspend fun releaseIfUncommitted() {
         if (releaseOnFailure) withContext(NonCancellable + io) {
-            runCatching { releaseReadGrant() }.onSuccess { releaseOnFailure = false }
+            storageMutex.withLock {
+                runCatching { releaseReadGrant() }.onSuccess { releaseOnFailure = false }
+            }
         }
     }
 }

@@ -29,7 +29,8 @@ class FolderGrantTransactionTest {
             hasReadGrant = { beforeTake(); granted },
             takeReadGrant = { taken++; granted = true },
             releaseReadGrant = { released++; granted = false },
-            io = io
+            io = io,
+            storageMutex = disk
         )
         fun start(body: suspend () -> Unit) = scope.async {
             try { ownership.acquire(); body() }

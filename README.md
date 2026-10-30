@@ -7,7 +7,9 @@ An unofficial, native Android adaptation of [Tinycast](https://github.com/abue-a
 
 This README follows the development branch. The downloadable tagged preview may predate newly merged parity work; its exact scope is recorded in the release notes and linked PRs.
 
-[Download preview APK](https://github.com/moikdev/DroidCast/releases/tag/v0.4.0-preview) · [Parity audit](PARITY.md) · [Recommended improvements](ROADMAP.md) · [Testing record](docs/TESTING.md)
+[Nightly checkpoints](https://github.com/moikdev/DroidCast/releases) · [Baseline preview APK](https://github.com/moikdev/DroidCast/releases/tag/v0.4.0-preview) · [Parity audit](PARITY.md) · [Recommended improvements](ROADMAP.md) · [Testing record](docs/TESTING.md)
+
+Nightly checkpoints are published manually while CI is inactive. Each release identifies its source commit, APK checksum, tested scope and known findings. Review its notes before enabling experimental features.
 
 This preview covers the core palette workflow and a subset of Raycast extension APIs. **Window-snapping commands, automatic clipboard history and snippets remain unimplemented. Development builds add Android-native backup/restore, centralized settings and partial selected-folder metadata search; Tinycast/Raycast export-container import remains open.** See the parity matrix for the full scope. DroidCast is not affiliated with Tinycast's maintainers or Raycast.
 
