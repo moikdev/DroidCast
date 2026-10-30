@@ -43,7 +43,7 @@ object ExtensionHttp {
             val connection = target.toURL().openConnection() as HttpURLConnection
             connection.connectTimeout = 15000; connection.readTimeout = 25000; connection.instanceFollowRedirects = false
             connection.useCaches = false; connection.requestMethod = method
-            connection.setRequestProperty("User-Agent", "DroidCast Android/0.4.0-preview")
+            connection.setRequestProperty("User-Agent", "Droidcast Android/0.4.0-preview")
             connection.setRequestProperty("Cache-Control", "no-cache")
             headers.forEach { (k, v) -> connection.setRequestProperty(k, v) }
             try {

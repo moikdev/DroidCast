@@ -1,6 +1,6 @@
 # Backup and restore validation
 
-Enhancement [#3](https://github.com/moikdev/DroidCast/issues/3). Baseline `58ea4d1`, after merged settings PR #23. Upstream comparison: Tinycast `37e6043`, `docs/features/backup.md`. [Format and user workflow](../BACKUP.md).
+Enhancement [#3](https://github.com/moikdev/droidcast/issues/3). Baseline `58ea4d1`, after merged settings PR #23. Upstream comparison: Tinycast `37e6043`, `docs/features/backup.md`. [Format and user workflow](../BACKUP.md).
 
 ## Local checks
 
@@ -37,7 +37,7 @@ An assertion initially requested exact equality for a substring; a cancellation 
 
 ## Boundaries
 
-The format is DroidCast JSON v1, not Tinycast AppleArchive or a Raycast export. Those container readers remain open in [#24](https://github.com/moikdev/DroidCast/issues/24). Backup/restore parity remains partial. Backups are readable plaintext; the app explains this before export. Credentials, extension data/code, recent-document URIs/grants and accessibility consent are excluded. Import grants no capabilities and runs no commands.
+The format is DroidCast JSON v1, not Tinycast AppleArchive or a Raycast export. Those container readers remain open in [#24](https://github.com/moikdev/droidcast/issues/24). Backup/restore parity remains partial. Backups are readable plaintext; the app explains this before export. Credentials, extension data/code, recent-document URIs/grants and accessibility consent are excluded. Import grants no capabilities and runs no commands.
 
 GitHub CI is inactive because the publishing credential lacks workflow scope; these are local checks, not CI results.
 

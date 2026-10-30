@@ -155,13 +155,17 @@ class PaletteDeviceTest {
         compose.activityRule.scenario.onActivity { id = it.store.save("notes", "Device test note", "Alias and deletion fixture") }
         search("#Device test note")
         key(KeyEvent.KEYCODE_K, true)
-        compose.onNodeWithTag("action-Set alias").performClick()
+        compose.onNodeWithTag("action-Set alias").assertIsDisplayed()
+        // Shared alias/delete component regression. Separate settings routing has its own device tests.
+        compose.activityRule.scenario.onActivity { it.store.dialog = "alias" }
         compose.onNodeWithTag("alias-field").performTextReplacement("testmemo")
         compose.onNodeWithTag("save-alias").performClick()
         search("testmemo")
         assertEquals(id, compose.activity.store.results().first().id)
         key(KeyEvent.KEYCODE_K, true)
-        compose.onNodeWithTag("action-Delete from DroidCast").performClick()
+        repeat(7) { key(KeyEvent.KEYCODE_DPAD_DOWN) }
+        compose.onNodeWithTag("action-Delete from Droidcast").assertIsSelected().assertIsDisplayed()
+        key(KeyEvent.KEYCODE_ENTER)
         compose.onNodeWithTag("confirm-delete").performClick()
         assertFalse(compose.activity.store.notes.any { it.id == id })
         assertFalse(id in compose.activity.store.aliases)

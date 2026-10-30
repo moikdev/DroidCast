@@ -70,6 +70,32 @@ object ShortcutRuntime {
     val requests = ShortcutInvocationQueue { android.os.SystemClock.elapsedRealtime() }
     @Volatile var recordingOwner: Any? = null
     private var foreground = WeakReference<MainActivity>(null)
+    private var settings = WeakReference<SettingsActivity>(null)
+    private var settingsWorkspace = WeakReference<SettingsActivity>(null)
+    fun settingsCreated(activity: SettingsActivity) { settingsWorkspace = WeakReference(activity) }
+    fun settingsDestroyed(activity: SettingsActivity) { if (settingsWorkspace.get() === activity) settingsWorkspace.clear() }
+    // Only one preferences snapshot may remain editable when the palette opens again.
+    fun paletteOpening(): Boolean {
+        val workspace = settingsWorkspace.get()?.takeUnless { it.isFinishing || it.isDestroyed } ?: return true
+        if (workspace.store.backupBusy) {
+            Toast.makeText(workspace, "Finish the backup operation first.", Toast.LENGTH_SHORT).show()
+            return false
+        }
+        workspace.store.cancelShortcutRecording(false)
+        workspace.finish()
+        return true
+    }
+    fun settingsResumed(activity: SettingsActivity) { settings = WeakReference(activity) }
+    fun settingsPaused(activity: SettingsActivity) { if (settings.get() === activity) settings.clear() }
+    fun passesSettingsNavigation(event: KeyEvent): Boolean {
+        val chord = event.asChord()
+        val commandModifier = chord.modifiers in setOf(ShortcutRules.CTRL, ShortcutRules.META, ShortcutRules.CTRL or ShortcutRules.SHIFT, ShortcutRules.META or ShortcutRules.SHIFT)
+        if (!commandModifier) return false
+        val settingsVisible = settings.get()?.let { !it.isFinishing && !it.isDestroyed } == true
+        val paletteVisible = foreground.get()?.let { !it.isFinishing && !it.isDestroyed } == true
+        return (event.keyCode == KeyEvent.KEYCODE_COMMA && (settingsVisible || paletteVisible)) ||
+            (event.keyCode == KeyEvent.KEYCODE_F && settingsVisible && !event.isShiftPressed)
+    }
     fun resumed(activity: MainActivity) { foreground = WeakReference(activity) }
     fun paused(activity: MainActivity) { if (foreground.get() === activity) foreground.clear() }
     fun dispatch(context: Context, target: String, chord: KeyChord) {
@@ -77,7 +103,7 @@ object ShortcutRuntime {
         val activity = foreground.get()?.takeUnless { it.isFinishing || it.isDestroyed }
         if (activity != null) activity.acceptShortcut(token, toggleExisting = true)
         else try { context.startActivity(Intent(context, MainActivity::class.java).setAction(ACTION).putExtra(TOKEN, token).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)) }
-        catch (_: Exception) { requests.consume(token); Toast.makeText(context, "Could not open DroidCast", Toast.LENGTH_SHORT).show() }
+        catch (_: Exception) { requests.consume(token); Toast.makeText(context, "Could not open Droidcast", Toast.LENGTH_SHORT).show() }
     }
 }
 
@@ -97,7 +123,7 @@ class PaletteShortcutService : AccessibilityService(), InputManager.InputDeviceL
     override fun onInterrupt() = Unit
     override fun onKeyEvent(event: KeyEvent): Boolean {
         if (event.action !in listOf(KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP)) return false
-        val result = engine.handle(event.asShortcutInput(), configuration.byChord, ShortcutRuntime.recordingOwner != null)
+        val result = engine.handle(event.asShortcutInput(), configuration.byChord, ShortcutRuntime.recordingOwner != null || ShortcutRuntime.passesSettingsNavigation(event))
         if (result.target != null) ShortcutRuntime.dispatch(this, result.target, result.chord!!)
         return result.consumed
     }

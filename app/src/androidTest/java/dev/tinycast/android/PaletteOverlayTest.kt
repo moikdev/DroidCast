@@ -27,7 +27,12 @@ class PaletteOverlayTest {
         compose.waitForIdle()
         compose.onNodeWithText("Command center").assertDoesNotExist()
         val bounds=compose.onNodeWithTag("palette").fetchSemanticsNode().boundsInWindow
-        assertTrue("Palette should be narrower than the tablet",bounds.width<device.displayWidth*.8f)
+        if (compose.activity.resources.configuration.screenWidthDp >= 700) {
+            assertTrue("Tablet palette stays compact", bounds.width < device.displayWidth * .8f)
+        } else {
+            assertTrue("Phone palette retains clear side margins", bounds.left > 0 && bounds.right < device.displayWidth)
+            assertTrue("Phone palette uses the available width", bounds.width > device.displayWidth * .8f)
+        }
         compose.activityRule.scenario.onActivity{
             val style=it.obtainStyledAttributes(intArrayOf(android.R.attr.windowIsTranslucent))
             assertTrue(style.getBoolean(0,false));style.recycle()
@@ -45,10 +50,46 @@ class PaletteOverlayTest {
         compose.activityRule.scenario.onActivity{it.startActivity(Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))}
         assertTrue(device.wait(Until.hasObject(By.pkg("com.android.settings")),5000))
         device.executeShellCommand("cmd statusbar add-tile dev.tinycast.android/.PaletteTileService")
-        device.openQuickSettings()
-        device.waitForIdle()
-        device.executeShellCommand("cmd statusbar click-tile dev.tinycast.android/.PaletteTileService")
-        assertTrue(device.wait(Until.hasObject(By.pkg("dev.tinycast.android")),10000))
-        compose.onNodeWithTag("palette").assertExists()
+        try {
+            device.openQuickSettings()
+            device.waitForIdle()
+            device.executeShellCommand("cmd statusbar click-tile dev.tinycast.android/.PaletteTileService")
+            assertTrue(device.wait(Until.hasObject(By.pkg("dev.tinycast.android")),10000))
+            compose.onNodeWithTag("palette").assertExists()
+        } finally {
+            // A failed tile startup must not leave the shade covering the next test.
+            device.executeShellCommand("cmd statusbar collapse")
+        }
     }
+    @Test fun typingAndSelectionUpdateWithoutAnimatedScrollOrMovingSearchFrame() {
+        compose.waitUntil(10000) { !compose.activity.store.loading && !compose.activity.store.folderSearch.loading }
+        compose.activityRule.scenario.onActivity { it.store.filter("All") }
+        compose.activityRule.scenario.onActivity {
+            androidx.core.view.WindowCompat.getInsetsController(it.window, it.window.decorView).hide(androidx.core.view.WindowInsetsCompat.Type.ime())
+        }
+        compose.waitForIdle(); device.waitForIdle()
+        val palette = compose.onNodeWithTag("palette").fetchSemanticsNode().boundsInWindow
+        val search = compose.onNodeWithTag("search").fetchSemanticsNode().boundsInWindow
+        compose.mainClock.autoAdvance = false
+        try {
+            compose.activityRule.scenario.onActivity { it.store.selected = minOf(15, it.store.results().lastIndex) }
+            repeat(2) { compose.mainClock.advanceTimeByFrame() }; compose.waitForIdle()
+            val selected = compose.activity.store.results()[compose.activity.store.selected]
+            compose.onNodeWithTag("result-${selected.id}").assertIsDisplayed().assertIsSelected()
+            for (query in listOf("Wi", "Wi-Fi", "calc", "no-such-result-938172", "", "Settings")) {
+                compose.activityRule.scenario.onActivity { it.store.search(query) }
+                // Two layout frames, not an animation-duration advance.
+                repeat(2) { compose.mainClock.advanceTimeByFrame() }; compose.waitForIdle()
+                assertEquals(palette, compose.onNodeWithTag("palette").fetchSemanticsNode().boundsInWindow)
+                assertEquals(search, compose.onNodeWithTag("search").fetchSemanticsNode().boundsInWindow)
+                compose.activity.store.results().firstOrNull()?.let {
+                    compose.onNodeWithTag("result-${it.id}").assertIsDisplayed().assertIsSelected()
+                }
+            }
+            val dir = java.io.File(compose.activity.filesDir, "assistant-evidence").apply { mkdirs() }
+            device.waitForIdle()
+            assertTrue(device.takeScreenshot(java.io.File(dir, "snappy-search.png")))
+        } finally { compose.mainClock.autoAdvance = true }
+    }
+
 }

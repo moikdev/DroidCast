@@ -1,20 +1,20 @@
 # Tinycast parity audit
 
-Audited 2026-10-30 against [Tinycast](https://github.com/abue-ammar/tinycast) main at [`37e6043`](https://github.com/abue-ammar/tinycast/tree/37e6043f3f550febb64bdb3cff3ac29a30caad5a). The upstream revision was refreshed and confirmed before this audit. DroidCast baseline: Android 0.3.1, with the same command implementation in the 0.4.0 preview and updated public branding.
+Audited 2026-10-30 against [Tinycast](https://github.com/abue-ammar/tinycast) main at [`37e6043`](https://github.com/abue-ammar/tinycast/tree/37e6043f3f550febb64bdb3cff3ac29a30caad5a). The upstream revision was refreshed and confirmed before this audit. Droidcast baseline: Android 0.3.1, with the same command implementation in the 0.4.0 preview and updated public branding.
 
-DroidCast reproduces the central summon → search → run → dismiss workflow. It is an early Android adaptation, not a complete Tinycast port. No parity percentage is assigned: a working calculator is not equivalent in scope to an extension ecosystem or desktop window manager.
+Droidcast reproduces the central summon → search → run → dismiss workflow. It is an early Android adaptation, not a complete Tinycast port. No parity percentage is assigned: a working calculator is not equivalent in scope to an extension ecosystem or desktop window manager.
 
 **Partial** means a working subset, **missing** means no implementation, and **replacement** means a macOS feature needs an Android-specific design. A source inspection is not an end-to-end compatibility test.
 
 ## Feature matrix
 
-| Area | Status | DroidCast behavior and remaining gap |
+| Area | Status | Droidcast behavior and remaining gap |
 | --- | --- | --- |
 | Floating palette | Working Android adaptation | Native Compose palette, transparent surroundings, outside-tap/Escape dismissal, contextual actions. Uses Tinycast geometry/tokens; macOS material and fonts are not reproduced. |
 | App search and launch | Partial | Fuzzy search, aliases, pins and usage ranking work. No running-app indicators, focus/hide toggles or quit-all behavior. |
 | Global activation | Partial | Configurable ordinary chord (default Ctrl+Space) through an opt-in key-filter service; icon, assistant intent and Quick Settings tile. Advanced modifier taps/Fn/Hyper remain open in #26. Universal OEM delivery is not established. |
 | Per-app / per-command hotkeys | Partial | Record, clear/reset and conflict-check ordinary command/app/item chords; result keycaps and existing execution paths. Advanced upstream hotkeys remain open in #26. |
-| File search | Partial | System picker, searchable recent documents, persisted URI grants and external viewers. No selected-folder search, filename index or folder preview. |
+| File search | Partial | System picker, searchable recent documents, opt-in bounded filename/path index for selected folder trees, type filters, persisted read grants and external viewers. No content index/preview or certified cloud-provider behavior; remaining validation is tracked in #5. |
 | Dictionary lookup | Missing | No dictionary command, dataset or definition view. |
 | Clipboard | Partial | Explicitly saved text, shared/selected-text input, foreground clipboard access and copy actions. No automatic history, image collection or paste-back into another app. |
 | Calculator | Partial | Arithmetic, percentages, functions and a fixed set of unit conversions. No live currency/crypto rates, date/time arithmetic or built-in color card. The tested color extension is a separate capability. |
@@ -22,8 +22,8 @@ DroidCast reproduces the central summon → search → run → dismiss workflow.
 | Apple Shortcuts | Replacement | Apple's automation framework does not run here. An Android intent/automation command catalog has not been built. |
 | Snippet templates | Missing | Saved clips and notes are plain content, not variable-aware templates. No keyword expansion or nested snippets. |
 | Shell/custom commands | Replacement | The Android host exposes no process execution. macOS tools and native helpers do not port directly; scoped Android intents are a more useful first replacement. |
-| Window management | Missing | No half/quarter/third placement, resizing, display movement or snap commands. System split-screen and divider resizing were exercised separately; that is not an implemented DroidCast command. |
-| System actions | Partial | Root Settings plus 11 dedicated Android destinations, including Wi-Fi, Bluetooth, display, sound, storage, accessibility and DroidCast app-info/notification settings. Missing hardware toggles and other upstream privileged actions remain open. Battery/security destination validation is tracked separately in [#22](https://github.com/moikdev/DroidCast/issues/22). |
+| Window management | Missing | No half/quarter/third placement, resizing, display movement or snap commands. System split-screen and divider resizing were exercised separately; that is not an implemented Droidcast command. |
+| System actions | Partial | Root Settings plus 11 dedicated Android destinations, including Wi-Fi, Bluetooth, display, sound, storage, accessibility and Droidcast app-info/notification settings. Missing hardware toggles and other upstream privileged actions remain open. Battery/security destination validation is tracked separately in [#22](https://github.com/moikdev/droidcast/issues/22). |
 | Calendar and meeting actions | Missing | No calendar permission flow, event search, upcoming-meeting card or join command. |
 | Notes | Partial | Persistent text/Markdown source, search and an editor. No rendered Markdown, file-backed notebook, floating companion editor or note import/export. |
 | Emoji and symbol picker | Missing | No local catalog, search grid or recent emoji collection. |
@@ -32,13 +32,14 @@ DroidCast reproduces the central summon → search → run → dismiss workflow.
 | Raycast extension installation | Partial | Real Store search, package download, validation, install, update and uninstall. Uses unofficial endpoints. Store installation is not a compatibility guarantee. |
 | Extension views | Partial | Native lists, basic forms, selectable Detail text and actions/navigation. Grid is a list; Markdown, metadata, images, advanced fields and validation are incomplete. |
 | Extension host APIs | Partial | HTTPS, clipboard, timers, local storage/cache, preferences/arguments, limited crypto and scoped files. OAuth, menu bars, shell/native helpers, browser/window management, WebSockets and Raycast AI are not available. |
-| Backup and import | Partial | Selectable versioned DroidCast JSON export/import for notes, quicklinks, saved clips, pins/aliases, usage ranking and portable keyboard bindings, with preview, content inspection and merge/replace confirmation. Capability grants and extension data are excluded. Tinycast AppleArchive and Raycast container compatibility remain open in [#24](https://github.com/moikdev/DroidCast/issues/24); Android OS backup stays disabled. |
-| Settings mirror/history | Missing | No editable settings file mirror or change history; [#27](https://github.com/moikdev/DroidCast/issues/27). |
-| Dictation | Missing | No local speech model, microphone flow or dictation command; [#28](https://github.com/moikdev/DroidCast/issues/28). |
-| Camera | Missing | No camera preview/capture command; [#29](https://github.com/moikdev/DroidCast/issues/29). |
-| MCP | Missing | No MCP transport/tool capability flow; [#30](https://github.com/moikdev/DroidCast/issues/30). |
-| Frontmost app menu search | Replacement | No supported Android action-search equivalent; [#31](https://github.com/moikdev/DroidCast/issues/31). |
-| Custom command library | Replacement | No scoped automation catalog/argument workflow; [#32](https://github.com/moikdev/DroidCast/issues/32). |
+| Backup and import | Partial | Selectable versioned Droidcast JSON export/import for notes, quicklinks, saved clips, pins/aliases, usage ranking and portable keyboard bindings, with preview, content inspection and merge/replace confirmation. Capability grants and extension data are excluded. Tinycast AppleArchive and Raycast container compatibility remain open in [#24](https://github.com/moikdev/droidcast/issues/24); Android OS backup stays disabled. |
+| Settings workspace | Partial | Separate Raycast-inspired native preferences, settings search, central shortcuts/aliases, inline editing, folder scopes and backup. Appearance and advanced keyboard options remain open. |
+| Settings mirror/history | Missing | No editable settings file mirror or change history; [#27](https://github.com/moikdev/droidcast/issues/27). |
+| Dictation | Missing | No local speech model, microphone flow or dictation command; [#28](https://github.com/moikdev/droidcast/issues/28). |
+| Camera | Missing | No camera preview/capture command; [#29](https://github.com/moikdev/droidcast/issues/29). |
+| MCP | Missing | No MCP transport/tool capability flow; [#30](https://github.com/moikdev/droidcast/issues/30). |
+| Frontmost app menu search | Replacement | No supported Android action-search equivalent; [#31](https://github.com/moikdev/droidcast/issues/31). |
+| Custom command library | Replacement | No scoped automation catalog/argument workflow; [#32](https://github.com/moikdev/droidcast/issues/32). |
 | Appearance, localization, accessibility | Partial | Dark theme and extensive keyboard handling. No light/system appearance, language translations or comprehensive TalkBack/large-font/physical-device audit. |
 
 ## Evidence and boundaries
@@ -65,4 +66,4 @@ The following affect the design of improvements; they do not excuse labeling an 
 - Window behavior depends on device/version. The accessibility API's split-screen toggle is a device-dependent action, not a general 34-action desktop window manager. [Multi-window](https://developer.android.com/develop/ui/views/layout/support-multi-window-mode), [split-screen action](https://developer.android.com/reference/android/accessibilityservice/AccessibilityService#GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN).
 - Dedicated settings destinations have public intents; hardware toggles and privileged actions need separate capability checks and cannot be inferred from those intents. [Settings intents](https://developer.android.com/reference/android/provider/Settings#ACTION_WIFI_SETTINGS).
 
-The recommended implementation order and acceptance criteria are in [ROADMAP.md](ROADMAP.md). The live enhancement/PR loop is tracked in [docs/PARITY-TRACKER.md](docs/PARITY-TRACKER.md) and [issue #1](https://github.com/moikdev/DroidCast/issues/1).
+The recommended implementation order and acceptance criteria are in [ROADMAP.md](ROADMAP.md). The live enhancement/PR loop is tracked in [docs/PARITY-TRACKER.md](docs/PARITY-TRACKER.md) and [issue #1](https://github.com/moikdev/droidcast/issues/1).

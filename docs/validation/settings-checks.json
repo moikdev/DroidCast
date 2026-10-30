@@ -1,0 +1,666 @@
+{
+  "source_base": "6ea2b328c6d860d4944c94318649fecc058b5042",
+  "development_build_after_tag": "v0.4.0-preview",
+  "apk_sha256": "bfd7ca707da305a31f799c40fe7bcc291fe44bb49975665fb9e43eec2e0c09e5",
+  "android_test_apk_sha256": "87ea7f4b94515d4aa7da55c202d5ce5831847cc40f6a6449dc9bb91454bac1ab",
+  "installed_apk_sha256": "bfd7ca707da305a31f799c40fe7bcc291fe44bb49975665fb9e43eec2e0c09e5",
+  "installed_matches": true,
+  "local_validation_only": true,
+  "github_ci_active": false,
+  "device": {
+    "avd": "Tinycast_Tablet_API_36",
+    "api": 36,
+    "abi": "arm64-v8a",
+    "ram_mib": 6144,
+    "gpu": "host/Metal, Vulkan disabled",
+    "tablet_pixels": "1920x1200",
+    "tablet_density": 240,
+    "phone_pixels": "1080x2340",
+    "phone_density": 420,
+    "viewport_restored": true,
+    "adbd_unprivileged": true,
+    "final_app_process": [
+      "u0_a213      dev.tinycast.android"
+    ],
+    "final_app_unprivileged": true
+  },
+  "build": {
+    "success": true,
+    "log": "artifacts/settings-final-build.log",
+    "lint_errors": 0,
+    "lint_warnings": 39,
+    "jvm": {
+      "tests": 66,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "native": {
+    "tablet": {
+      "passed": 71,
+      "total": 71,
+      "log": "artifacts/settings-tablet-verified.log",
+      "elapsed_seconds": 205.76
+    },
+    "phone": {
+      "passed": 71,
+      "total": 71,
+      "log": "artifacts/settings-phone-verified.log",
+      "elapsed_seconds": 210.452
+    }
+  },
+  "full_suite_build": {
+    "apk_sha256": "8bcf5edd2f0d9f6d74e3c2a32e0eae62799247ae2761a63839e9516cdce9a777",
+    "android_test_apk_sha256": "88ece2d37c3ff3c6a64c2f1338d7a5d25c2b677f134f4b0fe07d8f2615e06b57"
+  },
+  "final_native": {
+    "tablet": {
+      "passed": 27,
+      "total": 27,
+      "log": "artifacts/settings-tablet-final-focused.log",
+      "scope": "SettingsDeviceTest, SettingsRouteDeviceTest, FolderDeviceTest, AssistantDeviceTest, PaletteOverlayTest",
+      "elapsed_seconds": 124.656
+    },
+    "phone": {
+      "passed": 27,
+      "total": 27,
+      "log": "artifacts/settings-phone-final-focused.log",
+      "scope": "SettingsDeviceTest, SettingsRouteDeviceTest, FolderDeviceTest, AssistantDeviceTest, PaletteOverlayTest",
+      "elapsed_seconds": 121.184
+    }
+  },
+  "final_correction_after_full_suite": "Settings recorder focus restoration now skips the absent Record button while reset confirmation replaces the inspector. Folder revalidation also updates the status count after grant changes; the final test asserts zero after revocation. File search evidence waits for settled status. Review corrections add cancellation-safe grant ownership and clear stale alias feedback; final targeted tests cover those paths, and thirteen deterministic JVM tests cover the grant transaction, with a three-failure negative control for the old bookkeeping placement. The final storage correction uses a process-wide coordinator, verifies committed bytes, and passes two real Android AtomicFile interleaving/failure regressions. Restoring the instance-local mutex deterministically deletes the paused pending write. Full suites use the earlier APK listed under full_suite_build; the final hardware run independently passes sixteen main cases and five Alt+Q cases with restoration; final targeted suites and screenshots use the final APK.",
+  "hardware": {
+    "device": "emulator-5580",
+    "app_requires_root": false,
+    "injection": "dedicated emulator Linux qwerty2 device",
+    "cases": [
+      {
+        "name": "recording pauses the existing global shortcut",
+        "passed": true
+      },
+      {
+        "name": "record and persist Ctrl + Alt + Space",
+        "passed": true
+      },
+      {
+        "name": "Ctrl+F focuses settings search while the service is enabled",
+        "passed": true
+      },
+      {
+        "name": "Ctrl+Comma opens the separate settings workspace with the service enabled",
+        "passed": true
+      },
+      {
+        "name": "round 1: summon/toggle from Settings",
+        "passed": true
+      },
+      {
+        "name": "round 1: summon/toggle from Home",
+        "passed": true
+      },
+      {
+        "name": "old global chord stops activating after reassignment",
+        "passed": true
+      },
+      {
+        "name": "live conflict names its owner and cannot overwrite it",
+        "passed": true
+      },
+      {
+        "name": "Wi-Fi command uses normal destination and suppresses repeats",
+        "passed": true
+      },
+      {
+        "name": "installed-app binding launches real Files app",
+        "passed": true
+      },
+      {
+        "name": "recent-document binding opens the persisted TXT fixture",
+        "passed": true
+      },
+      {
+        "name": "calculator binding enters the same calculator mode",
+        "passed": true
+      },
+      {
+        "name": "calculator shortcut toggles its existing mode",
+        "passed": true
+      },
+      {
+        "name": "note command binding opens the normal native editor",
+        "passed": true
+      },
+      {
+        "name": "unrelated typing and an unbound chord pass through",
+        "passed": true
+      },
+      {
+        "name": "service disable/reconnect respects persisted configuration",
+        "passed": true
+      },
+      {
+        "name": "record and persist Alt + Q",
+        "passed": true
+      },
+      {
+        "name": "Alt + Q summons and dismisses from Settings",
+        "passed": true
+      },
+      {
+        "name": "Alt + Q summons and dismisses from Home",
+        "passed": true
+      },
+      {
+        "name": "Alt + Q cannot activate globally without service consent",
+        "passed": true
+      },
+      {
+        "name": "Alt + Q persists across service disable and reconnect",
+        "passed": true
+      }
+    ],
+    "original_service_consent_restored": true,
+    "original_preferences_restored": true,
+    "unroot_command_exit_code": 0,
+    "adbd_unprivileged": true,
+    "app_process": [
+      "u0_a213      dev.tinycast.android"
+    ],
+    "app_unprivileged": true,
+    "apk_sha256": "bfd7ca707da305a31f799c40fe7bcc291fe44bb49975665fb9e43eec2e0c09e5",
+    "rounds": 1,
+    "log": "artifacts/settings-hardware-current.log",
+    "alt_q": {
+      "cases": [
+        {
+          "name": "record and persist Alt + Q",
+          "passed": true
+        },
+        {
+          "name": "Alt + Q summons and dismisses from Settings",
+          "passed": true
+        },
+        {
+          "name": "Alt + Q summons and dismisses from Home",
+          "passed": true
+        },
+        {
+          "name": "Alt + Q cannot activate globally without service consent",
+          "passed": true
+        },
+        {
+          "name": "Alt + Q persists across service disable and reconnect",
+          "passed": true
+        }
+      ],
+      "log": "artifacts/settings-hardware-alt-q.log",
+      "original_preferences_restored": true,
+      "original_service_consent_restored": true,
+      "adbd_unprivileged": true,
+      "app_unprivileged": true
+    }
+  },
+  "earlier_runs": [
+    {
+      "scope": "final APK first hardware run",
+      "apk_sha256": "bfd7ca707da305a31f799c40fe7bcc291fe44bb49975665fb9e43eec2e0c09e5",
+      "passed_cases_before_abort": 10,
+      "planned_cases": 16,
+      "failed_stage": "TXT body missing from accessibility XML despite correct rendered filename/body",
+      "remaining_cases_not_run": 5,
+      "limitation_issue": 41,
+      "log": "artifacts/settings-hardware-body-xml-failure.log",
+      "visual_evidence": "docs/screenshots/parity-activation/hardware-viewer-xml-limitation.png",
+      "automatic_body_assertion_passed": false,
+      "body_visually_reviewed": true,
+      "restoration_verified": true
+    },
+    {
+      "scope": "tablet before warm viewer launch correction",
+      "passed": 70,
+      "total": 71,
+      "log": "artifacts/settings-before-warm-viewer-fix.log",
+      "finding": "warm viewer resumed another document above the desired root; corrected with CLEAR_TOP and explicit warm-stack regression"
+    },
+    {
+      "scope": "tablet before final keyboard/category corrections",
+      "passed": 68,
+      "total": 70,
+      "log": "artifacts/settings-tablet-final.log",
+      "limitation_issue": 37,
+      "focused_reruns": "2/2 twice; no tile cause or fix established"
+    },
+    {
+      "scope": "three-round hardware run before helper reconnect correction",
+      "behavior_cases_passed": 20,
+      "helper_exit_success": false,
+      "failure": "unroot reply disconnected",
+      "manual_recovery_verified": true,
+      "log": "artifacts/settings-hardware-before-unroot-check.log"
+    }
+  ],
+  "review_corrections": {
+    "prior_head": "381e95ff0acb8f7e6ef9193c96fd46c41399cc4e",
+    "prior_apk_sha256": "c2303af7370b410b9f12f09f909f78c79dbb7d27e29295f466f43d7ff689044f",
+    "findings": [
+      "P2 SAF acquisition/commit cancellation ownership",
+      "P3 stale alias validation after Clear"
+    ],
+    "ownership_jvm_tests": 13,
+    "negative_control_expected_failures": 3,
+    "negative_control_observed_failures": 3,
+    "negative_control_log": "artifacts/settings-grant-negative-control.log"
+  },
+  "storage_replacement_regressions": {
+    "reviewed_head_with_finding": "26d09f6c68b5ac9409e4c0960036e2cee1cc379f",
+    "real_atomic_file_cases": 2,
+    "positive_replacement_observation": {
+      "replacement_waited": true,
+      "pending_write_preserved": true
+    },
+    "positive_replacement_result": {
+      "reader_attempted_while_write_pending": true,
+      "pending_write_preserved": true,
+      "outgoing_scope_cancelled": true,
+      "replacement_loaded_committed_removal": true,
+      "owned_read_grant_released": true
+    },
+    "instance_mutex_negative_control_failures": 1,
+    "negative_control_observation": {
+      "replacement_waited": true,
+      "pending_write_preserved": false
+    },
+    "log": "artifacts/settings-storage-negative-control.log"
+  },
+  "latest_ownership_corrections": {
+    "prior_head": "7e5464abeabf1bc97a1d0610cb5dc8ec972d2f66",
+    "grant_transaction_jvm_tests": 13,
+    "new_native_cases": 4,
+    "negative_controls": {
+      "provisional": {
+        "expected_failures": 1,
+        "observed_failures": 1,
+        "log": "artifacts/settings-ownership-negative-provisional.log"
+      },
+      "verification": {
+        "expected_failures": 1,
+        "observed_failures": 1,
+        "log": "artifacts/settings-ownership-negative-verification.log"
+      }
+    },
+    "provisional_rollback": {
+      "replacement_waited_for_validation": true,
+      "cancelled_validation_released_grant": true,
+      "replacement_entries": 0,
+      "replacement_matches": 0,
+      "expired_scope_reported": true
+    },
+    "indeterminate_result": "Permission retained after two failed post-rename verification reads; reopening checks actual stored roots; process-death recovery not certified",
+    "branding": "Droidcast; repository moikdev/droidcast"
+  },
+  "assistant_and_motion": {
+    "reference": "https://github.com/jaxparrow07/launchpad-search/tree/67e10897b9d49e6d5aac39816e104a49947293dd",
+    "role_selection": "Real Android default digital-assistant settings UI; cancellation retains prior role",
+    "keyboard_service_disabled_during_assistant_tests": true,
+    "assistant_key_from_home_and_settings": true,
+    "meta_a_from_warm_settings": true,
+    "restoration": {
+      "tablet": {
+        "assistant_role_restored": true,
+        "keyboard_service_consent_restored": true
+      },
+      "phone": {
+        "assistant_role_restored": true,
+        "keyboard_service_consent_restored": true
+      }
+    },
+    "motion": "Fixed palette/search bounds across six queries; selection visible after two layout frames with automatic clock advancement disabled; software keyboard settled before measurement",
+    "animation_negative_control": {
+      "expected_failures": 1,
+      "observed_failures": 1,
+      "log": "artifacts/palette-animation-negative-device.log"
+    },
+    "assist_context": "Disabled in VoiceInteractionService and Session source; no microphone or overlay permission requested",
+    "limitations": "No independently exercised Lenovo assistant-key mapping; system IME animations are not changed"
+  },
+  "manual_rotation": {
+    "original_rotation": "free",
+    "cases": [
+      {
+        "orientation": "portrait",
+        "shortcut_label": "Ctrl + Space",
+        "inspector_preserved": true
+      },
+      {
+        "orientation": "landscape",
+        "shortcut_label": "Ctrl + Space",
+        "inspector_preserved": true
+      }
+    ],
+    "shortcut_preferences_unchanged": true,
+    "rotation_restored": true
+  },
+  "screenshots": [
+    {
+      "path": "docs/screenshots/parity-settings/before-popup.png",
+      "sha256": "bfc7f8ab71ba561f8ea6a656c35bb7f820c8583fbee4052c9e1b94af55a8e9c9",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/before-tablet.png",
+      "sha256": "2e266f25e921726dda1e55373c1893e4442d376f0640b5e99aa4c221f76801ac",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/alias-cleared.png",
+      "sha256": "92172a29cb1a39015f27d7f7ba33df255054ecbbf40c153e0e88116ee7d34ff2",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/alias-conflict.png",
+      "sha256": "df6ce0fa3dc655cbe0f469db13f1c1315b154ee852b1c93825e230485407c848",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/alias-reused.png",
+      "sha256": "cb23e5fdacb0db5603d1a91a5717d6ba1142cbd50fc639a0129eba5a2259a871",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/command-inspector.png",
+      "sha256": "48ac72f9106d2e2af5199f336e2b521cdffe6cfc1c368f945d727a5f3bbbaf14",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/general.png",
+      "sha256": "c6753e894264ac2cf83f28a2847a45753ad3f2c6362b026f1d78a157082b8c5e",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/inline-backup-confirm.png",
+      "sha256": "b0cbe38ca7e6ff84b5a8fde3c02bbd3b626a8867e6b698911ab68935f22c57ea",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/inline-conflict.png",
+      "sha256": "7f07644c765b615f46dce6fc594703c77166b959b159d679098a1ee3c12a26da",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/inline-recording.png",
+      "sha256": "6be389b8b0b87aa7084d419a8e5bd16e7cb605b96a92ba1175fbc84f781e625d",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/unavailable-alias.png",
+      "sha256": "6a9f4d6478711f5298628cdf5cc565c4422d72c0319aedbec50b05d8213aa2c0",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/alias-cleared.png",
+      "sha256": "18752ef3ab4ed0c1aa1b4538b67145d303ff82883154e2d6752f6489458d660a",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/alias-conflict.png",
+      "sha256": "57bfbd75a0642d9a1bc2fbd7c4b02fb044c8500a7100a3595460e7d0ea8cdd26",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/alias-reused.png",
+      "sha256": "a9f8554d56097cc85cefc88cd69839ef78c86cae772199d999e4d5f5d304de8f",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/command-inspector.png",
+      "sha256": "1512a22c0558ab53548632b3c0d7c4e1a30c2fa865ac01ce5fd9ab620e372631",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/filtered-commands.png",
+      "sha256": "b02e5f4e714447fe0a1562bd26dfa897db9b4822597f01814b08ed7ce55ea724",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/general.png",
+      "sha256": "ec0c93af9b182d8986f0296f219e4f3c214778ea336447cce437319dac8784c4",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/inline-backup.png",
+      "sha256": "7eb7e05141aac91bc95522b10d3dd7d84ad70f14adfd404ec20d7696dfc98dd3",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/inline-conflict.png",
+      "sha256": "cccf1d22409343d8e16e77cdf6df1c9185be4abc0eb124b00e7f5eed49e63957",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/inline-recording.png",
+      "sha256": "6836f92239521deb8b60bba86dee0625dbee0738078d6c9ec3521f23112ba84c",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/portrait-inspector.png",
+      "sha256": "e78f1ba44510022f5171a57655cc1ca873d8f7eca0c29c1cee8bed0e74a5449a",
+      "pixels": [
+        1200,
+        1920
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/unavailable-alias.png",
+      "sha256": "85db06149a370ba419e170583b30e54990d27a0a6dff4b01b1b56b1d8a416e4c",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/before-search.png",
+      "sha256": "fa1eeb4cf880a88190d4af33b168f5013e36d96aac2550a204ac0e3193c402e8",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/folder-configured.png",
+      "sha256": "e4f81e22eca8379228341bf9ba25f8f6e97517f68508448beffb2bb1d2fa45b3",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/folder-removed.png",
+      "sha256": "bf0c53e65f35b930399245157ba75391f0de57c58b6af36a50166d665b787780",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/native-folder-picker.png",
+      "sha256": "4e28ff61dc9c301a0a226af8d424aff9f2a9e298427bd6d8f42e16ff1b3a9933",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/opened-document.png",
+      "sha256": "f9e4387e9089dcf35945b860aafca4c8ce93c5fda0cf8ebac3f0d2d1923b7200",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/permission-expired.png",
+      "sha256": "0cf72ffcb373546b34da3b6e257ccdab52b1f7eb122a194b9222cd499df79e4a",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/replacement-palette.png",
+      "sha256": "1369ce35092c10988613531863bacee69b31777d6f5bbd68307e9ac6bf209493",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/search-result.png",
+      "sha256": "ad4de11817f9a4f9fe20b9d0f2d54106ffcd6b7c01b4447d980e929a09d36d89",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/hardware-viewer-xml-limitation.png",
+      "sha256": "ef71924617d9d8f10e7c02c81674d069fb06c5b5d50c97756f7278c848a66fa4",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/phone/assistant-home.png",
+      "sha256": "7689f1257bbc59eeee9f33e7fe63440b08921c396daad715d20239ca77ada763",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/phone/assistant-picker.png",
+      "sha256": "b9a59b52bac7637197e62308f66154349ff65c085edf44c02fa2597ef2b2ec44",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/phone/assistant-settings.png",
+      "sha256": "625b042f370c97e7adb3fa69e76ff2d45f90d3f8229af8d5d64784e315d09700",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/phone/snappy-search.png",
+      "sha256": "5a323ba48e5cad340461c4af5b557576f556fb4d1d666ed965ceb2459653f4ef",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/tablet/assistant-home.png",
+      "sha256": "3860518aee05c8999d9e7b83da6cfd27a30a3e2458dbaac3cb1dbe7f9d9b983b",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/tablet/assistant-picker.png",
+      "sha256": "54ecb512d9434afdd4e6d85acec97fc45650d7bd452c04c1b38ca974116ebcd0",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/tablet/assistant-settings.png",
+      "sha256": "8c8a7a83c361fcea5efca6b3abcc03bc746b855c5834b934de9c7392e533e759",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/tablet/snappy-search.png",
+      "sha256": "c0a2e2c072d1a7ed390f73ee538daa650ca8b033c4dec6b939269d6e1525e5de",
+      "pixels": [
+        1920,
+        1200
+      ]
+    }
+  ],
+  "limitations": [
+    "Partial selected-folder parity; #5 stays open",
+    "Viewer rendered body requires screenshot review in addition to URI/title checks",
+    "Intermittent backup timeout #35, tile timeout #37 and viewer body XML omission #41 remain undiagnosed",
+    "Physical/OEM, comprehensive TalkBack, large fonts and advanced #26 shortcuts unverified",
+    "Opt-in EnduranceDeviceTest not rerun for this slice"
+  ]
+}

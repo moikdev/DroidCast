@@ -1,6 +1,6 @@
 # Configurable shortcuts validation
 
-Enhancement [#4](https://github.com/moikdev/DroidCast/issues/4), PR [#33](https://github.com/moikdev/DroidCast/pull/33). Baseline `77cb9ad` after backup PR #25. Upstream Tinycast `37e6043`, `docs/features/hotkeys.md`: persistent bindings, owner-aware conflicts, shared command dispatch, keycap labels, pausing during recording and palette-mode toggling. Advanced modifier-tap/Fn/Hyper parity remains open in #26.
+Enhancement [#4](https://github.com/moikdev/droidcast/issues/4), PR [#33](https://github.com/moikdev/droidcast/pull/33). Baseline `77cb9ad` after backup PR #25. Upstream Tinycast `37e6043`, `docs/features/hotkeys.md`: persistent bindings, owner-aware conflicts, shared command dispatch, keycap labels, pausing during recording and palette-mode toggling. Advanced modifier-tap/Fn/Hyper parity remains open in #26.
 
 ## Local verification
 
@@ -23,7 +23,7 @@ The hardware helper injects Linux keyboard events outside UiAutomation; instrume
 
 Hardware testing exposed a real cursor bug: after programmatic calculator entry, typing produced `12*7= ` because the search field retained its previous cursor. A device regression reproduced the missing result. The search field now carries selection/composition explicitly, puts the cursor after programmatic text, and preserves user-selected replacement. The focused regression passes.
 
-The subsequent full run passed 48/51: the external keyboard test had left Settings Intelligence search open, exposing root Settings returning to that warm task. [#34](https://github.com/moikdev/DroidCast/issues/34) adds CLEAR_TOP to the root command, a regression that opens native search first and verifies root-specific UI afterward, and explicit root navigation in overlay fixtures. The destination is captured as `root-settings.png`. A first capture helper incorrectly accessed a finished Activity; it now uses target application context.
+The subsequent full run passed 48/51: the external keyboard test had left Settings Intelligence search open, exposing root Settings returning to that warm task. [#34](https://github.com/moikdev/droidcast/issues/34) adds CLEAR_TOP to the root command, a regression that opens native search first and verifies root-specific UI afterward, and explicit root navigation in overlay fixtures. The destination is captured as `root-settings.png`. A first capture helper incorrectly accessed a finished Activity; it now uses target application context.
 
 The earlier combined run passed 49/50 tests; its failure was a picker fixture outside the visible file list. Follow-up harness runs exposed a stale Downloads node and a query-field selector mismatch. The corrected picker checks the Downloads root, searches for the fixture and selects its actual title row rather than the search field. A focused rerun passed. The initial hardware run also stopped at a remembered HTML Viewer chooser whose title already contained the selected app; the helper now treats the separate app row as optional before choosing Just once. Its finally block restored preferences, consent and unprivileged adbd even on that failure. Another assertion was corrected to accept Settings Intelligence as the native search host and verify the same host/text after an unbound chord. Those failed iterations are not counted as successful verification.
 

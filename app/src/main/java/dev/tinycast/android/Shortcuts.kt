@@ -32,7 +32,7 @@ object ShortcutRules {
             key !in KeyEvent.KEYCODE_COMMA..KeyEvent.KEYCODE_PERIOD && key !in KeyEvent.KEYCODE_GRAVE..KeyEvent.KEYCODE_SLASH && key !in navigation && !function)
             return "Choose a letter, number, navigation key or F1–F12"
         if (modifiers and (CTRL or ALT or META) == 0 && !function) return "Use Ctrl, Alt or Meta; plain typing is never a global shortcut"
-        if (modifiers in setOf(CTRL, META) && key in editing) return "Reserved for DroidCast's search, editor or navigation controls"
+        if (modifiers in setOf(CTRL, META) && key in editing) return "Reserved for Droidcast's search, editor or navigation controls"
         if (modifiers in setOf(ALT, ALT or SHIFT) && key in setOf(KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_F4)) return "Reserved for Android window navigation"
         if (modifiers in setOf(META, META or SHIFT) && key in setOf(KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_SPACE, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_H, KeyEvent.KEYCODE_L, KeyEvent.KEYCODE_SLASH)) return "Reserved for Android system navigation"
         if (modifiers and (CTRL or ALT) == (CTRL or ALT) && key in setOf(KeyEvent.KEYCODE_DEL, KeyEvent.KEYCODE_FORWARD_DEL)) return "Reserved for system control"

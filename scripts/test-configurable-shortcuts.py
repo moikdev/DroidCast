@@ -18,6 +18,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--adb", default=os.environ.get("ADB", "adb"))
 parser.add_argument("--serial", default="emulator-5580")
 parser.add_argument("--rounds", type=int, default=3)
+parser.add_argument("--alt-q-only", action="store_true", help="Verify the reported Alt+Q activation chord from other apps")
 args = parser.parse_args()
 assert 1 <= args.rounds <= 10
 base = [args.adb, "-s", args.serial]
@@ -50,7 +51,7 @@ def focused():
 
 
 def bound():
-    return any("Bound services:" in line and "Service[label=DroidCast" in line for line in adb("shell", "dumpsys", "accessibility").splitlines())
+    return any("Bound services:" in line and "Service[label=Droidcast" in line for line in adb("shell", "dumpsys", "accessibility").splitlines())
 
 
 def tree():
@@ -110,7 +111,9 @@ def prefs():
 
 assert adb("shell", "getprop", "ro.kernel.qemu") == "1", "Use an emulator"
 assert adb("emu", "avd", "name").splitlines()[0] == "Tinycast_Tablet_API_36", "Use the dedicated AVD"
-assert APP + ".test" not in adb("shell", "dumpsys", "activity", "instrumentation"), "Finish instrumentation before hardware trials"
+instrumentation_state = adb("shell", "dumpsys", "activity", "processes")
+assert "Unknown command" not in instrumentation_state, "Cannot verify instrumentation state"
+assert "ActiveInstrumentation{" not in instrumentation_state, "Finish instrumentation before hardware trials"
 original_services = adb("shell", "settings", "get", "secure", "enabled_accessibility_services")
 original_enabled = adb("shell", "settings", "get", "secure", "accessibility_enabled")
 adb("shell", "input", "keyevent", "KEYCODE_HOME")
@@ -164,7 +167,7 @@ def assign(query, key, label):
     chord(key)
     node(label)
     click("Save shortcut")
-    node("Your commands, one key combination away.")
+    node("Manage command aliases and keyboard shortcuts in one place.")
 
 
 def restore_setting(name, value):
@@ -196,128 +199,174 @@ try:
     assert match, "Dedicated qwerty2 device not found"
     keyboard = match.group(1)
 
-    palette("Keyboard shortcuts")
-    adb("shell", "input", "keyevent", "KEYCODE_ENTER")
-    click("Reset all shortcuts…"); click("Reset shortcuts")
-    click("Change global shortcut")
-    node("Record a shortcut")
-    chord(57)
-    node("Ctrl + Alt + Space")
-    chord(57, (29,))
-    node("Ctrl + Space")
-    node("Record a shortcut")  # The existing global chord must record, not dismiss.
-    click("Save shortcut")
-    passed("recording pauses the existing global shortcut")
-    click("Change global shortcut")
-    node("Record a shortcut")
-    chord(57)
-    node("Ctrl + Alt + Space")
-    snapshot("record-global", "Record a shortcut")
-    click("Save shortcut")
-    snapshot("configured-global", "Ctrl + Alt + Space")
-    passed("record and persist Ctrl + Alt + Space")
-
-    for index in range(args.rounds):
-        for origin in ("Settings", "Home"):
-            if origin == "Settings": settings()
+    if args.alt_q_only:
+        palette("Keyboard shortcuts")
+        adb("shell", "input", "keyevent", "KEYCODE_ENTER")
+        click("Reset shortcuts…"); click("Reset shortcuts")
+        click("Record")
+        node("Record a shortcut")
+        chord(16, (56,))  # Linux Q + left Alt, delivered through Android's input filter.
+        node("Alt + Q")
+        click("Save shortcut")
+        snapshot("alt-q-configured", "Alt + Q")
+        assert json.loads(prefs()["shortcuts"])["bindings"]["global:palette"] == {"keyCode": 45, "modifiers": 2}
+        passed("record and persist Alt + Q")
+        for label in ("Settings", "Home"):
+            if label == "Settings": settings()
             else: adb("shell", "input", "keyevent", "KEYCODE_HOME")
-            wait(lambda: APP + "/" not in focused(), "Did not leave palette")
-            chord(57)
-            wait(lambda: APP + "/" in focused(), "Configured global chord did not summon")
-            if index == 0 and origin == "Settings": palette_snapshot("summon-from-settings")
-            chord(57)
-            wait(lambda: APP + "/" not in focused(), "Repeated summon should hide the visible palette")
-            passed(f"round {index + 1}: summon/toggle from {origin}")
+            wait(lambda: APP + "/" not in focused(), "Could not leave app before Alt+Q")
+            chord(16, (56,))
+            wait(lambda: APP + "/" in focused(), "Alt+Q did not summon from " + label)
+            palette_snapshot("alt-q-from-" + label.lower())
+            chord(16, (56,))
+            wait(lambda: APP + "/" not in focused(), "Alt+Q did not dismiss to " + label)
+            passed("Alt + Q summons and dismisses from " + label)
+        set_services(other_services)
+        wait(lambda: not bound(), "Service did not disconnect")
+        adb("shell", "input", "keyevent", "KEYCODE_HOME")
+        emit([(1, 56, 1), (0, 0, 0), (1, 16, 1), (0, 0, 0), (1, 16, 0), (1, 56, 0), (0, 0, 0)])
+        tree(); assert APP + "/" not in focused()
+        passed("Alt + Q cannot activate globally without service consent")
+        adb("shell", "settings", "put", "secure", "enabled_accessibility_services", enabled_services)
+        adb("shell", "settings", "put", "secure", "accessibility_enabled", "1")
+        wait(bound, "Service did not reconnect")
+        chord(16, (56,))
+        wait(lambda: APP + "/" in focused(), "Alt+Q failed after reconnect")
+        palette_snapshot("alt-q-reconnected")
+        passed("Alt + Q persists across service disable and reconnect")
+    else:
+        palette("Keyboard shortcuts")
+        adb("shell", "input", "keyevent", "KEYCODE_ENTER")
+        click("Reset shortcuts…"); click("Reset shortcuts")
+        click("Record")
+        node("Record a shortcut")
+        chord(57)
+        node("Ctrl + Alt + Space")
+        chord(57, (29,))
+        node("Ctrl + Space")
+        node("Record a shortcut")  # The existing global chord must record, not dismiss.
+        click("Save shortcut")
+        passed("recording pauses the existing global shortcut")
+        click("Record")
+        node("Record a shortcut")
+        chord(57)
+        node("Ctrl + Alt + Space")
+        snapshot("record-global", "Record a shortcut")
+        click("Save shortcut")
+        snapshot("configured-global", "Ctrl + Alt + Space")
+        passed("record and persist Ctrl + Alt + Space")
 
-    settings(); chord(57, (29,)); tree()
-    assert APP + "/" not in focused(), "Old Ctrl + Space still activated"
-    passed("old global chord stops activating after reassignment")
+        chord(33, (29,))
+        assert any(item.get("resource-id") == "settings-search" and item.get("focused") == "true" for item in tree().iter("node"))
+        passed("Ctrl+F focuses settings search while the service is enabled")
+        chord(57)
+        wait(lambda: APP + "/" in focused() and ".MainActivity" in focused(), "Global chord did not return to the palette")
+        chord(51, (29,))
+        node("Make Droidcast fit the way you work.")
+        snapshot("settings-keyboard-route", "Global shortcut")
+        passed("Ctrl+Comma opens the separate settings workspace with the service enabled")
 
-    assign("wifi", 17, "Ctrl + Alt + W")
-    palette("Calculator"); click("Actions"); click("Set keyboard shortcut")
-    node("Record a shortcut"); chord(17)
-    snapshot("conflict", "Already assigned to Wi-Fi settings")
-    chord(1, ())
-    assert "calculator" not in json.loads(prefs()["shortcuts"])["bindings"]
-    passed("live conflict names its owner and cannot overwrite it")
-    before = json.loads(prefs().get("usage", "{}" )).get("system:wifi", 0)
-    chord(57)
-    settings(); chord(17, repeats=8)
-    node("Wi-Fi")
-    assert "com.android.settings/" in focused()
-    snapshot("wifi-destination", "Wi-Fi")
-    assert json.loads(prefs()["usage"])["system:wifi"] == before + 1, "Repeat events dispatched more than once"
-    passed("Wi-Fi command uses normal destination and suppresses repeats")
+        for index in range(args.rounds):
+            for origin in ("Settings", "Home"):
+                if origin == "Settings": settings()
+                else: adb("shell", "input", "keyevent", "KEYCODE_HOME")
+                wait(lambda: APP + "/" not in focused(), "Did not leave palette")
+                chord(57)
+                wait(lambda: APP + "/" in focused(), "Configured global chord did not summon")
+                if index == 0 and origin == "Settings": palette_snapshot("summon-from-settings")
+                chord(57)
+                wait(lambda: APP + "/" not in focused(), "Repeated summon should hide the visible palette")
+                passed(f"round {index + 1}: summon/toggle from {origin}")
 
-    assign("@Files", 33, "Ctrl + Alt + F")
-    chord(57)
-    settings(); chord(33)
-    wait(lambda: "com.google.android.documentsui/" in focused(), "App binding did not launch Files")
-    assert any(item.get("package") == "com.google.android.documentsui" for item in tree().iter("node"))
-    (output / "files-app.png").write_bytes(raw("exec-out", "screencap", "-p"))
-    passed("installed-app binding launches real Files app")
+        settings(); chord(57, (29,)); tree()
+        assert APP + "/" not in focused(), "Old Ctrl + Space still activated"
+        passed("old global chord stops activating after reassignment")
 
-    assert any(item["title"] == "tinycast-soak-document.txt" for item in json.loads(prefs().get("files", "[]"))), "Run the document fixture setup before this dedicated test"
-    assign("tinycast-soak-document.txt", 25, "Ctrl + Alt + P")
-    chord(57)
-    settings(); chord(25)
-    visible = tree()
-    if any(item.get("text", "").startswith("Open with") for item in visible.iter("node")):
-        choice = next((item for item in visible.iter("node") if item.get("text") == "HTML Viewer"), None)
-        if choice is not None:
-            tap(choice)
-        # Android may already name the remembered viewer in the chooser title.
-        click("Just once")
-    wait(lambda: "com.android.htmlviewer/" in focused(), "Recent-document binding did not reach its viewer")
-    node("tinycast-soak-document.txt")
-    node("Tinycast extended text file test.", contains=True)
-    (output / "document-viewer.xml").write_bytes(ET.tostring(tree()))
-    (output / "document-viewer.png").write_bytes(raw("exec-out", "screencap", "-p"))
-    passed("recent-document binding opens the persisted TXT fixture")
+        assign("wifi", 17, "Ctrl + Alt + W")
+        palette("Calculator"); click("Actions"); click("Set keyboard shortcut")
+        node("Record a shortcut"); chord(17)
+        snapshot("conflict", "Already assigned to Wi-Fi settings")
+        chord(1, ())
+        assert "calculator" not in json.loads(prefs()["shortcuts"])["bindings"]
+        passed("live conflict names its owner and cannot overwrite it")
+        before = json.loads(prefs().get("usage", "{}" )).get("system:wifi", 0)
+        chord(57)
+        settings(); chord(17, repeats=8)
+        node("Wi-Fi")
+        assert "com.android.settings/" in focused()
+        snapshot("wifi-destination", "Wi-Fi")
+        assert json.loads(prefs()["usage"])["system:wifi"] == before + 1, "Repeat events dispatched more than once"
+        passed("Wi-Fi command uses normal destination and suppresses repeats")
 
-    assign("Calculator", 46, "Ctrl + Alt + C")
-    chord(57)
-    settings(); chord(46)
-    wait(lambda: APP + "/" in focused(), "Calculator binding did not open palette mode")
-    assert any(item.get("class") == "android.widget.EditText" and item.get("text", "").startswith("=") for item in tree().iter("node"))
-    type_text("12*7")
-    snapshot("calculator", "84")
-    passed("calculator binding enters the same calculator mode")
-    chord(46); tree()
-    assert APP + "/" not in focused(), "Repeated calculator shortcut should close its existing mode"
-    passed("calculator shortcut toggles its existing mode")
+        assign("@Files", 33, "Ctrl + Alt + F")
+        chord(57)
+        settings(); chord(33)
+        wait(lambda: "com.google.android.documentsui/" in focused(), "App binding did not launch Files")
+        assert any(item.get("package") == "com.google.android.documentsui" for item in tree().iter("node"))
+        (output / "files-app.png").write_bytes(raw("exec-out", "screencap", "-p"))
+        passed("installed-app binding launches real Files app")
 
-    assign("Create a note", 49, "Ctrl + Alt + N")
-    chord(57)
-    settings(); chord(49)
-    snapshot("new-note", "A place for the thought")
-    passed("note command binding opens the normal native editor")
+        assert any(item["title"] == "tinycast-soak-document.txt" for item in json.loads(prefs().get("files", "[]"))), "Run the document fixture setup before this dedicated test"
+        assign("tinycast-soak-document.txt", 25, "Ctrl + Alt + P")
+        chord(57)
+        settings(); chord(25)
+        visible = tree()
+        if any(item.get("text", "").startswith("Open with") for item in visible.iter("node")):
+            choice = next((item for item in visible.iter("node") if item.get("text") == "HTML Viewer"), None)
+            if choice is not None:
+                tap(choice)
+            # Android may already name the remembered viewer in the chooser title.
+            click("Just once")
+        wait(lambda: "com.android.htmlviewer/" in focused(), "Recent-document binding did not reach its viewer")
+        node("tinycast-soak-document.txt")
+        node("Tinycast extended text file test.", contains=True)
+        (output / "document-viewer.xml").write_bytes(ET.tostring(tree()))
+        (output / "document-viewer.png").write_bytes(raw("exec-out", "screencap", "-p"))
+        passed("recent-document binding opens the persisted TXT fixture")
 
-    settings()
-    search = next(item for item in tree().iter("node") if (item.get("text", "") or item.get("content-desc", "")).casefold() == "search settings")
-    tap(search); tree()
-    for key in (16, 17, 18, 19, 20, 21): chord(key, ())
-    assert any(item.get("class") == "android.widget.EditText" and item.get("text") == "qwerty" for item in tree().iter("node")), "Unrelated typing was lost"
-    search_package = re.search(r"u\d+ ([^/\s]+)/", focused()).group(1)
-    assert search_package in ("com.android.settings", "com.google.android.settings.intelligence")
-    chord(44); tree()
-    assert search_package + "/" in focused(), "Unbound chord changed the focused search app"
-    assert any(item.get("class") == "android.widget.EditText" and item.get("text") == "qwerty" for item in tree().iter("node")), "Unbound chord changed the search text"
-    passed("unrelated typing and an unbound chord pass through")
+        assign("Calculator", 46, "Ctrl + Alt + C")
+        chord(57)
+        settings(); chord(46)
+        wait(lambda: APP + "/" in focused(), "Calculator binding did not open palette mode")
+        assert any(item.get("class") == "android.widget.EditText" and item.get("text", "").startswith("=") for item in tree().iter("node"))
+        type_text("12*7")
+        snapshot("calculator", "84")
+        passed("calculator binding enters the same calculator mode")
+        chord(46); tree()
+        assert APP + "/" not in focused(), "Repeated calculator shortcut should close its existing mode"
+        passed("calculator shortcut toggles its existing mode")
 
-    set_services(other_services)
-    wait(lambda: not bound(), "Service did not disconnect")
-    adb("shell", "input", "keyevent", "KEYCODE_HOME")
-    # Without the service, this raw chord cannot invoke the app.
-    emit([(1, 29, 1), (1, 56, 1), (0, 0, 0), (1, 57, 1), (0, 0, 0), (1, 57, 0), (1, 56, 0), (1, 29, 0), (0, 0, 0)])
-    tree(); assert APP + "/" not in focused()
-    adb("shell", "settings", "put", "secure", "enabled_accessibility_services", enabled_services)
-    adb("shell", "settings", "put", "secure", "accessibility_enabled", "1")
-    wait(bound, "Service did not reconnect")
-    chord(57)
-    wait(lambda: APP + "/" in focused(), "Persisted chord failed after reconnect")
-    palette_snapshot("reconnected")
-    passed("service disable/reconnect respects persisted configuration")
+        assign("Create a note", 49, "Ctrl + Alt + N")
+        chord(57)
+        settings(); chord(49)
+        snapshot("new-note", "A place for the thought")
+        passed("note command binding opens the normal native editor")
+
+        settings()
+        search = next(item for item in tree().iter("node") if (item.get("text", "") or item.get("content-desc", "")).casefold() == "search settings")
+        tap(search); tree()
+        for key in (16, 17, 18, 19, 20, 21): chord(key, ())
+        assert any(item.get("class") == "android.widget.EditText" and item.get("text") == "qwerty" for item in tree().iter("node")), "Unrelated typing was lost"
+        search_package = re.search(r"u\d+ ([^/\s]+)/", focused()).group(1)
+        assert search_package in ("com.android.settings", "com.google.android.settings.intelligence")
+        chord(44); tree()
+        assert search_package + "/" in focused(), "Unbound chord changed the focused search app"
+        assert any(item.get("class") == "android.widget.EditText" and item.get("text") == "qwerty" for item in tree().iter("node")), "Unbound chord changed the search text"
+        passed("unrelated typing and an unbound chord pass through")
+
+        set_services(other_services)
+        wait(lambda: not bound(), "Service did not disconnect")
+        adb("shell", "input", "keyevent", "KEYCODE_HOME")
+        # Without the service, this raw chord cannot invoke the app.
+        emit([(1, 29, 1), (1, 56, 1), (0, 0, 0), (1, 57, 1), (0, 0, 0), (1, 57, 0), (1, 56, 0), (1, 29, 0), (0, 0, 0)])
+        tree(); assert APP + "/" not in focused()
+        adb("shell", "settings", "put", "secure", "enabled_accessibility_services", enabled_services)
+        adb("shell", "settings", "put", "secure", "accessibility_enabled", "1")
+        wait(bound, "Service did not reconnect")
+        chord(57)
+        wait(lambda: APP + "/" in focused(), "Persisted chord failed after reconnect")
+        palette_snapshot("reconnected")
+        passed("service disable/reconnect respects persisted configuration")
 except Exception:
     (output / "failure.png").write_bytes(raw("exec-out", "screencap", "-p"))
     (output / "failure.xml").write_bytes(ET.tostring(tree()))
@@ -334,10 +383,18 @@ finally:
             adb("shell", "am", "start", "-W", "-n", APP + "/.MainActivity")
             restore_setting("enabled_accessibility_services", original_services)
             restore_setting("accessibility_enabled", original_enabled)
+            results["original_service_consent_restored"] = (
+                adb("shell", "settings", "get", "secure", "enabled_accessibility_services") == original_services
+                and adb("shell", "settings", "get", "secure", "accessibility_enabled") == original_enabled)
+            assert results["original_service_consent_restored"]
             results["original_preferences_restored"] = raw("exec-out", "run-as", APP, "cat", "shared_prefs/palette.xml") == original_xml
             assert results["original_preferences_restored"]
         finally:
-            adb("unroot"); adb("wait-for-device")
+            # adbd can disconnect before the unroot command receives its reply.
+            # Check the actual identity after reconnect, even on a nonzero reply.
+            unroot = subprocess.run(base + ["unroot"], capture_output=True, text=True)
+            results["unroot_command_exit_code"] = unroot.returncode
+            adb("wait-for-device")
             results["adbd_unprivileged"] = "uid=2000" in adb("shell", "id")
             results["app_process"] = [line for line in adb("shell", "ps", "-A", "-o", "USER,NAME").splitlines() if line.endswith(APP)]
             results["app_unprivileged"] = bool(results["app_process"]) and all(line.split()[0] not in ("root", "system", "shell") for line in results["app_process"])

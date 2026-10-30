@@ -33,7 +33,7 @@ The preview updates visible branding to DroidCast and adds source/license access
 
 The branded preview was rebuilt locally with 18 passing unit tests and 20 passing device regression tests, including both real Store examples. Android lint and workflow syntax validation passed. The renamed keyboard service also passed global Ctrl+Space activation from Settings and Home.
 
-Publication checks and their results are recorded in the [preview release](https://github.com/moikdev/DroidCast/releases) and [Actions runs](https://github.com/moikdev/DroidCast/actions). The earlier 308-second run applies to the 0.3.1 implementation; it is not represented as a new endurance run on every subsequent branding build.
+Publication checks and their results are recorded in the [preview release](https://github.com/moikdev/droidcast/releases) and [Actions runs](https://github.com/moikdev/droidcast/actions). The earlier 308-second run applies to the 0.3.1 implementation; it is not represented as a new endurance run on every subsequent branding build.
 
 ## Reproduce
 

@@ -52,9 +52,9 @@ class SystemSettingsDeviceTest {
                 "system:bluetooth" -> listOf(By.desc("Connected devices"), By.text("Pair new device"))
                 "system:display" -> listOf(By.text("Brightness level"), By.text("Dark theme"))
                 "system:sound" -> listOf(By.text("Media volume"), By.text("Alarm volume"))
-                "system:notifications" -> listOf(By.text("All DroidCast notifications"))
+                "system:notifications" -> listOf(By.text("All Droidcast notifications"))
                 "system:apps" -> listOf(By.text("Android System WebView"), By.text("Calendar"))
-                "system:app-info" -> listOf(By.text("App info"), By.text("DroidCast"), By.text("Force stop"), By.text("Storage & cache"))
+                "system:app-info" -> listOf(By.text("App info"), By.text("Droidcast"), By.text("Force stop"), By.text("Storage & cache"))
                 "system:storage" -> listOf(By.text("Free up space"), By.text("Go to Files app to manage and free up space"))
                 "system:accessibility" -> listOf(By.text("Downloaded apps"), By.text("TalkBack"))
                 "system:date" -> listOf(By.text("Automatic date and time"), By.text("Automatic time zone"))
@@ -75,15 +75,15 @@ class SystemSettingsDeviceTest {
     @Test fun wifiSearchOpensWifiPage() = launches("wifi", "system:wifi", Settings.ACTION_WIFI_SETTINGS)
     @Test fun bluetoothSearchOpensBluetoothPage() = launches("bluetooth", "system:bluetooth", Settings.ACTION_BLUETOOTH_SETTINGS)
     @Test fun brightnessSearchOpensDisplayPage() = launches("brightness", "system:display", Settings.ACTION_DISPLAY_SETTINGS)
-    @Test fun appInfoReplacesAnExistingAccessibilityPageWithDroidCastDetails() {
+    @Test fun appInfoReplacesAnExistingAccessibilityPageWithDroidcastDetails() {
         compose.activityRule.scenario.onActivity { it.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)) }
         assertTrue(device.wait(Until.hasObject(By.pkg("com.android.settings").text("Downloaded apps")), 7000))
         device.executeShellCommand("am start -W -n dev.tinycast.android/.MainActivity")
         compose.waitForIdle()
-        launches("DroidCast app info", "system:app-info", Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        launches("Droidcast app info", "system:app-info", Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
     }
     @Test fun soundOpensSoundPage() = launches("Sound settings", "system:sound", Settings.ACTION_SOUND_SETTINGS)
-    @Test fun notificationsOpenDroidCastNotificationPage() = launches("DroidCast notifications", "system:notifications", Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+    @Test fun notificationsOpenDroidcastNotificationPage() = launches("Droidcast notifications", "system:notifications", Settings.ACTION_APP_NOTIFICATION_SETTINGS)
     @Test fun appsOpenApplicationManagement() = launches("Apps settings", "system:apps", Settings.ACTION_APPLICATION_SETTINGS)
     @Test fun storageOpensDeviceStoragePage() = launches("Storage settings", "system:storage", Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
     @Test fun accessibilityOpensAccessibilityPage() = launches("Accessibility settings", "system:accessibility", Settings.ACTION_ACCESSIBILITY_SETTINGS)

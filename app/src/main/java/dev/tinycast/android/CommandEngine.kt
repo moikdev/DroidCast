@@ -17,7 +17,8 @@ data class Command(
     val icon: String = "command",
     val keywords: String = "",
     val payload: String = "",
-    val alias: String = ""
+    val alias: String = "",
+    val mimeType: String? = null
 )
 
 object CommandSearch {

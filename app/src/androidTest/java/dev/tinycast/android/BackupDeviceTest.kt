@@ -56,9 +56,9 @@ class BackupDeviceTest {
         assertTrue(device.takeScreenshot(File(directory, "$name.png")))
     }
     private fun openBackup() {
-        compose.onNodeWithTag("search").performTextReplacement("Backup and restore")
-        compose.onNodeWithTag("result-backup").performClick()
-        compose.onNodeWithText("Portable collections · DroidCast JSON format v1").assertIsDisplayed()
+        // Shared backup component regression; SettingsDeviceTest covers its production settings host.
+        compose.activityRule.scenario.onActivity { it.store.beginBackup() }
+        compose.onNodeWithText("Portable collections · Droidcast JSON format v1").assertIsDisplayed()
     }
     private fun load(document: BackupDocument) {
         val file = File(context.cacheDir, "backup-test.json").apply { writeText(BackupCodec.encode(document.data, document.categories)) }
@@ -195,7 +195,7 @@ class BackupDeviceTest {
         compose.onNodeWithTag("backup-import").performScrollTo().performClick()
         assertTrue(device.wait(Until.hasObject(By.pkg("com.google.android.documentsui")), 10000))
         device.pressBack()
-        compose.onNodeWithText("Portable collections · DroidCast JSON format v1").assertIsDisplayed()
+        compose.onNodeWithText("Portable collections · Droidcast JSON format v1").assertIsDisplayed()
         assertEquals(before, compose.activity.store.backupSnapshot())
         compose.onNodeWithTag("backup-export").performScrollTo().performClick()
         assertTrue(device.wait(Until.hasObject(By.pkg("com.google.android.documentsui")), 10000))
@@ -253,7 +253,7 @@ class BackupDeviceTest {
         compose.activityRule.scenario.onActivity { it.store.dialog = null; it.store.search("International backup link") }
         ids.forEach { id -> compose.onNodeWithTag("result-$id").assertIsDisplayed() }
         compose.onNodeWithTag("result-${ids.first()}").performTouchInput { longClick() }
-        compose.onNodeWithTag("action-Edit quicklink").performClick()
+        compose.onNodeWithTag("action-Edit quicklink").performScrollTo().performClick()
         compose.onNodeWithTag("editor-body").assertTextContains(urls.first())
         evidence("international-links")
     }
