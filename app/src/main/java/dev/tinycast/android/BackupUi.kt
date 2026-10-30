@@ -24,7 +24,8 @@ internal fun BackupDialog(store: PaletteStore, run: (Command) -> Unit, close: ()
         Shell("Apply this backup?", "Only your selected categories will change.", { if (!busy) store.dialog = "backup-preview" }) {
             Text(if (store.restorePolicy == RestorePolicy.REPLACE) "Replace deletes the current contents of selected categories and uses the backup instead. Other categories and recent documents are kept." else "Merge keeps existing items and their identities. Duplicate or conflicting items keep the existing version.", fontSize = 13.sp, lineHeight = 20.sp)
             plan.getOrNull()?.let { Text("${it.added} collection items applied · ${it.skipped} duplicates kept · ${it.removed} current collection items replaced", color = PaletteTheme.secondary, fontSize = 12.sp, modifier = Modifier.padding(top = 16.dp)) }
-            Text("Pins, aliases and ranking follow your selected merge/replace policy. Import never grants permissions or runs a command.", color = PaletteTheme.secondary, fontSize = 12.sp, modifier = Modifier.padding(top = 12.dp))
+            Text("Pins, aliases, ranking and keyboard bindings follow your selected merge/replace policy. Import never grants permissions or runs a command.", color = PaletteTheme.secondary, fontSize = 12.sp, modifier = Modifier.padding(top = 12.dp))
+            if (BackupCategory.SHORTCUTS in store.restoreCategories) Text("Selected keyboard bindings take effect after applying. They can work globally if the keyboard service is already enabled. Import never enables that Android service.", color = PaletteTheme.ink, fontSize = 12.sp, modifier = Modifier.padding(top = 12.dp).testTag("backup-shortcut-warning"))
             store.backupError?.let { Text(it, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(top = 12.dp)) }
             if (busy) LinearProgressIndicator(modifier = Modifier.fillMaxWidth().padding(top = 12.dp))
             Row(Modifier.fillMaxWidth().padding(top = 20.dp), horizontalArrangement = Arrangement.End) {
@@ -66,6 +67,10 @@ internal fun BackupDialog(store: PaletteStore, run: (Command) -> Unit, close: ()
                         data.aliases.toSortedMap().forEach { (id, alias) -> add("Alias · $id" to alias.ifEmpty { "Disabled" }) }
                     }
                     if (BackupCategory.LEARNING in selected) data.usage.toSortedMap().forEach { (id, count) -> add("Usage · $id" to count.toString()) }
+                    if (BackupCategory.SHORTCUTS in selected) data.shortcuts.bindings.toSortedMap().forEach { (id, chord) ->
+                        val name = (data.notes + data.links + data.clips).firstOrNull { it.id == id }?.title ?: store.shortcutTitle(id)
+                        add("Keyboard shortcut · $name" to chord.label())
+                    }
                 } }
                 Text("All selected entries. Note and clip text previews show the first 200 characters.", fontSize = 11.sp, color = PaletteTheme.secondary)
                 LazyColumn(Modifier.fillMaxWidth().height(180.dp).testTag("backup-contents")) {

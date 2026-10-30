@@ -1,6 +1,5 @@
 package dev.tinycast.android
 
-import android.accessibilityservice.AccessibilityService
 import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -16,7 +15,6 @@ import android.view.KeyboardShortcutGroup
 import android.view.KeyboardShortcutInfo
 import android.view.Menu
 import android.view.WindowManager
-import android.view.accessibility.AccessibilityEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -46,8 +44,16 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
         if (resources.configuration.smallestScreenWidthDp >= 600) window.setSoftInputMode((window.attributes.softInputMode and WindowManager.LayoutParams.SOFT_INPUT_MASK_STATE.inv()) or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
-        receive(intent)
+        if (savedInstanceState == null) receive(intent)
         setContent {
+            LaunchedEffect(store.pendingShortcut, store.loading) {
+                val request = store.pendingShortcut
+                if (request != null && !store.loading) {
+                    store.pendingShortcut = null
+                    if (!ShortcutRuntime.requests.isFresh(request) || store.shortcutConfiguration.bindings[request.target] != request.chord) store.message = "Shortcut changed or expired. Try again."
+                    else store.commands().firstOrNull { it.id == request.target }?.let(::execute) ?: run { store.message = "This shortcut's command is unavailable. Clear or reassign it in Keyboard shortcuts." }
+                }
+            }
             LaunchedEffect(sharedText) {
                 sharedText?.let {
                     store.editing = SavedItem("", "Shared text", it)
@@ -55,20 +61,33 @@ class MainActivity : ComponentActivity() {
                     sharedText = null
                 }
             }
-            TinycastApp(store, shortcutEnabled, ::execute, ::copyText, ::enableShortcut, { finish() })
+            TinycastApp(store, shortcutEnabled, ::execute, ::copyText, ::enableShortcut, { finish() }, { target, chord -> ShortcutRuntime.dispatch(this, target, chord) })
         }
     }
     override fun onResume() {
         super.onResume()
+        ShortcutRuntime.resumed(this)
         shortcutEnabled = Settings.Secure.getString(contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
             ?.split(':')?.any { it == ComponentName(this, PaletteShortcutService::class.java).flattenToString() } == true
+    }
+    override fun onPause() { ShortcutRuntime.paused(this); super.onPause() }
+    override fun onStop() { if (!isChangingConfigurations) store.cancelShortcutRecording(); super.onStop() }
+    fun acceptShortcut(token: String?, toggleExisting: Boolean = false) {
+        val request = ShortcutRuntime.requests.consume(token)
+        if (request == null || !ShortcutRuntime.requests.isFresh(request) || store.shortcutConfiguration.bindings[request.target] != request.chord) { store.message = "Shortcut changed or expired. Try again."; return }
+        if (store.backupBusy || ShortcutRuntime.recordingOwner != null) { store.message = "Finish the current operation before running a shortcut."; return }
+        if (request.target == ShortcutRules.PALETTE) { if (toggleExisting) finish() else store.reset() }
+        else if (toggleExisting && request.target == "calculator" && store.dialog == null && store.category == "All" && store.query.trimStart().startsWith("=")) finish()
+        else { store.reset(); store.pendingShortcut = request }
     }
     public override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         if (store.backupBusy) { store.message = "Backup in progress. Please try again when it finishes."; return }
+        store.pendingShortcut = null
         store.reset(); receive(intent)
     }
     private fun receive(intent: Intent) {
+        if (intent.action == ShortcutRuntime.ACTION) { acceptShortcut(intent.getStringExtra(ShortcutRuntime.TOKEN)); return }
         sharedText = when (intent.action) {
             Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT)
             Intent.ACTION_PROCESS_TEXT -> intent.getCharSequenceExtra(Intent.EXTRA_PROCESS_TEXT)?.toString()
@@ -82,6 +101,9 @@ class MainActivity : ComponentActivity() {
             KeyboardShortcutInfo("New note", KeyEvent.KEYCODE_N, KeyEvent.META_CTRL_ON),
             KeyboardShortcutInfo("Pin or unpin", KeyEvent.KEYCODE_D, KeyEvent.META_CTRL_ON)
         )))
+        val titles = store.commands().associate { it.id to it.title } + (ShortcutRules.PALETTE to "Show or hide DroidCast")
+        val bindings = store.shortcutConfiguration.bindings.entries.take(50).map { (id, chord) -> KeyboardShortcutInfo(titles[id] ?: "Unavailable command · $id", chord.keyCode, chord.nativeModifiers()) }
+        if (bindings.isNotEmpty()) data?.add(KeyboardShortcutGroup(if (store.shortcutConfiguration.bindings.size > 50) "Configured shortcuts (first 50)" else "Configured shortcuts", bindings))
         super.onProvideKeyboardShortcuts(data, menu, deviceId)
     }
     private fun enableShortcut() { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
@@ -142,30 +164,12 @@ class MainActivity : ComponentActivity() {
                     if (text.isNullOrBlank()) store.message = "No clipboard text available. Copy some text first."
                     else { store.editing = SavedItem("", text.take(60).lineSequence().first(), text); store.dialog = "clip" }
                 }
-                "shortcuts" -> store.dialog = "shortcuts"
-                "settings" -> open(Intent(Settings.ACTION_SETTINGS))
+                "shortcuts" -> store.dialog = "shortcut-settings"
+                "settings" -> open(Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                 "app-settings" -> store.dialog = "preferences"
                 "web" -> open(Intent(Intent.ACTION_VIEW, Uri.parse(command.payload)))
             }
         }
     }
     private fun openExtension(extension: dev.tinycast.android.extensions.InstalledExtension, command: dev.tinycast.android.extensions.ExtensionCommand) { store.openExtension(extension, command) }
-}
-
-class PaletteShortcutService : AccessibilityService() {
-    private var consumedSpace = false
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) = Unit
-    override fun onInterrupt() = Unit
-    override fun onKeyEvent(event: KeyEvent): Boolean {
-        if (event.keyCode != KeyEvent.KEYCODE_SPACE) return false
-        if (event.action == KeyEvent.ACTION_UP && consumedSpace) { consumedSpace = false; return true }
-        if (event.action == KeyEvent.ACTION_DOWN && event.isCtrlPressed && !event.isAltPressed && !event.isShiftPressed) {
-            consumedSpace = true
-            if (event.repeatCount == 0) startActivity(Intent(this, MainActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)
-                .putExtra("summon", true))
-            return true
-        }
-        return false
-    }
 }

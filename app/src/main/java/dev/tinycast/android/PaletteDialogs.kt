@@ -39,20 +39,22 @@ fun PaletteDialogs(store: PaletteStore, selected: Command?, globalEnabled: Boole
     val dialog = store.dialog ?: return
     if (dialog.startsWith("extension")) { dev.tinycast.android.extensions.ExtensionDialogs(store, close); return }
     if (dialog.startsWith("backup")) { BackupDialog(store, run, close); return }
+    if (dialog.startsWith("shortcut-") && dialog != "shortcut-help") { ShortcutDialogs(store, globalEnabled, enableGlobal, close); return }
     when (dialog) {
         "note", "link", "clip" -> Editor(store, dialog, close)
-        "shortcuts" -> Shell("Keyboard shortcuts", "Less reaching. More doing.", close) {
+        "shortcut-help" -> Shell("Keyboard shortcut help", "Less reaching. More doing.", { store.dialog = "shortcut-settings" }) {
             Text("IN DROIDCAST", color = ink, fontSize = 10.sp, letterSpacing = 1.sp, modifier = Modifier.padding(bottom = 8.dp))
             listOf("Focus search" to "Ctrl + L", "Open actions" to "Ctrl + K", "Navigate results" to "↑ / ↓", "Run selected command" to "Enter", "Pin / unpin selected" to "Ctrl + D", "Create a note" to "Ctrl + N", "Switch category" to "Ctrl + 1…8", "Save an editor" to "Ctrl + S / Ctrl + Enter", "Clear, go back, dismiss" to "Esc").forEach { ShortcutRow(it.first, it.second) }
             HorizontalDivider(color = line, modifier = Modifier.padding(vertical = 14.dp))
-            ShortcutRow("Summon from another app", "Ctrl + Space")
+            ShortcutRow("Show or hide from another app", store.shortcutConfiguration.bindings[ShortcutRules.PALETTE]?.label() ?: "Not assigned")
             Text(if (globalEnabled) "Global shortcut is enabled." else "Enable the optional keyboard service in Preferences for the global shortcut.", color = muted, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(top = 10.dp))
             Spacer(Modifier.height(16.dp)); Button(onClick = close, modifier = Modifier.fillMaxWidth()) { Text("Got it") }
         }
         "preferences" -> Shell("Preferences", "DroidCast · 0.4.0-preview", close) {
-            Row(verticalAlignment = Alignment.CenterVertically) { Glyph("keyboard", ink, 26); Spacer(Modifier.width(12.dp)); Column { Text("Global keyboard shortcut", fontSize = 16.sp, fontWeight = FontWeight.Medium); Text(if (globalEnabled) "Enabled · Ctrl + Space" else "Optional · Ctrl + Space", color = ink, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp)) } }
-            Text("Open the palette from another app with your hardware keyboard. Android requires you to enable the DroidCast keyboard shortcut accessibility service.", color = muted, fontSize = 13.sp, lineHeight = 20.sp, modifier = Modifier.padding(top = 18.dp))
-            Text("The service receives hardware key events only to recognize Ctrl + Space. It does not retrieve screen content or save keystrokes. You can turn it off in Android settings at any time.", color = muted, fontSize = 12.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 12.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) { Glyph("keyboard", ink, 26); Spacer(Modifier.width(12.dp)); Column { Text("Global keyboard shortcuts", fontSize = 16.sp, fontWeight = FontWeight.Medium); Text(if (globalEnabled) "Keyboard service enabled" else "Optional keyboard service", color = ink, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp)) } }
+            Text("Open the palette and run assigned commands from another app with your hardware keyboard. Android requires you to enable the DroidCast keyboard shortcut accessibility service.", color = muted, fontSize = 13.sp, lineHeight = 20.sp, modifier = Modifier.padding(top = 18.dp))
+            Text("The service filters your configured key combinations. It does not retrieve screen content or save keystrokes. You can turn it off in Android settings at any time.", color = muted, fontSize = 12.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 12.dp))
+            TextButton(onClick = { store.dialog = "shortcut-settings" }) { Text("Configure keyboard shortcuts") }
             Button(onClick = enableGlobal, modifier = Modifier.fillMaxWidth().padding(top = 20.dp).testTag("enable-global")) { Text(if (globalEnabled) "Manage keyboard service" else "Open accessibility settings") }
             HorizontalDivider(color = line, modifier = Modifier.padding(vertical = 22.dp))
             Text("Your data stays on your device", fontWeight = FontWeight.Medium, fontSize = 15.sp)
@@ -114,7 +116,7 @@ private fun Editor(store: PaletteStore, kind: String, close: () -> Unit) {
     }
     Shell(if (old?.id.isNullOrEmpty()) "Create a $type" else "Edit $type", when (kind) { "note" -> "A place for the thought you don't want to lose."; "link" -> "Your favorite destination, one command away."; else -> "Keep useful text close. Stored only on this device." }, close,
         Modifier.onPreviewKeyEvent {
-            if (it.type == KeyEventType.KeyDown && (it.isCtrlPressed || it.isMetaPressed) && (it.key == Key.S || it.key == Key.Enter)) { save(); true } else false
+            if (it.type == KeyEventType.KeyDown && (it.isCtrlPressed xor it.isMetaPressed) && !it.isAltPressed && !it.isShiftPressed && (it.key == Key.S || it.key == Key.Enter)) { save(); true } else false
         }) {
         LaunchedEffect(fieldReady) { if (fieldReady) focus.requestFocus() }
         Field("Title", title, { title = it; error = null }, "Give it a name", "editor-title", modifier = Modifier.focusRequester(focus).onGloballyPositioned { fieldReady = true })
@@ -144,6 +146,7 @@ internal fun ActionsMenu(store: PaletteStore, command: Command, run: (Command) -
         if (command.id !in listOf("result", "web")) {
             add(Action(if (command.id in store.pins) "Unpin command" else "Pin command", "Ctrl D") { store.togglePin(command.id); close() })
             add(Action("Set alias", "") { store.dialog = "alias" })
+            if (ShortcutRules.targetAllowed(command.id)) add(Action("Set keyboard shortcut", store.shortcutConfiguration.bindings[command.id]?.label().orEmpty()) { store.beginShortcutRecording(command.id) })
         }
         if (command.kind in listOf(Kind.NOTE, Kind.LINK, Kind.CLIP)) {
             add(Action("Edit ${command.kind.label.lowercase().removeSuffix("s")}", "") {

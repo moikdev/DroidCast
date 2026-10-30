@@ -21,7 +21,7 @@ class PaletteOverlayTest {
     @get:Rule val compose=createAndroidComposeRule<MainActivity>()
     private val device get()=UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
     @Test fun compactTranslucentPaletteDismissesOutsideToPreviousApp(){
-        compose.activityRule.scenario.onActivity{it.startActivity(Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))}
+        compose.activityRule.scenario.onActivity{it.startActivity(Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))}
         assertTrue(device.wait(Until.hasObject(By.pkg("com.android.settings")),5000))
         device.executeShellCommand("am start -n dev.tinycast.android/.MainActivity")
         compose.waitForIdle()
@@ -42,7 +42,7 @@ class PaletteOverlayTest {
         compose.waitUntil(5000){compose.activityRule.scenario.state==Lifecycle.State.DESTROYED}
     }
     @Test fun quickSettingsTileSummonsPalette(){
-        compose.activityRule.scenario.onActivity{it.startActivity(Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))}
+        compose.activityRule.scenario.onActivity{it.startActivity(Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))}
         assertTrue(device.wait(Until.hasObject(By.pkg("com.android.settings")),5000))
         device.executeShellCommand("cmd statusbar add-tile dev.tinycast.android/.PaletteTileService")
         device.openQuickSettings()

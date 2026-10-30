@@ -12,8 +12,8 @@ DroidCast reproduces the central summon → search → run → dismiss workflow.
 | --- | --- | --- |
 | Floating palette | Working Android adaptation | Native Compose palette, transparent surroundings, outside-tap/Escape dismissal, contextual actions. Uses Tinycast geometry/tokens; macOS material and fonts are not reproduced. |
 | App search and launch | Partial | Fuzzy search, aliases, pins and usage ranking work. No running-app indicators, focus/hide toggles or quit-all behavior. |
-| Global activation | Partial | Fixed Ctrl+Space through an opt-in key-filter service; icon, assistant intent and Quick Settings tile. No configurable global chord. OEM delivery is not established. |
-| Per-app / per-command hotkeys | Missing | Category shortcuts exist; assigning a global shortcut to an individual app or command does not. |
+| Global activation | Partial | Configurable ordinary chord (default Ctrl+Space) through an opt-in key-filter service; icon, assistant intent and Quick Settings tile. Advanced modifier taps/Fn/Hyper remain open in #26. Universal OEM delivery is not established. |
+| Per-app / per-command hotkeys | Partial | Record, clear/reset and conflict-check ordinary command/app/item chords; result keycaps and existing execution paths. Advanced upstream hotkeys remain open in #26. |
 | File search | Partial | System picker, searchable recent documents, persisted URI grants and external viewers. No selected-folder search, filename index or folder preview. |
 | Dictionary lookup | Missing | No dictionary command, dataset or definition view. |
 | Clipboard | Partial | Explicitly saved text, shared/selected-text input, foreground clipboard access and copy actions. No automatic history, image collection or paste-back into another app. |
@@ -32,7 +32,13 @@ DroidCast reproduces the central summon → search → run → dismiss workflow.
 | Raycast extension installation | Partial | Real Store search, package download, validation, install, update and uninstall. Uses unofficial endpoints. Store installation is not a compatibility guarantee. |
 | Extension views | Partial | Native lists, basic forms, selectable Detail text and actions/navigation. Grid is a list; Markdown, metadata, images, advanced fields and validation are incomplete. |
 | Extension host APIs | Partial | HTTPS, clipboard, timers, local storage/cache, preferences/arguments, limited crypto and scoped files. OAuth, menu bars, shell/native helpers, browser/window management, WebSockets and Raycast AI are not available. |
-| Backup and import | Partial | Selectable versioned DroidCast JSON export/import for notes, quicklinks, saved clips, pins/aliases and usage ranking, with preview, content inspection and merge/replace confirmation. Capability grants and extension data are excluded. Tinycast AppleArchive and Raycast container compatibility remain open in [#24](https://github.com/moikdev/DroidCast/issues/24); Android OS backup stays disabled. |
+| Backup and import | Partial | Selectable versioned DroidCast JSON export/import for notes, quicklinks, saved clips, pins/aliases, usage ranking and portable keyboard bindings, with preview, content inspection and merge/replace confirmation. Capability grants and extension data are excluded. Tinycast AppleArchive and Raycast container compatibility remain open in [#24](https://github.com/moikdev/DroidCast/issues/24); Android OS backup stays disabled. |
+| Settings mirror/history | Missing | No editable settings file mirror or change history; [#27](https://github.com/moikdev/DroidCast/issues/27). |
+| Dictation | Missing | No local speech model, microphone flow or dictation command; [#28](https://github.com/moikdev/DroidCast/issues/28). |
+| Camera | Missing | No camera preview/capture command; [#29](https://github.com/moikdev/DroidCast/issues/29). |
+| MCP | Missing | No MCP transport/tool capability flow; [#30](https://github.com/moikdev/DroidCast/issues/30). |
+| Frontmost app menu search | Replacement | No supported Android action-search equivalent; [#31](https://github.com/moikdev/DroidCast/issues/31). |
+| Custom command library | Replacement | No scoped automation catalog/argument workflow; [#32](https://github.com/moikdev/DroidCast/issues/32). |
 | Appearance, localization, accessibility | Partial | Dark theme and extensive keyboard handling. No light/system appearance, language translations or comprehensive TalkBack/large-font/physical-device audit. |
 
 ## Evidence and boundaries

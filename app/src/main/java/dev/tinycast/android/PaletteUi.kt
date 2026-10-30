@@ -34,8 +34,10 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import kotlinx.coroutines.delay
@@ -44,20 +46,26 @@ private val categories = listOf("All", "Pinned", "Apps", "Notes", "Quicklinks", 
 
 @Composable
 fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> Unit, copy: (String) -> Unit,
-                enableGlobal: () -> Unit, dismiss: () -> Unit) {
+                enableGlobal: () -> Unit, dismiss: () -> Unit, shortcut: (String, KeyChord) -> Unit) {
     MaterialTheme(colorScheme = darkColorScheme(primary = PaletteTheme.ink, onPrimary = PaletteTheme.background,
         surface = PaletteTheme.surface, background = PaletteTheme.background, onSurface = PaletteTheme.ink,
         onBackground = PaletteTheme.ink, outline = PaletteTheme.border, secondary = PaletteTheme.secondary,
         surfaceContainer = PaletteTheme.surface)) {
       CompositionLocalProvider(LocalContentColor provides PaletteTheme.ink) {
         val focus = remember { FocusRequester() }
+        var searchValue by remember { mutableStateOf(TextFieldValue(store.query, TextRange(store.query.length))) }
+        // Programmatic mode changes place typing after the prefix; user edits retain their selection/composition.
+        val displayedSearch = if (searchValue.text == store.query) searchValue else TextFieldValue(store.query, TextRange(store.query.length))
+        SideEffect { if (searchValue != displayedSearch) searchValue = displayedSearch }
         val keyboard = LocalSoftwareKeyboardController.current
         val list = rememberLazyListState()
         val results = store.results()
         val selected = results.getOrNull(store.selected.coerceIn(0, (results.size - 1).coerceAtLeast(0)))
         val snack = remember { SnackbarHostState() }
+        val shortcutEngine = remember { ShortcutEngine() }
         var menu by remember { mutableStateOf(false) }
         fun close() {
+            if (store.recordingTarget != null) { store.cancelShortcutRecording(); return }
             if (store.dialog?.startsWith("backup") == true) {
                 if (store.backupBusy) return
                 store.discardImport()
@@ -69,12 +77,14 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
             when { store.dialog != null -> close(); menu -> menu = false; store.query.isNotEmpty() -> store.search(""); store.category != "All" -> store.filter("All"); else -> dismiss() }
         }
         val handleKey: (KeyEvent) -> Boolean = { event ->
-            val ctrl = event.isCtrlPressed || event.isMetaPressed
-            if (event.action != KeyEvent.ACTION_DOWN) false
+            val configured = if (event.action in listOf(KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP)) shortcutEngine.handle(event.asShortcutInput(), store.shortcutConfiguration.byChord, store.dialog != null || store.backupBusy || ShortcutRuntime.recordingOwner != null) else ShortcutEngine.Result(false)
+            if (configured.target != null) shortcut(configured.target, configured.chord!!)
+            val ctrl = (event.isCtrlPressed xor event.isMetaPressed) && !event.isShiftPressed && !event.isAltPressed
+            if (configured.consumed) true
+            else if (event.action != KeyEvent.ACTION_DOWN) false
             else if (event.keyCode == KeyEvent.KEYCODE_ESCAPE) { escape(); true }
             else if (store.dialog != null) false
             else when {
-                ctrl && event.keyCode == KeyEvent.KEYCODE_SPACE -> { store.reset(); true }
                 ctrl && event.keyCode == KeyEvent.KEYCODE_L -> { focus.requestFocus(); keyboard?.show(); true }
                 ctrl && event.keyCode == KeyEvent.KEYCODE_K -> { if(selected != null) store.dialog = "actions"; true }
                 ctrl && event.keyCode == KeyEvent.KEYCODE_N -> { store.editing = null; store.dialog = "note"; true }
@@ -106,7 +116,7 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
                 .clickable(indication=null, interactionSource=remember { MutableInteractionSource() }) {}.testTag("palette")) {
                 Row(Modifier.fillMaxWidth().height(PaletteTheme.header).padding(horizontal=16.dp),verticalAlignment=Alignment.CenterVertically) {
                     Glyph("search",PaletteTheme.secondary,22);Spacer(Modifier.width(12.dp))
-                    BasicTextField(value=store.query,onValueChange=store::search,modifier=Modifier.weight(1f).focusRequester(focus).testTag("search"),
+                    BasicTextField(value=displayedSearch,onValueChange={ searchValue = it; store.search(it.text) },modifier=Modifier.weight(1f).focusRequester(focus).testTag("search"),
                         textStyle=TextStyle(color=PaletteTheme.ink,fontSize=20.sp,lineHeight=26.sp),singleLine=true,cursorBrush=SolidColor(PaletteTheme.accent),
                         keyboardOptions=KeyboardOptions(imeAction=ImeAction.Search,showKeyboardOnFocus=!wide),keyboardActions=KeyboardActions(onSearch={selected?.let(run)}),
                         decorationBox={inner -> Box{if(store.query.isEmpty())Text("Search for apps and commands…",color=PaletteTheme.secondary,fontSize=20.sp,maxLines=1,overflow=TextOverflow.Ellipsis);inner()}})
@@ -123,7 +133,7 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
                         if(i==0 || section!=previous) Text(section,color=PaletteTheme.secondary,fontSize=12.sp,fontWeight=FontWeight.Medium,
                             modifier=Modifier.fillMaxWidth().padding(start=8.dp,end=8.dp,top=if(i==0)4.dp else 12.dp,bottom=4.dp))
                         if(c.kind==Kind.CALC) CalculatorCard(c,i==store.selected,{store.selected=i;run(c)},{store.selected=i;store.dialog="actions"})
-                        else CommandRow(c,i==store.selected,{store.selected=i;run(c)},{store.selected=i;store.dialog="actions"})
+                        else CommandRow(c,i==store.selected,store.shortcutConfiguration.bindings[c.id]?.label(),{store.selected=i;run(c)},{store.selected=i;store.dialog="actions"})
                     }
                 }
                 Row(Modifier.fillMaxWidth().height(PaletteTheme.footer).padding(horizontal=8.dp),verticalAlignment=Alignment.CenterVertically){
@@ -135,7 +145,7 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
                                 trailingIcon={if(store.category==c)Text("✓",color=PaletteTheme.secondary)},onClick={store.filter(c);menu=false},modifier=Modifier.testTag("filter-$c")) }
                             HorizontalDivider(color=PaletteTheme.separator)
                             DropdownMenuItem(text={Text("Preferences…",fontSize=13.sp)},onClick={store.dialog="preferences";menu=false})
-                            DropdownMenuItem(text={Text("Keyboard Shortcuts",fontSize=13.sp)},onClick={store.dialog="shortcuts";menu=false})
+                            DropdownMenuItem(text={Text("Keyboard Shortcuts",fontSize=13.sp)},onClick={store.dialog="shortcut-settings";menu=false})
                             DropdownMenuItem(text={Text("Dismiss DroidCast",fontSize=13.sp)},onClick=dismiss)
                         }
                     }
@@ -179,13 +189,13 @@ internal fun primaryActionTitle(command:Command):String = when(command.kind) {
 }
 
 @Composable
-private fun CommandRow(command:Command,active:Boolean,run:()->Unit,actions:()->Unit){
+private fun CommandRow(command:Command,active:Boolean,shortcut:String?,run:()->Unit,actions:()->Unit){
     val interaction=remember { MutableInteractionSource() }
     val hovered by interaction.collectIsHoveredAsState()
     Row(Modifier.fillMaxWidth().height(PaletteTheme.row).clip(RoundedCornerShape(PaletteTheme.rowRadius))
         .background(if(active)PaletteTheme.selection else if(hovered)PaletteTheme.hover else Color.Transparent)
         .hoverable(interaction).combinedClickable(onClick=run,onLongClick=actions).padding(horizontal=8.dp)
-        .semantics{selected=active;contentDescription="${command.title}. ${command.subtitle}"}.testTag("result-${command.id}"),verticalAlignment=Alignment.CenterVertically){
+        .semantics{selected=active;contentDescription="${command.title}. ${command.subtitle}" + shortcut?.let { ". Shortcut $it" }.orEmpty()}.testTag("result-${command.id}"),verticalAlignment=Alignment.CenterVertically){
         CommandIcon(command);Spacer(Modifier.width(10.dp))
         Row(Modifier.weight(1f),verticalAlignment=Alignment.CenterVertically){
             Text(command.title,color=PaletteTheme.ink,fontSize=14.sp,lineHeight=20.sp,maxLines=1,overflow=TextOverflow.Ellipsis,modifier=Modifier.weight(1f,fill=false))
@@ -193,6 +203,7 @@ private fun CommandRow(command:Command,active:Boolean,run:()->Unit,actions:()->U
                 modifier=Modifier.padding(start=8.dp).clip(RoundedCornerShape(6.dp)).background(PaletteTheme.control).padding(horizontal=5.dp,vertical=2.dp))
         }
         Spacer(Modifier.width(8.dp))
+        if (shortcut != null) { Box(Modifier.widthIn(max=120.dp)) { KeyCap(shortcut) }; Spacer(Modifier.width(8.dp)) }
         Text(when(command.kind){Kind.APP->"Application";Kind.COMMAND->"Command";Kind.EXTENSION->command.subtitle;else->command.kind.label.removeSuffix("s")},
             color=PaletteTheme.secondary,fontSize=12.sp,maxLines=1,overflow=TextOverflow.Ellipsis,modifier=Modifier.widthIn(max=130.dp))
     }
@@ -242,7 +253,7 @@ private fun CommandIcon(command:Command){
 }
 
 @Composable
-internal fun KeyCap(text:String){Text(text,color=PaletteTheme.secondary,fontSize=10.sp,lineHeight=14.sp,
+internal fun KeyCap(text:String){Text(text,color=PaletteTheme.secondary,fontSize=10.sp,lineHeight=14.sp,maxLines=1,overflow=TextOverflow.Ellipsis,
     modifier=Modifier.heightIn(min=18.dp).clip(RoundedCornerShape(6.dp)).border(1.dp,PaletteTheme.border,RoundedCornerShape(6.dp)).padding(horizontal=4.dp,vertical=1.dp))}
 
 @Composable

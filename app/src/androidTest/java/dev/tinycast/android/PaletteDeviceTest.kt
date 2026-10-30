@@ -110,9 +110,20 @@ class PaletteDeviceTest {
         assertEquals("", compose.activity.store.query)
     }
     @Test fun launchingSettingsWorks() {
+        compose.activityRule.scenario.onActivity { it.startActivity(Intent(android.provider.Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)) }
+        val settingsSearch = device.wait(androidx.test.uiautomator.Until.findObject(androidx.test.uiautomator.By.pkg("com.android.settings").text("Search Settings")), 7000)
+        assertNotNull("Root Settings search entry", settingsSearch)
+        settingsSearch!!.click()
+        assertTrue("Warm Settings search must open", device.wait(androidx.test.uiautomator.Until.hasObject(androidx.test.uiautomator.By.clazz("android.widget.EditText")), 7000))
+        device.executeShellCommand("am start -W -n dev.tinycast.android/.MainActivity")
+        compose.waitForIdle()
         search("Android settings"); compose.onNodeWithTag("result-settings").performClick()
         device.wait(androidx.test.uiautomator.Until.hasObject(androidx.test.uiautomator.By.pkg("com.android.settings")), 5000)
         assertEquals("com.android.settings", device.currentPackageName)
+        assertTrue("Root command must leave the warm search page", device.wait(androidx.test.uiautomator.Until.hasObject(androidx.test.uiautomator.By.pkg("com.android.settings").text("Search Settings")), 7000))
+        device.waitForIdle()
+        val evidence = java.io.File(InstrumentationRegistry.getInstrumentation().targetContext.filesDir, "shortcut-evidence").apply { mkdirs() }
+        device.takeScreenshot(java.io.File(evidence, "root-settings.png"))
         device.pressBack()
     }
     @Test fun sharedTextCanBeSavedAndSearched() {
@@ -161,9 +172,19 @@ class PaletteDeviceTest {
         assertTrue(device.wait(androidx.test.uiautomator.Until.hasObject(androidx.test.uiautomator.By.pkg("com.google.android.documentsui")), 5000))
         val menu = device.findObject(androidx.test.uiautomator.By.desc("Show roots"))
         menu?.click()
-        device.wait(androidx.test.uiautomator.Until.findObject(androidx.test.uiautomator.By.res("android:id/title").text("Downloads")), 5000)?.click()
+        device.waitForIdle()
+        val downloads = device.findObject(androidx.test.uiautomator.UiSelector().resourceId("android:id/title").text("Downloads"))
+        assertTrue("Downloads picker root", downloads.waitForExists(5000))
+        downloads.click()
         assertTrue(device.wait(androidx.test.uiautomator.Until.gone(androidx.test.uiautomator.By.text("Open from")), 5000))
-        val file = device.wait(androidx.test.uiautomator.Until.findObject(androidx.test.uiautomator.By.text("tinycast-test-image.png")), 5000)
+        val pickerSearch = device.wait(androidx.test.uiautomator.Until.findObject(androidx.test.uiautomator.By.descContains("Search")), 5000)
+        assertNotNull("Document picker search control", pickerSearch)
+        pickerSearch!!.click()
+        val query = device.wait(androidx.test.uiautomator.Until.findObject(androidx.test.uiautomator.By.res("com.google.android.documentsui:id/search_src_text")), 5000)
+        assertNotNull("Document picker search field", query)
+        query!!.text = "tinycast-test-image.png"
+        device.pressKeyCode(KeyEvent.KEYCODE_ENTER)
+        val file = device.wait(androidx.test.uiautomator.Until.findObject(androidx.test.uiautomator.By.res("android:id/title").text("tinycast-test-image.png")), 5000)
         assertNotNull("Push the test image into /sdcard/Download before running", file)
         file!!.click()
         try {

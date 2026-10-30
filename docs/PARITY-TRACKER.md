@@ -32,8 +32,21 @@ The live backlog is [GitHub issue #1](https://github.com/moikdev/DroidCast/issue
 
 ## Active slice
 
-Backup/restore is [PR #25](https://github.com/moikdev/DroidCast/pull/25). Its live review/merge state is authoritative; it is not counted as completed before both independent audits clear the verified head.
+Configurable global/per-command ordinary chords are [PR #33](https://github.com/moikdev/DroidCast/pull/33), addressing #4. Advanced modifier-tap/Fn/Hyper cases remain open in #26. This slice is not completed before both audits clear the verified head.
 
 ## Completed slices
 
 The direct-settings slice merged in [PR #23](https://github.com/moikdev/DroidCast/pull/23), closing #2 after both independent audits cleared head `39fc5f8` and local checks passed. Its live review/merge state and [issue #1](https://github.com/moikdev/DroidCast/issues/1) are authoritative. Record subsequent slices here after their verified merges; the baseline preview is not full parity.
+
+Backup/restore merged in [PR #25](https://github.com/moikdev/DroidCast/pull/25), closing #3 after both independent audits cleared `d144ae0`: 31 JVM, 39 tablet and 10 phone tests, build/lint, and 18 inspected screenshots. CI remains inactive.
+
+## Additional upstream gaps
+
+- [#27: Editable settings mirror and history](https://github.com/moikdev/DroidCast/issues/27)
+- [#28: Local dictation](https://github.com/moikdev/DroidCast/issues/28)
+- [#29: Camera preview and capture](https://github.com/moikdev/DroidCast/issues/29)
+- [#30: MCP](https://github.com/moikdev/DroidCast/issues/30)
+- [#31: Frontmost app menu/action search](https://github.com/moikdev/DroidCast/issues/31)
+- [#32: Custom command library and scoped automation](https://github.com/moikdev/DroidCast/issues/32)
+
+- [#34: Predictable root Settings routing from warm search](https://github.com/moikdev/DroidCast/issues/34), exposed and addressed within PR #33.

@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Test the opt-in service on the dedicated emulator, outside UiAutomation.
+"""Legacy fixed-chord baseline helper; prefer test-configurable-shortcuts.py.
+
+Test the opt-in service on the dedicated emulator, outside UiAutomation.
 
 The app stays unprivileged. Root adbd is used only to inject events through the
 emulator's Linux keyboard device; adb input events bypass the accessibility filter.

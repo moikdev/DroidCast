@@ -1,5 +1,6 @@
 package dev.tinycast.android
 
+import android.view.KeyEvent
 import org.junit.Assert.*
 import org.junit.Test
 
@@ -65,5 +66,29 @@ class BackupPlannerTest {
         assertEquals(setOf(note.id), result.data.pins)
         assertEquals(mapOf(note.id to "trip"), result.data.aliases)
         assertEquals(mapOf(note.id to 5), result.data.usage)
+    }
+    @Test fun oldBackupOrUnselectedShortcutCategoryKeepsCurrentBindings() {
+        val current = BackupData(shortcuts = ShortcutConfiguration(mapOf(ShortcutRules.PALETTE to KeyChord(KeyEvent.KEYCODE_SPACE, ShortcutRules.CTRL or ShortcutRules.ALT))))
+        val document = BackupDocument(BackupData(notes = listOf(note)), setOf(BackupCategory.NOTES))
+        val result = BackupPlanner.plan(current, document, document.categories, RestorePolicy.REPLACE, emptyMap())
+        assertEquals(current.shortcuts, result.data.shortcuts)
+    }
+    @Test fun deduplicatedContentRemapsItsKeyboardBinding() {
+        val chord = KeyChord(KeyEvent.KEYCODE_T, ShortcutRules.CTRL or ShortcutRules.ALT)
+        val incoming = BackupData(notes = listOf(note.copy(id = "notes:copy")), shortcuts = ShortcutConfiguration(mapOf("notes:copy" to chord)))
+        val result = plan(BackupData(notes = listOf(note)), incoming)
+        assertEquals(chord, result.data.shortcuts.bindings[note.id])
+        assertFalse("notes:copy" in result.data.shortcuts.bindings)
+    }
+    @Test fun preservedDocumentBindingsBlockCollisionsForMergeAndReplace() {
+        val chord = KeyChord(KeyEvent.KEYCODE_F, ShortcutRules.CTRL or ShortcutRules.ALT)
+        val incoming = BackupDocument(BackupData(shortcuts = ShortcutConfiguration(mapOf("browse-files" to chord))), setOf(BackupCategory.SHORTCUTS))
+        RestorePolicy.entries.forEach { policy ->
+            assertThrows(IllegalArgumentException::class.java) { BackupPlanner.plan(BackupData(), incoming, incoming.categories, policy, emptyMap(), mapOf("files:local" to chord)) }
+        }
+    }
+    @Test fun remappingCannotDiscardDistinctKeyboardBindings() {
+        val incoming = BackupData(notes = listOf(note, note.copy(id = "notes:copy")), shortcuts = ShortcutConfiguration(mapOf(note.id to KeyChord(KeyEvent.KEYCODE_T, ShortcutRules.CTRL or ShortcutRules.ALT), "notes:copy" to KeyChord(KeyEvent.KEYCODE_Y, ShortcutRules.CTRL or ShortcutRules.ALT))))
+        assertThrows(IllegalArgumentException::class.java) { plan(BackupData(), incoming) }
     }
 }
