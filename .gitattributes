@@ -4,3 +4,5 @@ gradlew text eol=lf
 *.pdf binary
 *.png binary
 *.jar binary
+third_party/** linguist-vendored
+app/src/main/assets/RaycastRuntime.generated.js linguist-generated
