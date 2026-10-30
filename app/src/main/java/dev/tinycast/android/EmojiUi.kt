@@ -116,7 +116,7 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
                     (plain || ctrl) && (searchFocused || gridFocused) && e.keyCode in setOf(KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER, KeyEvent.KEYCODE_DPAD_CENTER) -> { selected?.let(::copyEntry); true }
                     else -> false
                 }
-            }.testTag("emoji-palette")) {
+            }.semantics { testTagsAsResourceId = true }.testTag("emoji-palette")) {
             Row(Modifier.fillMaxWidth().height(52.dp).padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = close, modifier = Modifier.semantics { contentDescription = "Back to commands" }.testTag("emoji-back")) { Text("‹", fontSize = 28.sp) }
                 Text("Emoji & Symbols", fontSize = 16.sp, fontWeight = FontWeight.Medium, modifier = Modifier.weight(1f))
@@ -131,7 +131,10 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
             }
             Row(Modifier.fillMaxWidth().height(48.dp).padding(horizontal = 18.dp), verticalAlignment = Alignment.CenterVertically) {
                 Glyph("search", PaletteTheme.secondary, 18); Spacer(Modifier.width(10.dp))
-                BasicTextField(displayedSearch, { searchValue = it; store.search(it.text); copiedName = null }, singleLine = true,
+                BasicTextField(displayedSearch, {
+                    searchValue = it
+                    if (it.text != store.query) { store.search(it.text); copiedName = null }
+                }, singleLine = true,
                     modifier = Modifier.weight(1f).height(30.dp).focusRequester(searchFocus).onFocusChanged { searchFocused = it.isFocused }.testTag("emoji-search"),
                     textStyle = TextStyle(color = PaletteTheme.ink, fontSize = 17.sp, lineHeight = 24.sp), cursorBrush = SolidColor(PaletteTheme.accent),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search, showKeyboardOnFocus = !wide),

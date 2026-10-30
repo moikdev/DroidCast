@@ -30,12 +30,17 @@ it is not a geometry comparison with the after captures.
 - Build, lint and all 71 JVM tests (five new catalog tests). Tests read the actual
   bundled catalog, check search/ranking/filtering, history bounds and exact
   identities/sequences. Generator output reproduces the committed TSV.
-- Eight instrumentation checks on each layout: six EmojiDeviceTest cases plus
+- Ten instrumentation checks on each layout: eight EmojiDeviceTest cases plus
   existing palette compactness/transparency/dismissal and immediate-search cases.
   These cover the command entry point; named/alias/keyword search; category and
   empty states; favorite clear/reuse and activity recreation; five exact Unicode
   clipboard strings; Copy and IME actions; keypad Enter, Enter, Ctrl+Enter,
-  Ctrl+keypad Enter and D-pad Center; arrows/Home/End; focus return and Escape.
+  Ctrl+keypad Enter and D-pad Center; all four arrows, Home/End; focus return and
+  Escape. A regression navigates while search retains focus, moves the caret,
+  selects text and applies a composition-only update through the actual Android
+  input connection, then verifies the copied glyph and retained copy feedback.
+  The tablet keyboard-show control opens the IME while keeping search focused;
+  the phone branch verifies that the tablet-only control is absent.
 - Paused Compose-clock checks require the selected end-of-grid cell to be visible
   after two layout frames and preserve the palette frame across query changes.
   Intentional IME/focus transitions are settled before measuring typing geometry.
@@ -91,3 +96,23 @@ comes from the verified Favorites state after force-stop. The manifest records
 every PNG. Captures show the grid, text symbols, alias search, copied family,
 favorites, recent copies, empty favorites, no results and keyboard-copy feedback.
 The visible underlying Settings/Home and system keyboard belong to the emulator.
+
+## Audit corrections
+
+The first UX audit at `72e0bdc` found that selection-only `TextFieldValue`
+updates called `search()` and reset the grid selection. The focused regression
+fails against that implementation (`artifacts/emoji-negative/caret-reset.log`).
+The correction always retains the field value but searches and clears copy
+feedback only when the text changes. Coverage now explicitly asserts Up, Right
+and Home as well as the previously exercised directions, and the tablet's
+keyboard-show path.
+
+The old tablet no-results XML contradicted its paired PNG (stale count/name and
+enabled actions). This establishes an evidence inconsistency, not its cause or
+a product/TalkBack failure. The old XML is retained in
+`artifacts/emoji-negative/stale-no-results.xml`. Capture now clears the native
+accessibility cache where supported, dumps the hierarchy and requires its tagged
+count, selected footer name and Copy/Favorite enablement to match the expected
+state before taking the PNG. Each layout starts with a fresh evidence directory
+to avoid carrying tablet-only captures into phone evidence. All final pairs are
+recaptured; comprehensive accessibility certification remains unclaimed.

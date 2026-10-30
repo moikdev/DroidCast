@@ -6,6 +6,7 @@ import android.view.KeyEvent
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -84,13 +85,31 @@ class EmojiDeviceTest {
     private fun evidence(name: String, marker: String) {
         compose.waitForIdle()
         assertTrue("Screenshot marker: $marker", device.wait(Until.hasObject(By.textContains(marker)), 5000))
-        val overlayDismiss = if (name in setOf("family-copied", "recent", "keyboard-copy"))
+        val overlayDismiss = if (name in setOf("family-copied", "recent", "keyboard-copy", "caret-preserved"))
             device.wait(Until.findObject(By.res("com.android.systemui", "dismiss_button")), 1500)
         else device.findObject(By.res("com.android.systemui", "dismiss_button"))
         overlayDismiss?.click()
         assertTrue("System clipboard overlay must settle before capture", device.wait(Until.gone(By.res("com.android.systemui", "clipboard_ui")), 5000))
         val dir = File(context.filesDir, "emoji-evidence").apply { mkdirs() }
-        device.dumpWindowHierarchy(File(dir, "$name.xml"))
+        val expectedCount = "${store.results().size} ${if (store.results().size == 1) "result" else "results"} · offline"
+        val expectedName = store.results().getOrNull(store.selected)?.name ?: "Emoji & Symbols"
+        val expectedEnabled = store.results().isNotEmpty().toString()
+        val xml = File(dir, "$name.xml")
+        // Validate the exact native hierarchy that will be paired with the PNG.
+        // A Compose assertion alone cannot certify a cached accessibility snapshot.
+        compose.waitUntil(10000) {
+            if (android.os.Build.VERSION.SDK_INT >= 34) InstrumentationRegistry.getInstrumentation().uiAutomation.clearCache()
+            device.dumpWindowHierarchy(xml)
+            val document = javax.xml.parsers.DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(xml)
+            val nodes = document.getElementsByTagName("node")
+            val elements = (0 until nodes.length).map { nodes.item(it) as org.w3c.dom.Element }
+                .filter { it.getAttribute("package") == context.packageName }
+            fun tagged(tag: String) = elements.singleOrNull { it.getAttribute("resource-id").substringAfterLast('/') == tag }
+            tagged("emoji-count")?.getAttribute("text") == expectedCount &&
+                tagged("emoji-selected-name")?.getAttribute("text") == expectedName &&
+                tagged("emoji-copy")?.getAttribute("enabled") == expectedEnabled &&
+                tagged("emoji-favorite")?.getAttribute("enabled") == expectedEnabled
+        }
         assertTrue(device.takeScreenshot(File(dir, "$name.png")))
     }
     @Test fun commandOpensOfflineGridWithinTheFloatingPalette() {
@@ -160,6 +179,11 @@ class EmojiDeviceTest {
         key(KeyEvent.KEYCODE_DPAD_DOWN)
         compose.onNodeWithTag("emoji-search").assertIsFocused()
         assertTrue(store.selected >= 3)
+        val row = store.selected
+        key(KeyEvent.KEYCODE_DPAD_UP)
+        assertEquals(0, store.selected)
+        key(KeyEvent.KEYCODE_DPAD_DOWN)
+        assertEquals(row, store.selected)
         var entry = store.results()[store.selected]
         compose.onNodeWithTag("emoji-cell-${entry.id}").assertIsDisplayed().assertIsSelected()
         key(KeyEvent.KEYCODE_NUMPAD_ENTER)
@@ -172,6 +196,12 @@ class EmojiDeviceTest {
         assertEquals(store.results().lastIndex, store.selected)
         key(KeyEvent.KEYCODE_DPAD_LEFT)
         assertEquals(store.results().lastIndex - 1, store.selected)
+        key(KeyEvent.KEYCODE_DPAD_RIGHT)
+        assertEquals(store.results().lastIndex, store.selected)
+        key(KeyEvent.KEYCODE_MOVE_HOME)
+        assertEquals(0, store.selected)
+        key(KeyEvent.KEYCODE_MOVE_END)
+        assertEquals(store.results().lastIndex, store.selected)
         entry = store.results()[store.selected]
         compose.onNodeWithTag("emoji-cell-${entry.id}").assertIsDisplayed()
         key(KeyEvent.KEYCODE_DPAD_CENTER)
@@ -216,5 +246,53 @@ class EmojiDeviceTest {
         compose.onNodeWithTag("result-emoji").performClick()
         compose.onNodeWithTag("emoji-back").performClick()
         compose.onNodeWithTag("search").assertIsFocused()
+    }
+
+    @OptIn(ExperimentalTestApi::class)
+    @Test fun caretAndSelectionChangesPreserveNavigatedResultAndCopyFeedback() {
+        search("face")
+        key(KeyEvent.KEYCODE_DPAD_DOWN)
+        val index = store.selected
+        val entry = store.results()[index]
+        assertTrue(index > 0)
+        key(KeyEvent.KEYCODE_DPAD_LEFT)
+        compose.onNodeWithTag("emoji-search").assertIsFocused()
+        compose.onNodeWithTag("emoji-search").assert(SemanticsMatcher.expectValue(SemanticsProperties.TextSelectionRange, TextRange(3)))
+        assertEquals("Caret movement must preserve the grid selection", index, store.selected)
+        compose.onNodeWithTag("emoji-search").performTextInputSelection(TextRange(0, 2))
+        assertEquals("Selecting text must preserve the grid selection", index, store.selected)
+        var connection: android.view.inputmethod.InputConnection? = null
+        compose.activityRule.scenario.onActivity {
+            connection = it.window.decorView.findFocus()?.onCreateInputConnection(android.view.inputmethod.EditorInfo())
+            assertNotNull("Use the actual focused Android input connection", connection)
+            assertTrue(connection!!.setComposingRegion(0, 4))
+        }
+        compose.waitForIdle()
+        assertEquals("Composition-only updates must preserve the grid selection", index, store.selected)
+        compose.activityRule.scenario.onActivity { assertTrue(connection!!.finishComposingText()) }
+        compose.waitForIdle()
+        key(KeyEvent.KEYCODE_ENTER, KeyEvent.META_CTRL_ON)
+        assertEquals(entry.glyph, clipboard())
+        val status = "Copied ${entry.name}"
+        compose.onNodeWithTag("emoji-copy-status").assertTextEquals(status)
+        compose.onNodeWithTag("emoji-search").performTextInputSelection(TextRange(0, 4))
+        compose.onNodeWithTag("emoji-copy-status").assertTextEquals(status)
+        evidence("caret-preserved", status)
+    }
+
+    @Test fun tabletKeyboardShowControlOpensImeWithoutLosingSearch() {
+        if (compose.activity.resources.configuration.screenWidthDp < 700) {
+            compose.onNodeWithContentDescription("Show on-screen keyboard").assertDoesNotExist()
+            return
+        }
+        compose.onNodeWithContentDescription("Show on-screen keyboard").performClick()
+        compose.waitUntil(5000) {
+            androidx.core.view.ViewCompat.getRootWindowInsets(compose.activity.window.decorView)!!.isVisible(androidx.core.view.WindowInsetsCompat.Type.ime())
+        }
+        compose.onNodeWithTag("emoji-search").assertIsFocused()
+        search("heart")
+        compose.onNodeWithTag("emoji-count").assertIsDisplayed()
+        compose.onNodeWithTag("emoji-copy").assertIsDisplayed().assertIsEnabled()
+        evidence("tablet-keyboard", "heart")
     }
 }
