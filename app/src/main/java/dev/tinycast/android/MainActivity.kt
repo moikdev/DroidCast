@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.ComponentName
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -82,11 +83,22 @@ class MainActivity : ComponentActivity() {
         getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("DroidCast", text))
         store.message = "Copied to clipboard"
     }
-    private fun open(intent: Intent) {
-        runCatching { startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)); finish() }.onFailure { store.message = "No available app can open this item" }
+    private fun open(intent: Intent, unavailableMessage: String = "No available app can open this item") {
+        try {
+            startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            finish()
+        } catch (_: ActivityNotFoundException) {
+            store.message = unavailableMessage
+        } catch (_: SecurityException) {
+            store.message = unavailableMessage
+        }
     }
+    fun openSystemSettings(destination: SettingsDestination) = open(destination.intent(packageName), "${destination.title} is unavailable on this device.")
     fun execute(command: Command) {
         store.used(command.id)
+        if (command.kind == Kind.COMMAND) {
+            SystemSettings.find(command.id)?.let { openSystemSettings(it); return }
+        }
         when (command.kind) {
             Kind.CALC, Kind.CLIP -> copyText(command.payload)
             Kind.APP -> open(Intent.makeMainActivity(ComponentName.unflattenFromString(command.payload)))

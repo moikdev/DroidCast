@@ -3,7 +3,9 @@
 An unofficial, native Android adaptation of [Tinycast](https://github.com/abue-ammar/tinycast), built with Kotlin and Jetpack Compose. Summon a compact floating search window over the app you are using, type, run a command, and dismiss it. The underlying app stays visible. The native overlay entry point was informed by [Launchpad Search](https://github.com/jaxparrow07/launchpad-search). The palette now ports the visual grammar of [Tinycast](https://github.com/abue-ammar/tinycast): its search header, section labels, neutral selection, compact rows, outlined keycaps, floating action capsule and two-column calculator card.
 
 
-**0.4.0-preview** · Android 8.0+ · AGPL-3.0-or-later
+**Android preview** · Android 8.0+ · AGPL-3.0-or-later
+
+This README follows the development branch. The downloadable tagged preview may predate newly merged parity work; its exact scope is recorded in the release notes and linked PRs.
 
 [Download preview APK](https://github.com/moikdev/DroidCast/releases/tag/v0.4.0-preview) · [Parity audit](PARITY.md) · [Recommended improvements](ROADMAP.md) · [Testing record](docs/TESTING.md)
 
@@ -35,6 +37,7 @@ The downloadable APK is a debug-signed preview, not a production-signed release.
 - Tap outside or close to return to the previous app. App and URL commands dismiss the palette when launching their destination.
 - Summon using the app icon, Android assistant intent, the optional DroidCast search Quick Settings tile, or Ctrl + Space after explicitly enabling the keyboard service.
 - Fuzzy app/command search, aliases, pins and usage ranking.
+- Dedicated Android settings commands: Wi-Fi, Bluetooth, display, sound, app notifications/info, installed apps, storage, accessibility, date/time and language. These open Android controls; they do not silently toggle hardware.
 - Prefixes: `@` apps, `#` notes, `:` quicklinks, `>` built-in commands, `=` calculator.
 - Local calculator and conversions: `200 * 15%`, `sqrt(81)`, `10 km to mi`, `32 f to c`, `1.5 h to min`, `1 gib to mib`. Trigonometric inputs use radians. No currency rates.
 - Persistent plain-text/Markdown notes, custom HTTP/HTTPS quicklinks with `{query}` arguments, saved clips and shared/selected-text input.
@@ -123,9 +126,13 @@ The image test expects Google Photos, the PDF test expects Google's PDF viewer, 
 
 A pinned, lint-checked workflow is provided in [`ci/android.yml`](ci/android.yml). It is not active: the publishing credential can create repositories and push source, but lacks GitHub’s `workflow` scope. See [`ci/README.md`](ci/README.md) to enable it with an authorized credential. Local build, unit, lint and device checks are documented in [docs/TESTING.md](docs/TESTING.md).
 
+## Parity loop
+
+Enhancements and audited PRs are tracked in [issue #1](https://github.com/moikdev/DroidCast/issues/1) and [docs/PARITY-TRACKER.md](docs/PARITY-TRACKER.md). Every implementation PR includes real emulator/device screenshots and two independent `gpt-6.1-sol` high-effort audits before merge.
+
 ## What to improve next
 
-The highest-value next steps are verified extension compatibility and richer native views, user-controlled backup/restore, configurable command hotkeys, direct Android settings/intent commands, selected-folder search and supported multitasking actions. These are proposals, not advertised preview features. [ROADMAP.md](ROADMAP.md) gives priorities and acceptance criteria; [PARITY.md](PARITY.md) compares the current implementation with upstream.
+The highest-value next steps are verified extension compatibility and richer native views, user-controlled backup/restore, configurable command hotkeys, further Android intent/automation commands, selected-folder search and supported multitasking actions. These are proposals, not advertised preview features. [ROADMAP.md](ROADMAP.md) gives priorities and acceptance criteria; [PARITY.md](PARITY.md) compares the current implementation with upstream.
 
 ## Source and attribution
 
