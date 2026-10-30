@@ -51,6 +51,10 @@ class SettingsDeviceTest {
     }
     @Test fun sidebarAndSettingsSearchNavigateWithoutDialogs() {
         compose.onNodeWithTag("settings-workspace").assertIsDisplayed()
+        val viewport = compose.onNodeWithTag("settings-viewport").fetchSemanticsNode().boundsInRoot
+        val frame = compose.onNodeWithTag("settings-frame").fetchSemanticsNode().boundsInRoot
+        assertEquals("Settings fills the entire safe viewport", viewport, frame)
+        assertEquals("Settings uses the tablet/phone width", device.displayWidth.toFloat(), frame.width, 1f)
         compose.onAllNodes(isDialog()).assertCountEquals(0)
         evidence("general", "Global shortcut")
         compose.onNodeWithTag("settings-workspace").performSemanticsAction(SemanticsActions.RequestFocus)
