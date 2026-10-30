@@ -87,6 +87,58 @@ class ShortcutDeviceTest {
         assertEquals(KeyChord(KeyEvent.KEYCODE_SPACE, ShortcutRules.CTRL or ShortcutRules.ALT), PaletteStore(context.applicationContext as android.app.Application).shortcutConfiguration.bindings[ShortcutRules.PALETTE])
         evidence("configured-global", "Ctrl + Alt + Space")
     }
+    @Test fun recorderActivationKeysPreserveCandidateUntilReleaseAndSave() {
+        settings()
+        val activationKeys = listOf(KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER, KeyEvent.KEYCODE_DPAD_CENTER)
+            .flatMap { code -> listOf(code to 0, code to KeyEvent.META_SHIFT_ON) }
+        activationKeys.forEachIndexed { index, (activation, activationModifiers) ->
+            compose.onNodeWithTag("shortcut-global-record").performClick()
+            val letter = KeyEvent.KEYCODE_G + index
+            val expected = KeyChord(letter, ShortcutRules.CTRL or ShortcutRules.ALT)
+            key(letter, ctrlAlt)
+            if (activation == KeyEvent.KEYCODE_DPAD_CENTER) {
+                listOf(KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_PAGE_UP,
+                    KeyEvent.KEYCODE_PAGE_DOWN, KeyEvent.KEYCODE_MOVE_HOME, KeyEvent.KEYCODE_MOVE_END).forEach {
+                    key(it)
+                    assertEquals(expected, compose.activity.store.recordingCandidate)
+                    assertNull(compose.activity.store.recordingError)
+                }
+            }
+            var tabs = 0
+            while (runCatching { compose.onNodeWithTag("shortcut-save").assertIsFocused() }.isFailure && tabs++ < 8) key(KeyEvent.KEYCODE_TAB)
+            compose.onNodeWithTag("shortcut-save").assertIsFocused()
+            key(KeyEvent.KEYCODE_SPACE)
+            assertEquals(expected, compose.activity.store.recordingCandidate)
+            assertNull(compose.activity.store.recordingError)
+            compose.onNodeWithTag("shortcut-save").assertIsEnabled().assertIsFocused()
+            if (activation == KeyEvent.KEYCODE_DPAD_CENTER) {
+                key(KeyEvent.KEYCODE_DPAD_LEFT)
+                compose.onNodeWithText("Cancel").assertIsFocused()
+                assertEquals(expected, compose.activity.store.recordingCandidate)
+                assertNull(compose.activity.store.recordingError)
+                key(KeyEvent.KEYCODE_DPAD_RIGHT)
+                compose.onNodeWithTag("shortcut-save").assertIsFocused()
+            }
+            val downTime = android.os.SystemClock.uptimeMillis()
+            fun inject(action: Int) {
+                val event = KeyEvent(downTime, android.os.SystemClock.uptimeMillis(), action, activation, 0, activationModifiers,
+                    android.view.KeyCharacterMap.VIRTUAL_KEYBOARD, 0, 0, android.view.InputDevice.SOURCE_KEYBOARD)
+                assertTrue("Inject activation $activation/$action", InstrumentationRegistry.getInstrumentation().uiAutomation.injectInputEvent(event, true))
+            }
+            try {
+                inject(KeyEvent.ACTION_DOWN)
+                compose.waitForIdle()
+                assertEquals("Activation $activation must preserve the candidate", expected, compose.activity.store.recordingCandidate)
+                assertNull(compose.activity.store.recordingError)
+                compose.onNodeWithTag("shortcut-save").assertIsEnabled()
+            } finally { inject(KeyEvent.ACTION_UP) }
+            compose.waitForIdle()
+            assertNull("Activation $activation must save", ShortcutRuntime.recordingOwner)
+            compose.onNodeWithTag("shortcut-global-value").assertTextEquals(expected.label())
+            assertEquals(expected, PaletteStore(context.applicationContext as android.app.Application).shortcutConfiguration.bindings[ShortcutRules.PALETTE])
+            if (activation == KeyEvent.KEYCODE_NUMPAD_ENTER && activationModifiers == 0) evidence("keypad-enter-saved", expected.label())
+        }
+    }
     @Test fun actionsAssignCommandKeycapAndLocalKeyRunsTheSameCommand() {
         compose.onNodeWithTag("search").performTextReplacement("Create a note")
         key(KeyEvent.KEYCODE_K, KeyEvent.META_CTRL_ON)

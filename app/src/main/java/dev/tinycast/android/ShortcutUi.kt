@@ -28,8 +28,10 @@ internal fun ShortcutDialogs(store: PaletteStore, enabled: Boolean, enable: () -
                     event.action != KeyEvent.ACTION_DOWN -> false
                     event.keyCode == KeyEvent.KEYCODE_ESCAPE && event.asChord().modifiers == 0 -> { store.cancelShortcutRecording(); true }
                     KeyEvent.isModifierKey(event.keyCode) -> false
-                    event.keyCode == KeyEvent.KEYCODE_TAB && event.asChord().modifiers == ShortcutRules.SHIFT -> false
-                    event.asChord().modifiers == 0 && event.keyCode in setOf(KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_SPACE) -> false
+                    event.asChord().modifiers in setOf(0, ShortcutRules.SHIFT) && event.keyCode in setOf(KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_ENTER,
+                        KeyEvent.KEYCODE_NUMPAD_ENTER, KeyEvent.KEYCODE_SPACE, KeyEvent.KEYCODE_DPAD_CENTER,
+                        KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN,
+                        KeyEvent.KEYCODE_PAGE_UP, KeyEvent.KEYCODE_PAGE_DOWN, KeyEvent.KEYCODE_MOVE_HOME, KeyEvent.KEYCODE_MOVE_END) -> false
                     event.repeatCount > 0 -> key in captured
                     else -> { captured.add(key); store.captureShortcut(event.asChord()); true }
                 }

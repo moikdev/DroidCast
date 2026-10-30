@@ -82,7 +82,7 @@
     "u0_a213      dev.tinycast.android"
   ],
   "app_unprivileged": true,
-  "apk_sha256": "d0b73918d045e8975c8d93496f2ef7c718f2f00f99412d995d4c12edd7974576",
+  "apk_sha256": "af86a736bdc17be4bf23fca9d9fa685351b6500e6bf4864e7d178da7d2d65016",
   "avd": "Tinycast_Tablet_API_36",
   "api": 36,
   "tablet_pixels": "1920x1200",
