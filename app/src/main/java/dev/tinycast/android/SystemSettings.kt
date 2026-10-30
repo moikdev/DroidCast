@@ -16,7 +16,7 @@ data class SettingsDestination(
 ) {
     fun command() = Command(id, title, description, icon = "settings", keywords = keywords)
 
-    fun intent(packageName: String) = Intent(action).apply {
+    fun intent(packageName: String) = Intent(action).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP).apply {
         when (packageArgument) {
             SettingsPackageArgument.DATA -> data = Uri.fromParts("package", packageName, null)
             SettingsPackageArgument.EXTRA -> putExtra(Settings.EXTRA_APP_PACKAGE, packageName)

@@ -28,6 +28,7 @@ class SystemSettingsDeviceTest {
         compose.waitForIdle()
         assertEquals(id, compose.activity.store.results().first().id)
         val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val packageName = compose.activity.packageName
         val launched = AtomicReference<Intent>()
         val monitor = object : Instrumentation.ActivityMonitor() {
             override fun onStartActivity(intent: Intent): Instrumentation.ActivityResult? {
@@ -40,10 +41,28 @@ class SystemSettingsDeviceTest {
             compose.onNodeWithTag("result-$id").performClick()
             compose.waitUntil(7000) { launched.get() != null }
             assertEquals(action, launched.get().action)
+            if (id == "system:app-info") assertEquals("package:$packageName", launched.get().dataString)
+            if (id == "system:notifications") assertEquals(packageName, launched.get().getStringExtra(Settings.EXTRA_APP_PACKAGE))
             compose.waitUntil(7000) { compose.activityRule.scenario.state == Lifecycle.State.DESTROYED }
             assertTrue(device.wait(Until.hasObject(By.pkg("com.android.settings")), 7000))
             device.waitForIdle()
             assertEquals("com.android.settings", device.currentPackageName)
+            val markers = when (id) {
+                "system:wifi" -> listOf(By.desc("Internet"), By.text("Wi-Fi"))
+                "system:bluetooth" -> listOf(By.desc("Connected devices"), By.text("Pair new device"))
+                "system:display" -> listOf(By.text("Brightness level"), By.text("Dark theme"))
+                "system:sound" -> listOf(By.text("Media volume"), By.text("Alarm volume"))
+                "system:notifications" -> listOf(By.text("All DroidCast notifications"))
+                "system:apps" -> listOf(By.text("Android System WebView"), By.text("Calendar"))
+                "system:app-info" -> listOf(By.text("App info"), By.text("DroidCast"), By.text("Force stop"), By.text("Storage & cache"))
+                "system:storage" -> listOf(By.text("Free up space"), By.text("Go to Files app to manage and free up space"))
+                "system:accessibility" -> listOf(By.text("Downloaded apps"), By.text("TalkBack"))
+                "system:date" -> listOf(By.text("Automatic date and time"), By.text("Automatic time zone"))
+                "system:language" -> listOf(By.text("Preferred language order"), By.text("Add a language"))
+                else -> error("Define destination-specific assertions for $id")
+            }
+            markers.forEach { marker -> assertTrue("Missing destination-specific UI for $id: $marker", device.wait(Until.hasObject(marker.pkg("com.android.settings")), 10000)) }
+            device.waitForIdle()
             assertFalse("Expected a dedicated page, not root Settings", device.hasObject(By.text("Search Settings")))
             val evidence = File(instrumentation.targetContext.filesDir, "system-settings-evidence").apply { mkdirs() }
             device.takeScreenshot(File(evidence, "${id.substringAfter(':')}.png"))
@@ -56,7 +75,13 @@ class SystemSettingsDeviceTest {
     @Test fun wifiSearchOpensWifiPage() = launches("wifi", "system:wifi", Settings.ACTION_WIFI_SETTINGS)
     @Test fun bluetoothSearchOpensBluetoothPage() = launches("bluetooth", "system:bluetooth", Settings.ACTION_BLUETOOTH_SETTINGS)
     @Test fun brightnessSearchOpensDisplayPage() = launches("brightness", "system:display", Settings.ACTION_DISPLAY_SETTINGS)
-    @Test fun appInfoOpensDroidCastDetails() = launches("DroidCast app info", "system:app-info", Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+    @Test fun appInfoReplacesAnExistingAccessibilityPageWithDroidCastDetails() {
+        compose.activityRule.scenario.onActivity { it.startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)) }
+        assertTrue(device.wait(Until.hasObject(By.pkg("com.android.settings").text("Downloaded apps")), 7000))
+        device.executeShellCommand("am start -W -n dev.tinycast.android/.MainActivity")
+        compose.waitForIdle()
+        launches("DroidCast app info", "system:app-info", Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+    }
     @Test fun soundOpensSoundPage() = launches("Sound settings", "system:sound", Settings.ACTION_SOUND_SETTINGS)
     @Test fun notificationsOpenDroidCastNotificationPage() = launches("DroidCast notifications", "system:notifications", Settings.ACTION_APP_NOTIFICATION_SETTINGS)
     @Test fun appsOpenApplicationManagement() = launches("Apps settings", "system:apps", Settings.ACTION_APPLICATION_SETTINGS)

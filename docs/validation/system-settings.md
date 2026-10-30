@@ -9,11 +9,11 @@ Enhancement [#2](https://github.com/moikdev/DroidCast/issues/2); source baseline
 - Tablet device tests: **29 passed** (13 settings tests and 16 existing palette/overlay tests).
 - Phone-layout checks: **2 passed** (Wi-Fi destination and unavailable-handler query/error preservation).
 - Device: dedicated Android 16/API 36 arm64 emulator; tablet 1920×1200, density 240; phone configuration 1080×2340, density 420. Restored to tablet afterward; app/adbd unprivileged.
-- APK SHA-256: `07a298419da88838a8d5645a1ee3cd565534fcafc2af33e9042f6ebba5f8357d`.
+- APK SHA-256: `99e22f4bf28a749983208015c4c19170c30014f21eeb2e3e1df198c367d1608b`.
 
 ## Exercised behavior
 
-All **11** included destinations were launched through palette search/clicks. A non-blocking instrumentation monitor observed the actual intent action, the palette Activity finished, Settings became foreground, and the dedicated page was checked against root Settings. App-info package URI and notification package extras are covered separately. Capture every destination using the test helper.
+All **11** included destinations were launched through palette search/clicks. A non-blocking instrumentation monitor observed the actual intent action, the palette Activity finished, Settings became foreground, and destination-specific content was required before capture (including DroidCast identity, App info, Force stop and Storage & cache for app details). A warm-task regression first opens Accessibility, then requires the real DroidCast app-info page. App-info package URI and notification package extras are covered separately. Capture every destination using the test helper.
 
 The fault-injected missing-handler case leaves the Activity/query intact and shows the error. This exposed and fixed an existing feedback bug: clearing the message before `showSnackbar` completed cancelled its own effect. Messages now remain visible until the host finishes displaying them.
 
@@ -27,12 +27,17 @@ Real framebuffer captures, not mockups. The before search is from baseline `5647
 - [After Wi-Fi search](../screenshots/parity-system-settings/after-wifi-search.png)
 - [Wi-Fi destination](../screenshots/parity-system-settings/wifi.png)
 - [Bluetooth destination](../screenshots/parity-system-settings/bluetooth.png)
+- [DroidCast app-info destination](../screenshots/parity-system-settings/app-info.png)
 - [Display destination](../screenshots/parity-system-settings/display.png)
 - [Unavailable-handler feedback](../screenshots/parity-system-settings/unavailable.png)
 - [Phone search](../screenshots/parity-system-settings/phone-wifi-search.png)
 - [Phone unavailable-handler feedback](../screenshots/parity-system-settings/phone-unavailable.png)
 
 Other destination captures are alongside these in the same directory.
+
+## Independent audit remediation
+
+Both initial gpt-6.1-sol/high audits flagged that the original generic Settings check could accept an unrelated page; the original app-info capture showed Accessibility. Investigation reproduced a warm-task routing bug: NEW_TASK could foreground the previous Settings page for app-info. Dedicated settings intents now include CLEAR_TOP. Every destination has specific UI assertions, app-scoped identity/arguments are checked, all destination captures were replaced, and the 29 tablet tests were rerun successfully. Both phone checks passed again on the same updated application. The initial evidence is superseded by this validation.
 
 ## Boundaries
 
