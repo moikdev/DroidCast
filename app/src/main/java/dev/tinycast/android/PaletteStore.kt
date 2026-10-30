@@ -19,6 +19,7 @@ data class SavedItem(val id: String, val title: String, val body: String, val al
 class PaletteStore(application: Application) : AndroidViewModel(application) {
     val extensions = ExtensionCatalog(application)
     val folderSearch = FolderSearch(application, viewModelScope)
+    val emoji = EmojiStore(application, viewModelScope)
     private val prefs = application.getSharedPreferences("palette", Context.MODE_PRIVATE)
     var apps by mutableStateOf<List<Command>>(emptyList()); private set
     var loading by mutableStateOf(true); private set
@@ -72,6 +73,7 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
 
     private fun catalog(): List<Command> = (listOf(
         Command("calculator", "Calculator", "Math, percentages & unit conversions", icon = "calculator", keywords = "math convert units temperature length weight", alias = "calc"),
+        Command("emoji", "Search Emoji & Symbols", "Offline emoji, flags and common text symbols", icon = "keyboard", keywords = "emoji smiley face unicode characters picker symbols"),
         Command("new-note", "Create a note", "Capture a thought without breaking your flow", icon = "note", keywords = "write markdown new memo", alias = "note"),
         Command("browse-files", "Open a document", "Browse device & connected storage", icon = "folder", keywords = "file document storage picker", alias = "files"),
         Command("search-files", "Search files", "Search names and paths in folders you choose", icon = "folder", keywords = "file folder filename index find"),

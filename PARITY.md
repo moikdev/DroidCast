@@ -26,7 +26,7 @@ Droidcast reproduces the central summon → search → run → dismiss workflow.
 | System actions | Partial | Root Settings plus 11 dedicated Android destinations, including Wi-Fi, Bluetooth, display, sound, storage, accessibility and Droidcast app-info/notification settings. Missing hardware toggles and other upstream privileged actions remain open. Battery/security destination validation is tracked separately in [#22](https://github.com/moikdev/droidcast/issues/22). |
 | Calendar and meeting actions | Missing | No calendar permission flow, event search, upcoming-meeting card or join command. |
 | Notes | Partial | Persistent text/Markdown source, search and an editor. No rendered Markdown, file-backed notebook, floating companion editor or note import/export. |
-| Emoji and symbol picker | Missing | No local catalog, search grid or recent emoji collection. |
+| Emoji and symbol picker | Partial — offline slice | Searchable native grid: 1,870 pinned gemoji entries + 70 common text symbols, English names/aliases/keywords, category filters, favorites, 32 recent copies and exact Unicode clipboard delivery. Tablet/phone validation is recorded in `docs/validation/emoji-picker.md`. Automatic insertion into other apps, tones, multilingual/custom keywords, adjustable density and portable favorites remain in #44. |
 | AI chat | Missing | No providers, credential setup, conversations or model calls. |
 | Text transformation actions | Missing | Selected text can be received and saved; rewrite, translate and summarize actions are not implemented. |
 | Raycast extension installation | Partial | Real Store search, package download, validation, install, update and uninstall. Uses unofficial endpoints. Store installation is not a compatibility guarantee. |

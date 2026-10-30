@@ -1,0 +1,387 @@
+{
+  "base": "34dd0cd4e1f1ee7fbe836d8475ee92f0b6f4797e",
+  "application": "dev.tinycast.android",
+  "version": "0.4.0-preview (5)",
+  "emulator": "Tinycast_Tablet_API_36 / emulator-5580 / API 36 / arm64",
+  "layouts": {
+    "tablet": "1920×1200 / 240 dpi",
+    "phone": "1080×2340 / 420 dpi"
+  },
+  "apk_sha256": "b323330a4a373b561f0679e4801e0bd8bbc59c39058690aab8fcfb5e085d0c03",
+  "test_apk_sha256": "ce9e49d7091fa1cdcdcd1ef495335f2b1a4680dae8e5a3aacef1a957b2ab00ae",
+  "installed_apk_matches": true,
+  "before_apk_sha256": "fe44ce5611ccb22e8634baaddfd19dcdc6a155aafb5a3117695d58ae9eded04c",
+  "jvm": {
+    "tests": 71,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "Error": 0,
+    "Warning": 41
+  },
+  "instrumentation": {
+    "tablet": {
+      "passed": 11,
+      "total": 11,
+      "log": "artifacts/emoji-tablet.log"
+    },
+    "phone": {
+      "passed": 11,
+      "total": 11,
+      "log": "artifacts/emoji-phone.log"
+    }
+  },
+  "native_hierarchies": {
+    "tablet": [
+      {
+        "state": "alias-search",
+        "count": "1 result · offline",
+        "selected_name": "thumbs up",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "c16f2b938fd0543eea53abd7d12d5985216cb4eb54d69aae94ba21587b71b95b"
+      },
+      {
+        "state": "caret-preserved",
+        "count": "127 results · offline",
+        "selected_name": "saluting face",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "d5ecba6bba4db9412d7a44cda80a551bf5cc8902d7c845be2a52ab1a422b1cad"
+      },
+      {
+        "state": "empty-favorites",
+        "count": "0 results · offline",
+        "selected_name": "Emoji & Symbols",
+        "copy_enabled": false,
+        "favorite_enabled": false,
+        "xml_sha256": "b545399fa9f6ef818bd34e481b8b70865aa60732a0ef0b40d4237d0d1db83664"
+      },
+      {
+        "state": "family-copied",
+        "count": "1 result · offline",
+        "selected_name": "family: man, woman, girl, boy",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "342d7ec062997faa9da731e39bec38f160a764b6f6107550191429ed2d0a99fc"
+      },
+      {
+        "state": "favorites",
+        "count": "1 result · offline",
+        "selected_name": "family: man, woman, girl, boy",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "4fe0b93ff878d1d52cb51efc388d7590643e6e72b15d06b7be677871df02e096"
+      },
+      {
+        "state": "grid",
+        "count": "1940 results · offline",
+        "selected_name": "grinning face",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "9bd440c5b49068194d023a5b4b3692a653abb906850b805915d8f15f9daffb0c"
+      },
+      {
+        "state": "held-favorite",
+        "count": "2 results · offline",
+        "selected_name": "grinning face with big eyes",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "6a46c8eaea39347069a5d8036a998852ccf636ca4e56db620bbde0ef0dc15c9a"
+      },
+      {
+        "state": "keyboard-copy",
+        "count": "1 result · offline",
+        "selected_name": "infinity",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "5c4a0a5cb254483681b54c201b517d07be883c9525603381d5eeff191974749b"
+      },
+      {
+        "state": "no-results",
+        "count": "0 results · offline",
+        "selected_name": "Emoji & Symbols",
+        "copy_enabled": false,
+        "favorite_enabled": false,
+        "xml_sha256": "041c44f7bf0795d58e47fa9b3fab24e3b95e5e00d714c5741956f23c92f2734f"
+      },
+      {
+        "state": "recent",
+        "count": "5 results · offline",
+        "selected_name": "pi",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "103fb5551bf6cdeff3d9130bc5ab982d0c3e3a91098686ab243174fa91efadd2"
+      },
+      {
+        "state": "symbols",
+        "count": "22 results · offline",
+        "selected_name": "plus minus",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "4c9b0f570b2612b4dd8d6b3f326470d7a58aa2e17d1a80d0e206960637d370d1"
+      },
+      {
+        "state": "tablet-keyboard",
+        "count": "35 results · offline",
+        "selected_name": "smiling face with heart-eyes",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "5f091a5acdb3ce26f2d07ab1788b190001c3ff54083593f929147483e5ae815a"
+      }
+    ],
+    "phone": [
+      {
+        "state": "alias-search",
+        "count": "1 result · offline",
+        "selected_name": "thumbs up",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "77d3180bf895b9f470657b4d2597a6b791da94102586e1ff785108df84d4e45e"
+      },
+      {
+        "state": "caret-preserved",
+        "count": "127 results · offline",
+        "selected_name": "zany face",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "d77fbbe2207c2512e98befe20fd1a7a6f96af8b95943a9c89e3274c085f759ea"
+      },
+      {
+        "state": "empty-favorites",
+        "count": "0 results · offline",
+        "selected_name": "Emoji & Symbols",
+        "copy_enabled": false,
+        "favorite_enabled": false,
+        "xml_sha256": "eb0c298e60e4977760db633da6b79e17e79010778c76ab6bddda6235e3b74a7a"
+      },
+      {
+        "state": "family-copied",
+        "count": "1 result · offline",
+        "selected_name": "family: man, woman, girl, boy",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "591784365c8c7ee9dc949f7356aa62a36341dbbe203132272a72b49b50a65bbe"
+      },
+      {
+        "state": "favorites",
+        "count": "1 result · offline",
+        "selected_name": "family: man, woman, girl, boy",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "4646bfe4c4dd24af3807d97c837fb2427dcb0e16c1f002cc533f2bb486094d50"
+      },
+      {
+        "state": "grid",
+        "count": "1940 results · offline",
+        "selected_name": "grinning face",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "eb0ecad41dd24a1c184470ac2fe47772e66317beb03657c839f71298d87af314"
+      },
+      {
+        "state": "held-favorite",
+        "count": "2 results · offline",
+        "selected_name": "grinning face with big eyes",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "2b2d3f63aff56e7b3d643d48f152442ac2bfd43f37f4bd1a12e2bfb11c5b4ed6"
+      },
+      {
+        "state": "keyboard-copy",
+        "count": "1 result · offline",
+        "selected_name": "infinity",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "158271d7c38bfa5956c901607c8b44ce0f0f4e61ab3ebcb650aaa424a76aea72"
+      },
+      {
+        "state": "no-results",
+        "count": "0 results · offline",
+        "selected_name": "Emoji & Symbols",
+        "copy_enabled": false,
+        "favorite_enabled": false,
+        "xml_sha256": "6234043f6bb6a1cb42dae9e7ba74b3e1fa272b142719e586a984a29644cdca3f"
+      },
+      {
+        "state": "recent",
+        "count": "5 results · offline",
+        "selected_name": "pi",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "4d905332ac81af428fcdc903e208d5e24d9fb3b6b37af605d4ffb721dbc2d994"
+      },
+      {
+        "state": "symbols",
+        "count": "22 results · offline",
+        "selected_name": "plus minus",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "e9002eac87396edd0cf2a0fe464e2ae846821cca227a3cb68798fd0616113fbf"
+      }
+    ]
+  },
+  "restart": "{\"airplane_mode\": true, \"process_force_stopped\": true, \"favorite_restored\": true, \"recent_restored\": true}\nPreferences and airplane mode restored after force-stop\n",
+  "final_adbd_identity": "uid=2000(shell) gid=2000(shell) groups=2000(shell),1004(input),1007(log),1011(adb),1015(sdcard_rw),1028(sdcard_r),1078(ext_data_rw),1079(ext_obb_rw),3001(net_bt_admin),3002(net_bt),3003(inet),3006(net_bw_stats),3009(readproc),3011(uhid),3012(readtracefs) context=u:r:shell:s0",
+  "final_size": "Physical size: 1920x1200",
+  "final_density": "Physical density: 240",
+  "final_airplane_mode": "0",
+  "app_process": [
+    "u0_a213      dev.tinycast.android"
+  ],
+  "ci": "inactive; local/android reports local validation only",
+  "screenshots": [
+    {
+      "path": "docs/screenshots/parity-emoji/before-tablet.png",
+      "sha256": "5289db578b640964f3fd202ad2b5c5acfce23067b3785a5c99b75c6384a026c1",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-alias-search.png",
+      "sha256": "22b0a9a4510fdb1ae3cb150a0100658f60029f7583d17ffc4513736ccc5c49f7",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-caret-preserved.png",
+      "sha256": "cce01fddf064d59c7842a85008b5f98e7761c200b3a958d79fdcf74c0042472f",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-empty-favorites.png",
+      "sha256": "1ff3544bde6dbaabf571edf0d374d0ffeea20fec4a5e01871950ec7d35308db7",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-family-copied.png",
+      "sha256": "ef2abb8ef212902f9fd4209564c8965ec958fab20bf66cca097476bdbc7654e0",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-favorites.png",
+      "sha256": "33a134f738fa6c4f47876b76b5b6b3f366f4844d0fb87b12db98bd1a374ce488",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-grid.png",
+      "sha256": "e62c9e73b91846b9ffdffa6225d9f17bdb1e7a3994c8b78503c9df6306080a83",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-held-favorite.png",
+      "sha256": "102a139907012a84a26dd51ca05620597c96dd8d65da8fbf0691d86fe1efbf24",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-keyboard-copy.png",
+      "sha256": "ce61ca22a3223a2b564c5a9132e0bf5f99f2c0299af846dea01b2b24e3fc6a97",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-no-results.png",
+      "sha256": "020d8fc383d9173659cce2389ac81eed9ef02c26f933ca4213931784e0b22974",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-recent.png",
+      "sha256": "e7fe5ef52b9ed29a3a05c2bd35fb7eecdf1afebf89c6763d85bcea9585ad4f28",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-symbols.png",
+      "sha256": "5128d92f871a3833461425ae22f5eb2a5dddddd6f6821e6bf217ea07d1c710b5",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-alias-search.png",
+      "sha256": "0533c0af4b2aa4bc6b7eddd3d8b364f3d8d0ecc0b20331da2c2a96f62aa4f840",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-caret-preserved.png",
+      "sha256": "722c5bef5b698c518dd54a404fee0371c5721b68e5845fceb9c2da1d1743027f",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-empty-favorites.png",
+      "sha256": "a347991cec4ed978a2f5f265f4d4bd917e34bf0ca20dcabf1423a2a0f36e4828",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-family-copied.png",
+      "sha256": "6d6ab1bccab0df3d90e8479abd29af11bf4fca42fd4207dadad2b39375274a94",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-favorites.png",
+      "sha256": "5784754dd792048d0c1142c5f6d63e93d699685b499e805ef85783ee6e7920fa",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-grid.png",
+      "sha256": "4e4d6e7857d5342623b45a1e3bd8da458d87df34c4c33ec598903fecc4159c79",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-held-favorite.png",
+      "sha256": "fd31271a08f82b7a07100b911b361b42ac6f38a32abae3889d6f9e857b16a0b5",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-keyboard-copy.png",
+      "sha256": "56ccf2bcadc15c0409cdeef0540ff9435995b0d3b73b2ee335deb25eec9ed405",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-no-results.png",
+      "sha256": "27ecda5285207488734c8c9ff559c2b2d91f1e064a5ecc40edcac699b8a17acd",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-recent.png",
+      "sha256": "6e3f5715e2f934e04524a0a27389e343dd1a8c50414fe3381a85fa4e1cf69881",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-restart-favorite.png",
+      "sha256": "8836e8826c1ed11ebde13adc6a9e1cf2e5531d813de87dec17cd099bbe866014",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-symbols.png",
+      "sha256": "0f700e895d70d3e52d771788aa7ba394f73609b7896de910ca2616d5076c3878",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-tablet-keyboard.png",
+      "sha256": "21322ead1d0d01d136cbb0fc41245778c53f78e5482f3b7a332210651c552a64",
+      "width": 1920,
+      "height": 1200
+    }
+  ]
+}

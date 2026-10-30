@@ -35,7 +35,11 @@ The live backlog is [GitHub issue #1](https://github.com/moikdev/droidcast/issue
 
 ## Active slice
 
-Raycast-style advanced settings [#36](https://github.com/moikdev/droidcast/issues/36) takes priority at the user’s request. It integrates selected-folder management/search from #5. Independent audits and a verified expected-head merge are required; #5 remains open for wider provider and lifecycle certification.
+Offline Emoji & Symbols [#11](https://github.com/moikdev/droidcast/issues/11): searchable licensed catalog, favorites, recent copies, keyboard navigation and exact Unicode clipboard delivery. Advanced emoji parity remains in [#44](https://github.com/moikdev/droidcast/issues/44); copying is the Android delivery equivalent in this slice, not automatic insertion into another app.
+
+Implementation and audit evidence: [PR #45](https://github.com/moikdev/droidcast/pull/45). Its first UX audit exposed a caret-only selection reset; the correction includes a failing old-code reproduction, native composition/selection preservation, all four grid arrows/Home/End, tablet keyboard-show checks and state-validated XML/PNG recaptures. Live issue #1 and the PR record the current reviewed/merge head.
+
+The subsequent correctness audit identified destructive favorite-key auto-repeat. A native old-code reproduction and held-chord regression cover one toggle per press, modifier release, repeat consumption and the next genuine press; the correction requires fresh complete audits before merge.
 
 ## Completed slices
 
@@ -44,6 +48,10 @@ The direct-settings slice merged in [PR #23](https://github.com/moikdev/droidcas
 Backup/restore merged in [PR #25](https://github.com/moikdev/droidcast/pull/25), closing #3 after both independent audits cleared `d144ae0`: 31 JVM, 39 tablet and 10 phone tests, build/lint, and 18 inspected screenshots. CI remains inactive.
 
 Configurable ordinary keyboard shortcuts merged in [PR #33](https://github.com/moikdev/droidcast/pull/33), closing #4 and #34 after both sol/high audits cleared `8ccd87d`: 46 JVM, 52 tablet, 23 phone and 18 Linux hardware cases, plus build/lint and 21 screenshots. The unexplained phone backup timeout remains tracked in #35.
+
+Raycast-style settings, scoped folders, assistant activation and immediate search merged in [PR #38](https://github.com/moikdev/droidcast/pull/38), closing #36/#40 after both audits cleared `1508ac6`. Final scope: 66 JVM, 27 targeted tests per layout, 16+5 hardware cases and 39 screenshots. #5 remains partial; the 71-test full suites belong to an earlier binary.
+
+Fullscreen tablet Settings merged in [PR #43](https://github.com/moikdev/droidcast/pull/43), closing #42 after both audits cleared `0ac6689`: 66 JVM tests, 16 targeted tests per layout and eight screenshots. The palette stays floating. [Nightly r2](https://github.com/moikdev/droidcast/releases/tag/nightly-2026-10-31-r2) is the released checkpoint for that source.
 
 ## Additional upstream gaps
 
@@ -58,8 +66,8 @@ Configurable ordinary keyboard shortcuts merged in [PR #33](https://github.com/m
 
 Global-shortcut onboarding follow-up: [#39](https://github.com/moikdev/droidcast/issues/39). A Lenovo user reports Alt+Q working after approving restricted settings; broader OEM certification remains open.
 
-Assistant activation and immediate search: [#40](https://github.com/moikdev/droidcast/issues/40), implemented in PR #38 pending final validation and independent audits. The custom global hotkey remains separate from the system assistant mapping.
+Assistant activation and immediate search: [#40](https://github.com/moikdev/droidcast/issues/40), merged in PR #38. The custom global hotkey remains separate from the system assistant mapping.
 
 Validation limitation [#41](https://github.com/moikdev/droidcast/issues/41): HTML Viewer rendered the correct TXT body but omitted it from accessibility XML in one hardware run; an unchanged rerun passed. Cause and fix remain unestablished.
 
-Tablet Settings fullscreen polish: [#42](https://github.com/moikdev/droidcast/issues/42), pending exact-head audits; the palette remains floating.
+Tablet Settings fullscreen polish: [#42](https://github.com/moikdev/droidcast/issues/42), merged in PR #43; the palette remains floating.

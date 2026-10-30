@@ -174,6 +174,7 @@ class MainActivity : ComponentActivity() {
                 "backup-read" -> importBackup.launch(arrayOf("application/json", "text/plain", "application/octet-stream"))
                 "extensions" -> store.dialog = "extensions"
                 "calculator" -> { store.category = "All"; store.search("= "); store.focusEpoch++ }
+                "emoji" -> { store.emoji.search(""); store.emoji.chooseFilter("All"); store.dialog = "emoji" }
                 "new-note" -> { store.editing = null; store.dialog = "note" }
                 "new-link" -> { store.editing = null; store.dialog = "link" }
                 "browse-files" -> openDocument.launch(arrayOf("*/*"))
