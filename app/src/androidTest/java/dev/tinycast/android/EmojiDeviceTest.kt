@@ -295,4 +295,58 @@ class EmojiDeviceTest {
         compose.onNodeWithTag("emoji-copy").assertIsDisplayed().assertIsEnabled()
         evidence("tablet-keyboard", "heart")
     }
+
+    @Test fun heldFavoriteChordTogglesOnceAndConsumesReleaseAfterModifierIsReleased() {
+        val entries = store.entries.take(3)
+        // Ctrl+D is the advertised Android chord; Meta+D delivery remains unverified (#26).
+        listOf(KeyEvent.META_CTRL_ON).forEachIndexed { iteration, modifier ->
+            compose.activityRule.scenario.onActivity {
+                store.entries.filter { it.id in store.favorites }.forEach(store::toggleFavorite)
+                entries.forEach(store::toggleFavorite)
+                store.search(""); store.chooseFilter("Favorites")
+            }
+            compose.waitForIdle()
+            key(KeyEvent.KEYCODE_L, KeyEvent.META_CTRL_ON)
+            val first = store.results().first()
+            val expected = entries.map { it.id }.toSet() - first.id
+            var downTime = android.os.SystemClock.uptimeMillis()
+            fun emit(action: Int, repeat: Int = 0, meta: Int = modifier) {
+                assertTrue(InstrumentationRegistry.getInstrumentation().uiAutomation.injectInputEvent(
+                    KeyEvent(downTime, android.os.SystemClock.uptimeMillis(), action, KeyEvent.KEYCODE_D, repeat, meta,
+                        android.view.KeyCharacterMap.VIRTUAL_KEYBOARD, 0, 0, android.view.InputDevice.SOURCE_KEYBOARD), true))
+                compose.waitForIdle()
+            }
+            try {
+                emit(KeyEvent.ACTION_DOWN)
+                assertEquals("Initial favorite down: modifier=$modifier package=${device.currentPackageName}", expected, store.favorites)
+                for (repeat in 1..5) {
+                    // Release the modifier before the final D repeats and D-up.
+                    emit(KeyEvent.ACTION_DOWN, repeat, if (repeat >= 3) 0 else modifier)
+                    assertEquals("A held chord must not remove successive favorites", expected, store.favorites)
+                    assertEquals("Consumed repeats must not type into search", "", store.query)
+                }
+                if (iteration == 0) evidence("held-favorite", "2 results")
+            } finally { emit(KeyEvent.ACTION_UP, meta = 0) }
+            assertEquals(expected, store.favorites)
+            assertEquals("", store.query)
+            key(KeyEvent.KEYCODE_D, modifier)
+            assertEquals("A genuine next press must toggle the next selected favorite", 1, store.favorites.size)
+            assertEquals(store.favorites, context.getSharedPreferences("emoji", Context.MODE_PRIVATE).getStringSet("favorites", emptySet()))
+            compose.activityRule.scenario.onActivity { store.chooseFilter("All"); store.search("grinning face") }
+            compose.waitForIdle()
+            val allEntry = store.results().first()
+            val allExpected = store.favorites.toMutableSet().apply { if (!add(allEntry.id)) remove(allEntry.id) }.toSet()
+            downTime = android.os.SystemClock.uptimeMillis()
+            try {
+                emit(KeyEvent.ACTION_DOWN)
+                assertEquals(allExpected, store.favorites)
+                for (repeat in 1..5) {
+                    emit(KeyEvent.ACTION_DOWN, repeat, if (repeat >= 3) 0 else modifier)
+                    assertEquals("Repeats must not toggle the same favorite in All", allExpected, store.favorites)
+                    assertEquals("grinning face", store.query)
+                }
+            } finally { emit(KeyEvent.ACTION_UP, meta = 0) }
+            assertEquals(allExpected, context.getSharedPreferences("emoji", Context.MODE_PRIVATE).getStringSet("favorites", emptySet()))
+        }
+    }
 }

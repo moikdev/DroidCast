@@ -39,6 +39,8 @@ Offline Emoji & Symbols [#11](https://github.com/moikdev/droidcast/issues/11): s
 
 Implementation and audit evidence: [PR #45](https://github.com/moikdev/droidcast/pull/45). Its first UX audit exposed a caret-only selection reset; the correction includes a failing old-code reproduction, native composition/selection preservation, all four grid arrows/Home/End, tablet keyboard-show checks and state-validated XML/PNG recaptures. Live issue #1 and the PR record the current reviewed/merge head.
 
+The subsequent correctness audit identified destructive favorite-key auto-repeat. A native old-code reproduction and held-chord regression cover one toggle per press, modifier release, repeat consumption and the next genuine press; the correction requires fresh complete audits before merge.
+
 ## Completed slices
 
 The direct-settings slice merged in [PR #23](https://github.com/moikdev/droidcast/pull/23), closing #2 after both independent audits cleared head `39fc5f8` and local checks passed. Its live review/merge state and [issue #1](https://github.com/moikdev/droidcast/issues/1) are authoritative. Record subsequent slices here after their verified merges; the baseline preview is not full parity.

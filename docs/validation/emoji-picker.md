@@ -30,7 +30,7 @@ it is not a geometry comparison with the after captures.
 - Build, lint and all 71 JVM tests (five new catalog tests). Tests read the actual
   bundled catalog, check search/ranking/filtering, history bounds and exact
   identities/sequences. Generator output reproduces the committed TSV.
-- Ten instrumentation checks on each layout: eight EmojiDeviceTest cases plus
+- Eleven instrumentation checks on each layout: nine EmojiDeviceTest cases plus
   existing palette compactness/transparency/dismissal and immediate-search cases.
   These cover the command entry point; named/alias/keyword search; category and
   empty states; favorite clear/reuse and activity recreation; five exact Unicode
@@ -54,6 +54,9 @@ it is not a geometry comparison with the after captures.
 Local raw evidence: `artifacts/emoji-build.log`, `emoji-test-build.log`,
 `emoji-{tablet,phone}.log`, `emoji-{tablet,phone}-evidence/`,
 `emoji-restart.log` and `emoji-restart-favorite.xml`.
+The earlier three-case `emoji-correction-focused.log` belongs to the caret
+correction at `ee856f2`; the final eleven-case per-layout runs are the current
+binary's instrumentation evidence after the held-key correction.
 
 ## Corrections exercised before the final runs
 
@@ -106,6 +109,26 @@ The correction always retains the field value but searches and clears copy
 feedback only when the text changes. Coverage now explicitly asserts Up, Right
 and Home as well as the previously exercised directions, and the tablet's
 keyboard-show path.
+
+The correctness audit at `ee856f2` found that Ctrl+D auto-repeat could remove
+successive favorites. The native negative regression reproduces that: after
+the first removal leaves two favorites, the first repeated down removes another
+(`artifacts/emoji-negative/favorite-repeat.log`). The correction records the
+claimed device/down-time sequence, toggles only on its initial down and consumes
+the remaining downs and matching up independently of modifier release. Lost
+window focus clears outstanding claims. The native held-key case verifies both
+Favorites and All, modifier release before D-up, the next genuine press, no
+repeat characters entering search, and persisted preference membership.
+An intermediate post-IME-only guard stopped the extra removals but let a plain
+`d` enter search after releasing the modifier. That failed regression is retained
+as `artifacts/emoji-negative/favorite-modifier-release-ime.log`; the final guard
+also consumes the claimed sequence before the IME.
+The held-key certification is for the advertised Ctrl+D chord. An additional
+synthetic Meta+D attempt left favorites unchanged on its initial down while
+the current package was still Droidcast; its cause is unestablished and Meta+D
+delivery is not certified. Raw evidence is retained as
+`artifacts/emoji-negative/favorite-meta-delivery.log`; modifier delivery remains
+a follow-up under #26. This does not weaken the Ctrl+D repeat assertions.
 
 The old tablet no-results XML contradicted its paired PNG (stale count/name and
 enabled actions). This establishes an evidence inconsistency, not its cause or

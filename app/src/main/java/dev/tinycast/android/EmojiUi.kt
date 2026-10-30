@@ -47,6 +47,16 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
     var menu by remember { mutableStateOf(false) }
     var keyboardRequested by remember { mutableStateOf(false) }
     var copiedName by remember { mutableStateOf<String?>(null) }
+    // Pair a claimed favorite chord with its physical key sequence, independent
+    // of later modifier release or the selection changing after an unpin.
+    val favoritePresses = remember { mutableMapOf<Int, Long>() }
+    val windowFocused = LocalWindowInfo.current.isWindowFocused
+    LaunchedEffect(windowFocused) { if (!windowFocused) favoritePresses.clear() }
+    fun consumeFavoriteSequence(event: KeyEvent): Boolean {
+        if (event.keyCode != KeyEvent.KEYCODE_D || favoritePresses[event.deviceId] != event.downTime) return false
+        if (event.action == KeyEvent.ACTION_UP) favoritePresses.remove(event.deviceId)
+        return true
+    }
     val grid = rememberLazyGridState()
     val results = store.results()
     val selected = results.getOrNull(store.selected.coerceIn(0, (results.size - 1).coerceAtLeast(0)))
@@ -58,6 +68,14 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
         store.toggleFavorite(entry)
         store.selected = store.results().indexOfFirst { it.id == entry.id }.takeIf { it >= 0 }
             ?: store.selected.coerceAtMost((store.results().size - 1).coerceAtLeast(0))
+    }
+    fun handleFavoriteChord(event: KeyEvent): Boolean {
+        if (consumeFavoriteSequence(event)) return true
+        val modifier = (event.isCtrlPressed xor event.isMetaPressed) && !event.isAltPressed && !event.isShiftPressed
+        if (event.action != KeyEvent.ACTION_DOWN || event.keyCode != KeyEvent.KEYCODE_D || !modifier) return false
+        favoritePresses[event.deviceId] = event.downTime
+        if (event.repeatCount == 0) selected?.let(::pin)
+        return true
     }
     fun back() { if (menu) menu = false else if (store.query.isNotEmpty()) store.search("") else close() }
     BackHandler(onBack = ::back)
@@ -82,11 +100,14 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
             .shadow(24.dp, RoundedCornerShape(PaletteTheme.radius)).clip(RoundedCornerShape(PaletteTheme.radius))
             .background(PaletteTheme.surface).border(1.dp, PaletteTheme.border, RoundedCornerShape(PaletteTheme.radius))
             .pointerInput(Unit) { detectTapGestures {} }
-            // Some IMEs consume keypad Enter without delivering an editor action.
-            // Handle only that activation key before the IME, and leave composition alone.
+            // Handle owned favorite chords before IME text conversion. Some IMEs
+            // also consume keypad Enter without delivering an editor action;
+            // that activation path leaves active composition alone.
             .onPreInterceptKeyBeforeSoftKeyboard { key ->
                 val e = key.nativeKeyEvent
-                if (searchFocused && displayedSearch.composition == null && e.keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER &&
+                // Once claimed, repeats must not become IME text when Ctrl/Meta is released first.
+                if (handleFavoriteChord(e)) true
+                else if (searchFocused && displayedSearch.composition == null && e.keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER &&
                     !e.isAltPressed && !e.isShiftPressed && !(e.isCtrlPressed && e.isMetaPressed)) {
                     if (e.action == KeyEvent.ACTION_DOWN && e.repeatCount == 0) selected?.let(::copyEntry)
                     true
@@ -96,11 +117,11 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
                 val e = key.nativeKeyEvent
                 val ctrl = (e.isCtrlPressed xor e.isMetaPressed) && !e.isAltPressed && !e.isShiftPressed
                 val plain = !e.isCtrlPressed && !e.isMetaPressed && !e.isAltPressed && !e.isShiftPressed
-                if (e.action != KeyEvent.ACTION_DOWN) false
+                if (handleFavoriteChord(e)) true
+                else if (e.action != KeyEvent.ACTION_DOWN) false
                 else when {
                     e.keyCode == KeyEvent.KEYCODE_ESCAPE -> { back(); true }
                     ctrl && e.keyCode == KeyEvent.KEYCODE_L -> { searchFocus.requestFocus(); true }
-                    ctrl && e.keyCode == KeyEvent.KEYCODE_D -> { selected?.let(::pin); true }
                     plain && (searchFocused || gridFocused) && e.keyCode in setOf(KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_MOVE_HOME, KeyEvent.KEYCODE_MOVE_END) -> {
                         if (results.isNotEmpty()) store.selected = when (e.keyCode) {
                             KeyEvent.KEYCODE_DPAD_DOWN -> (store.selected + columns).coerceAtMost(results.lastIndex)

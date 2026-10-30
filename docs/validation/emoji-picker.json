@@ -7,8 +7,8 @@
     "tablet": "1920×1200 / 240 dpi",
     "phone": "1080×2340 / 420 dpi"
   },
-  "apk_sha256": "9a4883b171be1fcdcb16867bd63be5493235bd6ae43817a4ab9d615290c10576",
-  "test_apk_sha256": "448eacc2a5b075cef70683f992104eeec3488e5bdfde6e4d5dfe7810ad58350c",
+  "apk_sha256": "b323330a4a373b561f0679e4801e0bd8bbc59c39058690aab8fcfb5e085d0c03",
+  "test_apk_sha256": "ce9e49d7091fa1cdcdcd1ef495335f2b1a4680dae8e5a3aacef1a957b2ab00ae",
   "installed_apk_matches": true,
   "before_apk_sha256": "fe44ce5611ccb22e8634baaddfd19dcdc6a155aafb5a3117695d58ae9eded04c",
   "jvm": {
@@ -23,13 +23,13 @@
   },
   "instrumentation": {
     "tablet": {
-      "passed": 10,
-      "total": 10,
+      "passed": 11,
+      "total": 11,
       "log": "artifacts/emoji-tablet.log"
     },
     "phone": {
-      "passed": 10,
-      "total": 10,
+      "passed": 11,
+      "total": 11,
       "log": "artifacts/emoji-phone.log"
     }
   },
@@ -41,7 +41,7 @@
         "selected_name": "thumbs up",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "fd12867be73cb17ba7fd4945ebf9e6293c90887ec7c2411479a661b656fd0cfa"
+        "xml_sha256": "c16f2b938fd0543eea53abd7d12d5985216cb4eb54d69aae94ba21587b71b95b"
       },
       {
         "state": "caret-preserved",
@@ -49,7 +49,7 @@
         "selected_name": "saluting face",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "92972001256ce3ba567333761b895246d03d98c9dc6f1d803a20131e6f82fc69"
+        "xml_sha256": "d5ecba6bba4db9412d7a44cda80a551bf5cc8902d7c845be2a52ab1a422b1cad"
       },
       {
         "state": "empty-favorites",
@@ -57,7 +57,7 @@
         "selected_name": "Emoji & Symbols",
         "copy_enabled": false,
         "favorite_enabled": false,
-        "xml_sha256": "408a0df51d35a5a93defed487a72748b9c4445dd5e242099a96386db6b558336"
+        "xml_sha256": "b545399fa9f6ef818bd34e481b8b70865aa60732a0ef0b40d4237d0d1db83664"
       },
       {
         "state": "family-copied",
@@ -65,7 +65,7 @@
         "selected_name": "family: man, woman, girl, boy",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "f98c4fda36f3c042263e325bafc45e3f12c3e8d4fb7c5516abd6af413bc98f80"
+        "xml_sha256": "342d7ec062997faa9da731e39bec38f160a764b6f6107550191429ed2d0a99fc"
       },
       {
         "state": "favorites",
@@ -73,7 +73,7 @@
         "selected_name": "family: man, woman, girl, boy",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "b5f0e8f7de9cbbe4f9fd212896f65a67346892e313823162dfb7e59813fafb60"
+        "xml_sha256": "4fe0b93ff878d1d52cb51efc388d7590643e6e72b15d06b7be677871df02e096"
       },
       {
         "state": "grid",
@@ -81,7 +81,15 @@
         "selected_name": "grinning face",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "0c32d4f714f98879f3c6a263c01b8e6d222dcb9d22453f217b38e7e2b0e9ed5f"
+        "xml_sha256": "9bd440c5b49068194d023a5b4b3692a653abb906850b805915d8f15f9daffb0c"
+      },
+      {
+        "state": "held-favorite",
+        "count": "2 results · offline",
+        "selected_name": "grinning face with big eyes",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "6a46c8eaea39347069a5d8036a998852ccf636ca4e56db620bbde0ef0dc15c9a"
       },
       {
         "state": "keyboard-copy",
@@ -89,7 +97,7 @@
         "selected_name": "infinity",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "f12a7364a35864cbc5f074ad08b05637cd0c65ba93713668e8dcbfb5ccb4040f"
+        "xml_sha256": "5c4a0a5cb254483681b54c201b517d07be883c9525603381d5eeff191974749b"
       },
       {
         "state": "no-results",
@@ -97,7 +105,7 @@
         "selected_name": "Emoji & Symbols",
         "copy_enabled": false,
         "favorite_enabled": false,
-        "xml_sha256": "033d634cd948260a86a478433aff8edacfe5393292ce54650b2a72b150ddd648"
+        "xml_sha256": "041c44f7bf0795d58e47fa9b3fab24e3b95e5e00d714c5741956f23c92f2734f"
       },
       {
         "state": "recent",
@@ -105,7 +113,7 @@
         "selected_name": "pi",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "33d98e69a38f632bda38e6793809a810143d942f0f3c723153d4593cc37cbcd6"
+        "xml_sha256": "103fb5551bf6cdeff3d9130bc5ab982d0c3e3a91098686ab243174fa91efadd2"
       },
       {
         "state": "symbols",
@@ -113,7 +121,7 @@
         "selected_name": "plus minus",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "126b17818de3bb8b3a2b7cdabcc45282a9bbf01a5e1c50106b742ce2bd45b243"
+        "xml_sha256": "4c9b0f570b2612b4dd8d6b3f326470d7a58aa2e17d1a80d0e206960637d370d1"
       },
       {
         "state": "tablet-keyboard",
@@ -121,7 +129,7 @@
         "selected_name": "smiling face with heart-eyes",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "704df46c6677d3f7db5e2026bafa3c9e9cbc6219ad091f6c68822f887bcf2367"
+        "xml_sha256": "5f091a5acdb3ce26f2d07ab1788b190001c3ff54083593f929147483e5ae815a"
       }
     ],
     "phone": [
@@ -131,7 +139,7 @@
         "selected_name": "thumbs up",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "7fc30db9b66c84256bc8efd73da0bb9886bd6184d74e49814805b169d8980da7"
+        "xml_sha256": "77d3180bf895b9f470657b4d2597a6b791da94102586e1ff785108df84d4e45e"
       },
       {
         "state": "caret-preserved",
@@ -139,7 +147,7 @@
         "selected_name": "zany face",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "f55be65f2e027138d6b3bb5e223cd9ee9c8a7f2231be446827cf5707c7ba98b8"
+        "xml_sha256": "d77fbbe2207c2512e98befe20fd1a7a6f96af8b95943a9c89e3274c085f759ea"
       },
       {
         "state": "empty-favorites",
@@ -147,7 +155,7 @@
         "selected_name": "Emoji & Symbols",
         "copy_enabled": false,
         "favorite_enabled": false,
-        "xml_sha256": "9dd4451561a092291a60457740443ee35bd2e6851cb69f4149ac0d7bf4d94d34"
+        "xml_sha256": "eb0c298e60e4977760db633da6b79e17e79010778c76ab6bddda6235e3b74a7a"
       },
       {
         "state": "family-copied",
@@ -155,7 +163,7 @@
         "selected_name": "family: man, woman, girl, boy",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "ac1c2a540e48eba3481f670f63c6ceef052945ddba26e830a593e9305a70c0f8"
+        "xml_sha256": "591784365c8c7ee9dc949f7356aa62a36341dbbe203132272a72b49b50a65bbe"
       },
       {
         "state": "favorites",
@@ -163,7 +171,7 @@
         "selected_name": "family: man, woman, girl, boy",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "7a5b5c101f93215dd4f46228d126d64c986a2a4b38d10b397d0ae743ae54a949"
+        "xml_sha256": "4646bfe4c4dd24af3807d97c837fb2427dcb0e16c1f002cc533f2bb486094d50"
       },
       {
         "state": "grid",
@@ -171,7 +179,15 @@
         "selected_name": "grinning face",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "cd018b0edf03d0340407ef30ccb0c4590197e673511e90ac83f6783f5c2de29e"
+        "xml_sha256": "eb0ecad41dd24a1c184470ac2fe47772e66317beb03657c839f71298d87af314"
+      },
+      {
+        "state": "held-favorite",
+        "count": "2 results · offline",
+        "selected_name": "grinning face with big eyes",
+        "copy_enabled": true,
+        "favorite_enabled": true,
+        "xml_sha256": "2b2d3f63aff56e7b3d643d48f152442ac2bfd43f37f4bd1a12e2bfb11c5b4ed6"
       },
       {
         "state": "keyboard-copy",
@@ -179,7 +195,7 @@
         "selected_name": "infinity",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "0a838ec26a2954d30cf6e91cf3cd464f500997861e5c9db6b165c49667425ba9"
+        "xml_sha256": "158271d7c38bfa5956c901607c8b44ce0f0f4e61ab3ebcb650aaa424a76aea72"
       },
       {
         "state": "no-results",
@@ -187,7 +203,7 @@
         "selected_name": "Emoji & Symbols",
         "copy_enabled": false,
         "favorite_enabled": false,
-        "xml_sha256": "ade4dc111d487f30cf420e609937d73e97a322475d9625d036ddaa4f4dd8b61c"
+        "xml_sha256": "6234043f6bb6a1cb42dae9e7ba74b3e1fa272b142719e586a984a29644cdca3f"
       },
       {
         "state": "recent",
@@ -195,7 +211,7 @@
         "selected_name": "pi",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "3de0d3f12f2ad8a199a172dabaeee22e5dd1de1b5a2945c4eb5e2b94a6c6418e"
+        "xml_sha256": "4d905332ac81af428fcdc903e208d5e24d9fb3b6b37af605d4ffb721dbc2d994"
       },
       {
         "state": "symbols",
@@ -203,7 +219,7 @@
         "selected_name": "plus minus",
         "copy_enabled": true,
         "favorite_enabled": true,
-        "xml_sha256": "b451f8474f58437fcfab381669951a1dbd5e24f6ac7c3259ea353e76daff2377"
+        "xml_sha256": "e9002eac87396edd0cf2a0fe464e2ae846821cca227a3cb68798fd0616113fbf"
       }
     ]
   },
@@ -225,133 +241,145 @@
     },
     {
       "path": "docs/screenshots/parity-emoji/phone-alias-search.png",
-      "sha256": "0edd12f98f2c65576fe8a918a4b8946512180a3ddfbe8ced0d2190a5e7042372",
+      "sha256": "22b0a9a4510fdb1ae3cb150a0100658f60029f7583d17ffc4513736ccc5c49f7",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-emoji/phone-caret-preserved.png",
-      "sha256": "392336e031f3ae333d96937a7ad7a52574f867412d15187d22284e4191e43976",
+      "sha256": "cce01fddf064d59c7842a85008b5f98e7761c200b3a958d79fdcf74c0042472f",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-emoji/phone-empty-favorites.png",
-      "sha256": "b756084ae2d4470d4e674a326625a4c3be54dcbff94c11f9beadc306d90bf95b",
+      "sha256": "1ff3544bde6dbaabf571edf0d374d0ffeea20fec4a5e01871950ec7d35308db7",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-emoji/phone-family-copied.png",
-      "sha256": "c1dca21fa9d44628cfd7eb5e21faca6696f6523409d3a0854a6fec09e5d7ed37",
+      "sha256": "ef2abb8ef212902f9fd4209564c8965ec958fab20bf66cca097476bdbc7654e0",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-emoji/phone-favorites.png",
-      "sha256": "1aecd47b3964adcb694808a27b8feb7fbaf76244c2181e2b5b9fbbd9ae795b01",
+      "sha256": "33a134f738fa6c4f47876b76b5b6b3f366f4844d0fb87b12db98bd1a374ce488",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-emoji/phone-grid.png",
-      "sha256": "b4851959a10039d9126aa28587599451672617bc4841629e65dbf9ad51763e49",
+      "sha256": "e62c9e73b91846b9ffdffa6225d9f17bdb1e7a3994c8b78503c9df6306080a83",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-held-favorite.png",
+      "sha256": "102a139907012a84a26dd51ca05620597c96dd8d65da8fbf0691d86fe1efbf24",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-emoji/phone-keyboard-copy.png",
-      "sha256": "cb60b2d7d666dd4aac40c3dff8d6847e530f5702f8aaef50c72353d757803f39",
+      "sha256": "ce61ca22a3223a2b564c5a9132e0bf5f99f2c0299af846dea01b2b24e3fc6a97",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-emoji/phone-no-results.png",
-      "sha256": "3e775dcd408ff71b0d3f7535f19b7c2a647cc2b66cc4714250d1cec6c1bd5614",
+      "sha256": "020d8fc383d9173659cce2389ac81eed9ef02c26f933ca4213931784e0b22974",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-emoji/phone-recent.png",
-      "sha256": "f1a493f7ed9e25e16d9a4bc0990be0f12acdcfed5f577846ca5ef9d737b26434",
+      "sha256": "e7fe5ef52b9ed29a3a05c2bd35fb7eecdf1afebf89c6763d85bcea9585ad4f28",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-emoji/phone-symbols.png",
-      "sha256": "494d20dea1ccf9b11af7bf282f9f32cffc3340361a815427834541a8b8727bba",
+      "sha256": "5128d92f871a3833461425ae22f5eb2a5dddddd6f6821e6bf217ea07d1c710b5",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-emoji/tablet-alias-search.png",
-      "sha256": "59338ba89991c29799db7d3f89d3516b81257275c6fe99760b0d0360f5fcd63d",
+      "sha256": "0533c0af4b2aa4bc6b7eddd3d8b364f3d8d0ecc0b20331da2c2a96f62aa4f840",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-emoji/tablet-caret-preserved.png",
-      "sha256": "c932d24417a9f0712e5f4c8c3c8b62cac67b7f0bccf9e2d6b9929e9ee63500dd",
+      "sha256": "722c5bef5b698c518dd54a404fee0371c5721b68e5845fceb9c2da1d1743027f",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-emoji/tablet-empty-favorites.png",
-      "sha256": "52c4d0078cc43cf131394ac6afe8ab3df5b12d531860a3749225f206e1d6f6d7",
+      "sha256": "a347991cec4ed978a2f5f265f4d4bd917e34bf0ca20dcabf1423a2a0f36e4828",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-emoji/tablet-family-copied.png",
-      "sha256": "31c7e8ff142140c86f3999d811594922960b818a12eb3f318f3ade49a6f5de52",
+      "sha256": "6d6ab1bccab0df3d90e8479abd29af11bf4fca42fd4207dadad2b39375274a94",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-emoji/tablet-favorites.png",
-      "sha256": "9bcd90a3da95eee7e47892cd5e8679748147839efc776a86af5e3695de024f54",
+      "sha256": "5784754dd792048d0c1142c5f6d63e93d699685b499e805ef85783ee6e7920fa",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-emoji/tablet-grid.png",
-      "sha256": "5a4d63fa268cc0fb070b1684bb204c52945900a2cfddc340e2ac3c9db80387f5",
+      "sha256": "4e4d6e7857d5342623b45a1e3bd8da458d87df34c4c33ec598903fecc4159c79",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-held-favorite.png",
+      "sha256": "fd31271a08f82b7a07100b911b361b42ac6f38a32abae3889d6f9e857b16a0b5",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-emoji/tablet-keyboard-copy.png",
-      "sha256": "87f6afa1556f66f6050a03da3ef1d09bb49ddf9412b0971c521d5180fcaeae9b",
+      "sha256": "56ccf2bcadc15c0409cdeef0540ff9435995b0d3b73b2ee335deb25eec9ed405",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-emoji/tablet-no-results.png",
-      "sha256": "accc1df38ab8a5585256e2d4574e9e501c5b247c664ea5f74da8fc7d6d8200a7",
+      "sha256": "27ecda5285207488734c8c9ff559c2b2d91f1e064a5ecc40edcac699b8a17acd",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-emoji/tablet-recent.png",
-      "sha256": "d726207bdaebeded94667be582c387757b93eefaedfb2c80cc124b72c28c0ac1",
+      "sha256": "6e3f5715e2f934e04524a0a27389e343dd1a8c50414fe3381a85fa4e1cf69881",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-emoji/tablet-restart-favorite.png",
-      "sha256": "3c4ee1b3e3da93c0db013744872dc1fe96847ea195314c8cb5eaf3172faf28e9",
+      "sha256": "8836e8826c1ed11ebde13adc6a9e1cf2e5531d813de87dec17cd099bbe866014",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-emoji/tablet-symbols.png",
-      "sha256": "b6ac83f897ccc2eac389c69033900724e7b5c1438843f99d9bcdb79dad9ca85a",
+      "sha256": "0f700e895d70d3e52d771788aa7ba394f73609b7896de910ca2616d5076c3878",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-emoji/tablet-tablet-keyboard.png",
-      "sha256": "e2c3580911ce9c3b2590163faf4103d14f252b6f6b69c3f05ea13be9cad5dd63",
+      "sha256": "21322ead1d0d01d136cbb0fc41245778c53f78e5482f3b7a332210651c552a64",
       "width": 1920,
       "height": 1200
     }
