@@ -19,6 +19,7 @@ import org.junit.Assert.*
 import org.junit.runner.RunWith
 import java.io.File
 import java.io.FileOutputStream
+import java.io.FileInputStream
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -39,7 +40,7 @@ class FolderDeviceTest {
     private lateinit var controller: FolderSearch
     private val scopes = mutableListOf<CoroutineScope>()
     private val directory get() = File(context.filesDir, "folder-search")
-    private val rootName = "DroidCastFolderFixture"
+    private val rootName = "DroidcastFolderFixture"
     @Before fun setup() {
         androidx.test.uiautomator.Configurator.getInstance().uiAutomationFlags = android.app.UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES
         original = context.getSharedPreferences("palette", Context.MODE_PRIVATE).all.toMap()
@@ -51,7 +52,7 @@ class FolderDeviceTest {
         assertFalse("Fixture path must be unused", device.executeShellCommand("ls /sdcard/Download").lineSequence().any { it == rootName })
         fixtureCreated = true
         device.executeShellCommand("mkdir -p /sdcard/Download/$rootName/Research")
-        writeFixture("Research/Orbit-notes.txt", "DroidCast scoped search fixture body 314159")
+        writeFixture("Research/Orbit-notes.txt", "Droidcast scoped search fixture body 314159")
         writeFixture("Previous-note.txt", "Prior viewer fixture body 271828")
         writeFixture("Bundle.zip", "archive fixture")
     }
@@ -235,6 +236,125 @@ class FolderDeviceTest {
         assertEquals(listOf(folder), replacement.folders)
         assertEquals(4, replacement.count)
     }
+    private fun aliasEvidence(name: String) {
+        compose.onNodeWithTag("settings-clear-alias").performScrollTo().assertIsDisplayed()
+        compose.waitForIdle(); device.waitForIdle()
+        val dir = File(context.filesDir, "folder-evidence").apply { mkdirs() }
+        device.dumpWindowHierarchy(File(dir, "$name.xml"))
+        assertTrue(device.takeScreenshot(File(dir, "$name.png")))
+    }
+    private class VerificationReadFailure(file: File, private val persistent: Boolean) : AtomicFile(file) {
+        var failedReads = 0
+        private var armed = false
+        override fun finishWrite(stream: FileOutputStream?) { super.finishWrite(stream); armed = true }
+        override fun openRead(): FileInputStream {
+            if (armed && (persistent || failedReads == 0)) {
+                failedReads++
+                throw java.io.IOException("Injected post-rename verification read failure")
+            }
+            return super.openRead()
+        }
+    }
+    private fun reauthorizationReadFailure(persistent: Boolean) {
+        authorize()
+        val folder = controller.folders.single()
+        context.contentResolver.releasePersistableUriPermission(Uri.parse(folder.uri), Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        val writerScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).also { scopes += it }
+        val config = VerificationReadFailure(File(directory, "config.json"), persistent)
+        lateinit var outgoing: FolderSearch
+        compose.runOnUiThread {
+            outgoing = FolderSearch(context.applicationContext as android.app.Application, writerScope,
+                atomicFile = { if (it.name == "config.json") config else AtomicFile(it) })
+        }
+        compose.waitUntil(10000) { !outgoing.loading }
+        assertEquals(0, outgoing.count)
+        compose.runOnUiThread { assertTrue(outgoing.beginSelection(folder.uri)); outgoing.selected(Uri.parse(folder.uri)) }
+        compose.waitUntil(10000) { !outgoing.changing && !outgoing.busy }
+        assertEquals(if (persistent) 2 else 1, config.failedReads)
+        assertTrue(context.contentResolver.persistedUriPermissions.any { it.uri.toString() == folder.uri && it.isReadPermission })
+        assertTrue(org.json.JSONObject(config.baseFile.readText()).getJSONArray("folders").getJSONObject(0).getBoolean("ownsGrant"))
+        if (persistent) assertTrue(outgoing.error!!.contains("Permission was retained")) else assertNull(outgoing.error)
+        val replacement = reopened()
+        assertEquals(listOf(folder), replacement.folders)
+        assertEquals(4, replacement.count)
+    }
+    @Test fun transientPostRenameReadFailureReconcilesTheSavedFoldersGrant() = reauthorizationReadFailure(false)
+    @Test fun unreadablePostRenameResultCannotRevokeAPossiblyCommittedGrant() = reauthorizationReadFailure(true)
+
+    @Test fun replacementWaitsForProvisionalReauthorizationRollbackBeforeLoadingCachedEntries() {
+        authorize()
+        val folder = controller.folders.single()
+        context.contentResolver.releasePersistableUriPermission(Uri.parse(folder.uri), Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        val validationEntered = CompletableDeferred<Unit>()
+        val holdValidation = CompletableDeferred<Unit>()
+        val writerScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).also { scopes += it }
+        val readerScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate).also { scopes += it }
+        val readerIo = QueuedIo()
+        lateinit var outgoing: FolderSearch
+        lateinit var replacement: FolderSearch
+        try {
+            compose.runOnUiThread {
+                outgoing = FolderSearch(context.applicationContext as android.app.Application, writerScope,
+                    beforeFolderValidation = { validationEntered.complete(Unit); holdValidation.await() })
+            }
+            compose.waitUntil(10000) { !outgoing.loading }
+            assertEquals(0, outgoing.count)
+            compose.runOnUiThread { assertTrue(outgoing.beginSelection(folder.uri)); outgoing.selected(Uri.parse(folder.uri)) }
+            compose.waitUntil(10000) { validationEntered.isCompleted }
+            assertTrue(context.contentResolver.persistedUriPermissions.any { it.uri.toString() == folder.uri && it.isReadPermission })
+            compose.runOnUiThread {
+                replacement = FolderSearch(context.applicationContext as android.app.Application, readerScope, initialReadDispatcher = readerIo)
+            }
+            assertTrue(readerIo.runOne())
+            assertTrue("Replacement must wait until provisional ownership is resolved", replacement.loading)
+            writerScope.cancel()
+            compose.waitUntil(10000) { readerIo.drain(); !replacement.loading && !outgoing.changing }
+            assertFalse(context.contentResolver.persistedUriPermissions.any { it.uri.toString() == folder.uri && it.isReadPermission })
+            assertEquals(listOf(folder), replacement.folders)
+            assertEquals(0, replacement.count)
+            assertTrue(replacement.errors.containsKey(folder.uri))
+            compose.runOnUiThread { replacement.search("Orbit", true) }
+            compose.waitUntil(5000) { !replacement.searching }
+            assertTrue(replacement.matches.isEmpty())
+            File(context.filesDir, "folder-evidence/provisional-rollback.json").writeText(org.json.JSONObject()
+                .put("replacement_waited_for_validation", true).put("cancelled_validation_released_grant", true)
+                .put("replacement_entries", replacement.count).put("replacement_matches", replacement.matches.size)
+                .put("expired_scope_reported", true).toString(2))
+        } finally {
+            writerScope.cancel(); holdValidation.complete(Unit)
+            compose.waitUntil(10000) { readerIo.drain(); writerScope.coroutineContext[Job]!!.children.none() }
+        }
+    }
+    @Test fun unavailableAliasOnlyFileCanBeFoundClearedAndReusedAfterScopeRemoval() {
+        authorize()
+        val store = compose.activity.store
+        val file = store.configurationCommands().single { it.title == "Orbit-notes.txt" }
+        compose.runOnUiThread { store.setAlias(file.id, "orbitfixture") }
+        assertFalse(file.id in store.shortcutConfiguration.bindings)
+        compose.runOnUiThread { controller.remove(controller.folders.single()) }
+        compose.waitUntil(10000) { !controller.changing && !controller.busy }
+        assertFalse(store.configurationCommands().any { it.id == file.id })
+        compose.runOnUiThread {
+            assertThrows(IllegalArgumentException::class.java) { store.setAlias("calculator", "orbitfixture") }
+            compose.activity.selectPage("shortcuts")
+        }
+        compose.onNodeWithTag("settings-command-search").performTextReplacement("orbitfixture")
+        compose.onNodeWithTag("settings-command-${file.id}").performScrollTo().assertIsDisplayed().performClick()
+        compose.onNodeWithTag("settings-alias").performScrollTo().assertTextEquals("orbitfixture").assertIsNotEnabled()
+        compose.onNodeWithTag("settings-save-alias").assertIsNotEnabled()
+        compose.onNodeWithTag("settings-clear-alias").performScrollTo().assertIsEnabled()
+        aliasEvidence("unavailable-alias")
+        compose.onNodeWithTag("settings-clear-alias").performClick()
+        compose.waitUntil(5000) { store.aliases[file.id].isNullOrEmpty() }
+        assertTrue(context.getSharedPreferences("palette", Context.MODE_PRIVATE).getString("aliases", "")!!.let { org.json.JSONObject(it).optString(file.id).isEmpty() })
+        compose.runOnUiThread { compose.activity.configure("calculator") }
+        compose.onNodeWithTag("settings-alias").performScrollTo().performTextReplacement("orbitfixture")
+        compose.onNodeWithTag("settings-alias").performImeAction()
+        compose.waitUntil(5000) { store.command("calculator")!!.alias == "orbitfixture" }
+        compose.onNodeWithTag("settings-alias-error").assertDoesNotExist()
+        aliasEvidence("alias-reused")
+        assertEquals("orbitfixture", org.json.JSONObject(context.getSharedPreferences("palette", Context.MODE_PRIVATE).getString("aliases", "{}")!!).getString("calculator"))
+    }
     @Test fun scopedSearchIndexesMetadataFiltersAndReopensWithoutExportingGrants() {
         authorize()
         val model = compose.activity.store.folderSearch
@@ -266,7 +386,7 @@ class FolderDeviceTest {
         val index = File(directory, "index.json").readText()
         assertFalse("Contents must not be indexed", index.contains("314159"))
         // Verify that the selected URI resolves to the current fixture before external dispatch.
-        val expectedBody = "DroidCast scoped search fixture body 314159"
+        val expectedBody = "Droidcast scoped search fixture body 314159"
         val actualBody = context.contentResolver.openInputStream(Uri.parse(document.uri))!!.bufferedReader().use { it.readText() }
         assertEquals(expectedBody, actualBody)
         // Reproduce a warm viewer task: the desired document is its root, with

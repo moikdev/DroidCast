@@ -56,9 +56,9 @@ fun PaletteDialogs(store: PaletteStore, provided: Command?, globalEnabled: Boole
             Text(if (globalEnabled) "Global shortcut is enabled." else "Enable the optional keyboard service in Preferences for the global shortcut.", color = muted, fontSize = 12.sp, lineHeight = 18.sp, modifier = Modifier.padding(top = 10.dp))
             Spacer(Modifier.height(16.dp)); Button(onClick = close, modifier = Modifier.fillMaxWidth()) { Text("Got it") }
         }
-        "preferences" -> Shell("Preferences", "DroidCast · 0.4.0-preview", close) {
+        "preferences" -> Shell("Preferences", "Droidcast · 0.4.0-preview", close) {
             Row(verticalAlignment = Alignment.CenterVertically) { Glyph("keyboard", ink, 26); Spacer(Modifier.width(12.dp)); Column { Text("Global keyboard shortcuts", fontSize = 16.sp, fontWeight = FontWeight.Medium); Text(if (globalEnabled) "Keyboard service enabled" else "Optional keyboard service", color = ink, fontSize = 12.sp, modifier = Modifier.padding(top = 4.dp)) } }
-            Text("Open the palette and run assigned commands from another app with your hardware keyboard. Android requires you to enable the DroidCast keyboard shortcut accessibility service.", color = muted, fontSize = 13.sp, lineHeight = 20.sp, modifier = Modifier.padding(top = 18.dp))
+            Text("Open the palette and run assigned commands from another app with your hardware keyboard. Android requires you to enable the Droidcast keyboard shortcut accessibility service.", color = muted, fontSize = 13.sp, lineHeight = 20.sp, modifier = Modifier.padding(top = 18.dp))
             Text("The service filters your configured key combinations. It does not retrieve screen content or save keystrokes. You can turn it off in Android settings at any time.", color = muted, fontSize = 12.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 12.dp))
             TextButton(onClick = { store.dialog = "shortcut-settings" }) { Text("Configure keyboard shortcuts") }
             Button(onClick = enableGlobal, modifier = Modifier.fillMaxWidth().padding(top = 20.dp).testTag("enable-global")) { Text(if (globalEnabled) "Manage keyboard service" else "Open accessibility settings") }
@@ -69,14 +69,14 @@ fun PaletteDialogs(store: PaletteStore, provided: Command?, globalEnabled: Boole
             TextButton(onClick = { store.refreshApps(); store.message = "Application list refreshed" }, modifier = Modifier.padding(top = 12.dp)) { Text("Refresh installed apps") }
             TextButton(onClick = { store.dialog = "search-folders" }) { Text("Search folders") }
             TextButton(onClick = { store.beginBackup() }) { Text("Backup and restore") }
-            TextButton(onClick = { run(Command("web", "Source code", "", payload = "https://github.com/moikdev/DroidCast")) }) { Text("Source code") }
+            TextButton(onClick = { run(Command("web", "Source code", "", payload = "https://github.com/moikdev/droidcast")) }) { Text("Source code") }
             TextButton(onClick = { store.dialog = "licenses" }) { Text("License and attribution") }
         }
-        "licenses" -> Shell("License and attribution", "DroidCast · Android adaptation of Tinycast", close) {
-            Text("Tinycast Copyright (C) 2026 Abue Ammar. Android implementation and modifications: DroidCast contributors, 2026.", fontSize = 13.sp, lineHeight = 20.sp)
+        "licenses" -> Shell("License and attribution", "Droidcast · Android adaptation of Tinycast", close) {
+            Text("Tinycast Copyright (C) 2026 Abue Ammar. Android implementation and modifications: Droidcast contributors, 2026.", fontSize = 13.sp, lineHeight = 20.sp)
             Text("Licensed under the GNU Affero General Public License, version 3 or later. Distributed without warranty. React is distributed under the MIT license. Full notices and corresponding source are included in the source repository.", color = muted, fontSize = 12.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 12.dp))
-            TextButton(onClick = { run(Command("web", "License", "", payload = "https://github.com/moikdev/DroidCast/blob/main/LICENSE")) }) { Text("View full license") }
-            TextButton(onClick = { run(Command("web", "Source code", "", payload = "https://github.com/moikdev/DroidCast")) }) { Text("Get source code") }
+            TextButton(onClick = { run(Command("web", "License", "", payload = "https://github.com/moikdev/droidcast/blob/main/LICENSE")) }) { Text("View full license") }
+            TextButton(onClick = { run(Command("web", "Source code", "", payload = "https://github.com/moikdev/droidcast")) }) { Text("Get source code") }
         }
         "alias" -> if (selected != null) {
             var alias by remember(selected.id) { mutableStateOf(selected.alias) }
@@ -89,7 +89,7 @@ fun PaletteDialogs(store: PaletteStore, provided: Command?, globalEnabled: Boole
             }
         }
         "delete" -> if (selected != null) Shell("Delete ${selected.kind.label.lowercase().removeSuffix("s")}?", selected.title, close) {
-            Text("This removes the item from DroidCast. Original documents are kept on your device.", color = muted, fontSize = 13.sp, lineHeight = 20.sp)
+            Text("This removes the item from Droidcast. Original documents are kept on your device.", color = muted, fontSize = 13.sp, lineHeight = 20.sp)
             Row(Modifier.fillMaxWidth().padding(top = 20.dp), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = close) { Text("Cancel") }; Spacer(Modifier.width(10.dp))
                 Button(onClick = { store.delete(selected.id); close() }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEBABAA)), modifier = Modifier.testTag("confirm-delete")) { Text("Delete") }
@@ -165,7 +165,7 @@ internal fun ActionsMenu(store: PaletteStore, command: Command, run: (Command) -
             add(Action("Copy content", "") { copy(command.payload); close() })
         }
         if (command.id.startsWith("files:index:")) add(Action("Manage search folder", "") { close(); run(Command("search-folders", "Search folders", "")) })
-        else if (command.kind in listOf(Kind.NOTE, Kind.LINK, Kind.CLIP, Kind.FILE)) add(Action("Delete from DroidCast", "") { store.dialog = "delete" })
+        else if (command.kind in listOf(Kind.NOTE, Kind.LINK, Kind.CLIP, Kind.FILE)) add(Action("Delete from Droidcast", "") { store.dialog = "delete" })
     }
     var index by remember { mutableIntStateOf(0) }
     val focus = remember { FocusRequester() }

@@ -148,14 +148,14 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
                 Row(Modifier.fillMaxWidth().height(PaletteTheme.footer).padding(horizontal=8.dp),verticalAlignment=Alignment.CenterVertically){
                     Box {
                         Box(Modifier.size(38.dp).clip(CircleShape).background(PaletteTheme.control).border(1.dp,PaletteTheme.border,CircleShape)
-                            .clickable{menu=!menu}.semantics{contentDescription="DroidCast menu"}.testTag("palette-menu"),contentAlignment=Alignment.Center){Glyph("menu",PaletteTheme.secondary,18)}
+                            .clickable{menu=!menu}.semantics{contentDescription="Droidcast menu"}.testTag("palette-menu"),contentAlignment=Alignment.Center){Glyph("menu",PaletteTheme.secondary,18)}
                         DropdownMenu(expanded=menu,onDismissRequest={menu=false},containerColor=PaletteTheme.surface,shape=RoundedCornerShape(16.dp)) {
                             categories.forEach { c -> DropdownMenuItem(text={Text(if(c=="Pinned")"Favorites" else c,fontSize=13.sp)},
                                 trailingIcon={if(store.category==c)Text("✓",color=PaletteTheme.secondary)},onClick={store.filter(c);menu=false},modifier=Modifier.testTag("filter-$c")) }
                             HorizontalDivider(color=PaletteTheme.separator)
                             DropdownMenuItem(text={Text("Preferences…",fontSize=13.sp)},onClick={menu=false;run(Command("app-settings","Settings",""))})
                             DropdownMenuItem(text={Text("Keyboard Shortcuts",fontSize=13.sp)},onClick={menu=false;run(Command("shortcuts","Shortcuts",""))})
-                            DropdownMenuItem(text={Text("Dismiss DroidCast",fontSize=13.sp)},onClick=dismiss)
+                            DropdownMenuItem(text={Text("Dismiss Droidcast",fontSize=13.sp)},onClick=dismiss)
                         }
                     }
                     Spacer(Modifier.weight(1f))

@@ -1,6 +1,6 @@
 # Direct settings command validation
 
-Enhancement [#2](https://github.com/moikdev/DroidCast/issues/2); source baseline `564716c`. This is the first screenshot-backed parity-loop slice.
+Enhancement [#2](https://github.com/moikdev/droidcast/issues/2); source baseline `564716c`. This is the first screenshot-backed parity-loop slice.
 
 ## Results
 
@@ -41,7 +41,7 @@ Both initial gpt-6.1-sol/high audits flagged that the original generic Settings 
 
 ## Boundaries
 
-Battery Saver and Security routes crashed inside this emulator's Android Settings due to missing provider dependencies. They are excluded from this verified slice and remain open in [#22](https://github.com/moikdev/DroidCast/issues/22). This does not implement hardware toggles or all Tinycast system actions. No physical-device/OEM certification is claimed.
+Battery Saver and Security routes crashed inside this emulator's Android Settings due to missing provider dependencies. They are excluded from this verified slice and remain open in [#22](https://github.com/moikdev/droidcast/issues/22). This does not implement hardware toggles or all Tinycast system actions. No physical-device/OEM certification is claimed.
 
 An initial harness expected the requested action in `dumpsys activity top`, but Android 16's shared Settings activity does not reliably expose that information there. Final tests observe the real launch intent through an ActivityMonitor and verify actual Settings UI. Earlier failed harness runs are not counted as passing tests.
 

@@ -7,6 +7,7 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import java.io.IOException
 
 /** The durable write and its permission handoff finish before a cancellable dispatcher return. */
 internal suspend fun <T> commitFolderConfiguration(
@@ -22,6 +23,9 @@ internal suspend fun <T> commitFolderConfiguration(
     }
 }
 
+/** The rename may have succeeded, but the saved bytes could not be read for verification. */
+internal class IndeterminateFolderWrite(cause: Exception) : IOException("Folder save could not be verified", cause)
+
 /** Keep permission bookkeeping on the same side of dispatcher cancellation as its side effect. */
 internal class FolderGrantTransaction(
     private val hasReadGrant: () -> Boolean,
@@ -32,26 +36,40 @@ internal class FolderGrantTransaction(
 ) {
     var newlyAcquired = false; private set
     private var releaseOnFailure = false
+    private var locked = false
+    private val owner = Any()
 
-    suspend fun acquire() = withContext(io) { storageMutex.withLock {
+    // Keep replacement readers behind validation, commit or rollback, including cancellation.
+    suspend fun acquire() = withContext(io) {
+        storageMutex.lock(owner)
+        locked = true
         val preexisting = hasReadGrant()
         ensureActive()
         takeReadGrant()
-        // No suspension between successful acquisition and recording our responsibility.
         newlyAcquired = !preexisting
         releaseOnFailure = newlyAcquired
-    } }
+    }
 
-    suspend fun commit(disk: Mutex, writeConfiguration: () -> Unit) = commitFolderConfiguration(
-        disk, io, writeConfiguration,
-        // The saved configuration owns the grant even if returning to our caller is cancelled.
-        onCommitted = { releaseOnFailure = false }
-    )
+    suspend fun commit(disk: Mutex, writeConfiguration: () -> Unit) = withContext(io) {
+        check(disk === storageMutex && locked)
+        try {
+            writeConfiguration()
+            releaseOnFailure = false
+        } catch (unknown: IndeterminateFolderWrite) {
+            // Never revoke a grant which may now belong to the committed configuration.
+            // The caller reports the uncertain save and reopening reconciles the saved roots.
+            releaseOnFailure = false
+            throw unknown
+        }
+    }
 
     suspend fun releaseIfUncommitted() {
-        if (releaseOnFailure) withContext(NonCancellable + io) {
-            storageMutex.withLock {
-                runCatching { releaseReadGrant() }.onSuccess { releaseOnFailure = false }
+        if (locked) withContext(NonCancellable + io) {
+            try {
+                if (releaseOnFailure) runCatching { releaseReadGrant() }.onSuccess { releaseOnFailure = false }
+            } finally {
+                locked = false
+                storageMutex.unlock(owner)
             }
         }
     }

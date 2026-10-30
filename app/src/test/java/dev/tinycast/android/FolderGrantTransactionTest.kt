@@ -162,4 +162,29 @@ class FolderGrantTransactionTest {
         assertTrue(work.isCompleted && work.isCancelled && f.granted)
         assertFalse(f.saved); assertEquals(0, f.released)
     }
+    @Test fun replacementReaderCannotSeeTheGrantBeforeValidationRollback() {
+        val f = Fixture()
+        val validation = CompletableDeferred<Unit>()
+        val work = f.start { validation.await() }
+        f.caller.next(); f.io.next(); f.caller.next()
+        var readerObservedGrant: Boolean? = null
+        val reader = f.schedule { withContext(f.io) { f.disk.lock(); try { readerObservedGrant = f.granted } finally { f.disk.unlock() } } }
+        f.caller.next(); f.io.next()
+        assertNull(readerObservedGrant)
+        work.cancel(); f.drain()
+        assertTrue(reader.isCompleted)
+        assertEquals(false, readerObservedGrant)
+        assertEquals(1, f.released)
+    }
+
+    @Test fun unknownPostRenameResultRetainsTheGrantBeforeReplacementReads() {
+        val f = Fixture()
+        val work = f.start { f.ownership.commit(f.disk) { f.saved = true; throw IndeterminateFolderWrite(IOException("Cannot read committed file")) } }
+        f.drain()
+        assertThrows(IndeterminateFolderWrite::class.java) { runBlocking { work.await() } }
+        assertTrue(f.saved && f.granted)
+        assertEquals(0, f.released)
+        assertFalse(f.disk.isLocked)
+    }
+
 }

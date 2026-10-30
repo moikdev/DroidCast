@@ -20,7 +20,7 @@ internal fun FolderSearchDialog(store: PaletteStore, run: (Command) -> Unit, clo
     if (removing != null) {
         val folder = removing!!
         Shell("Remove search folder?", folder.title, { removing = null }, embedded = embedded) {
-            Text("This removes its indexed metadata. DroidCast releases the folder read grant if it acquired that grant here. Your files and individually picked recent documents are kept.", fontSize = 13.sp)
+            Text("This removes its indexed metadata. Droidcast releases the folder read grant if it acquired that grant here. Your files and individually picked recent documents are kept.", fontSize = 13.sp)
             Row(Modifier.fillMaxWidth().padding(top = 18.dp), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = { removing = null }) { Text("Cancel") }
                 Button(onClick = { model.remove(folder); removing = null }, modifier = Modifier.testTag("folder-remove-confirm")) { Text("Remove folder") }

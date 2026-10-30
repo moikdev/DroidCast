@@ -81,10 +81,10 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
         Command("save-clip", "Save clipboard text", "Keep the current clip in your local collection", icon = "clipboard", keywords = "copy paste history save", alias = "clip"),
         Command("shortcuts", "Keyboard shortcuts", "Record global and per-command shortcuts", icon = "keyboard", keywords = "help hotkey keys ctrl space global configure bindings", alias = "keys"),
         Command("settings", "Android settings", "Open device settings", icon = "settings", keywords = "android system device configuration preferences", alias = "settings"),
-        Command("app-settings", "DroidCast preferences", "Global shortcut, privacy & app information", icon = "settings", keywords = "accessibility global keyboard permission setup", alias = "prefs"),
+        Command("app-settings", "Droidcast preferences", "Global shortcut, privacy & app information", icon = "settings", keywords = "accessibility global keyboard permission setup", alias = "prefs"),
         Command("backup", "Backup and restore", "Export your collections or preview an import", icon = "folder", keywords = "export import restore json data transfer"),
-        Command("backup-export", "Export DroidCast backup", "Choose categories and save a JSON backup", icon = "folder", keywords = "backup save collections"),
-        Command("backup-import", "Import DroidCast backup", "Preview a backup before applying changes", icon = "folder", keywords = "backup restore collections")
+        Command("backup-export", "Export Droidcast backup", "Choose categories and save a JSON backup", icon = "folder", keywords = "backup save collections"),
+        Command("backup-import", "Import Droidcast backup", "Preview a backup before applying changes", icon = "folder", keywords = "backup restore collections")
     ) + SystemSettings.commands() + listOf(Command("extensions", "Raycast Store", "Find, install & manage extensions", icon = "extension", keywords = "plugins addons marketplace extensions store", alias = "store")) + apps +
         extensions.installed.flatMap { extension -> extension.commands.map { cmd -> Command("ext:${extension.listing.id}/${cmd.name}", cmd.title, extension.listing.title, Kind.EXTENSION, "extension", "${extension.listing.title} ${cmd.description}", "${extension.listing.id}/${cmd.name}") } } +
         notes.map { Command(it.id, it.title, it.body.lineSequence().firstOrNull().orEmpty().ifBlank { "Empty note" }, Kind.NOTE, "note", it.body, it.body) } +
@@ -97,7 +97,7 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
     fun configurationCommands(): List<Command> = (commands() + folderSearch.configurationCommands().map { it.copy(alias = aliases[it.id] ?: it.alias) }).distinctBy { it.id }
     fun command(id: String): Command? = commands().firstOrNull { it.id == id } ?: folderSearch.command(id)?.let { it.copy(alias = aliases[id].orEmpty()) }
 
-    fun shortcutTitle(id: String): String = if (id == ShortcutRules.PALETTE) "Show or hide DroidCast" else command(id)?.title ?: "Unavailable command · $id"
+    fun shortcutTitle(id: String): String = if (id == ShortcutRules.PALETTE) "Show or hide Droidcast" else command(id)?.title ?: "Unavailable command · $id"
     private fun saveShortcuts(configuration: ShortcutConfiguration) {
         ShortcutRules.validate(configuration)
         prefs.edit().putString("shortcuts", ShortcutCodec.encode(configuration).toString()).apply()

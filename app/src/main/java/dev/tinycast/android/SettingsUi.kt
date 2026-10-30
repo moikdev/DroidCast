@@ -103,7 +103,7 @@ internal fun AdvancedSettings(activity: SettingsActivity) {
                     Row(Modifier.padding(10.dp, 16.dp), verticalAlignment = Alignment.CenterVertically) {
                         Box(Modifier.size(32.dp).background(Color(0xFFEF5B50), RoundedCornerShape(9.dp)), contentAlignment = Alignment.Center) { Glyph("command", Color.White, 21) }
                         Spacer(Modifier.width(10.dp))
-                        Column { Text("DroidCast", fontSize = 14.sp, fontWeight = FontWeight.SemiBold); Text("Settings", fontSize = 11.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 2.dp)) }
+                        Column { Text("Droidcast", fontSize = 14.sp, fontWeight = FontWeight.SemiBold); Text("Settings", fontSize = 11.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 2.dp)) }
                     }
                     Spacer(Modifier.height(8.dp))
                     SettingsSearchField(query, { store.cancelShortcutRecording(false); query = it }, searchFocus)
@@ -117,7 +117,7 @@ internal fun AdvancedSettings(activity: SettingsActivity) {
                 Column(Modifier.weight(1f).fillMaxHeight()) {
                     if (!wide) {
                         Row(Modifier.fillMaxWidth().padding(12.dp, 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text("DroidCast Settings", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
+                            Text("Droidcast Settings", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
                             TextButton(onClick = activity::returnToPalette, modifier = Modifier.testTag("settings-return-palette")) { Text("Palette", fontSize = 12.sp) }
                         }
                         Box(Modifier.padding(horizontal = 14.dp)) { SettingsSearchField(query, { store.cancelShortcutRecording(false); query = it }, searchFocus) }
@@ -215,7 +215,7 @@ private fun SettingsPreferenceRow(title: String, detail: String, controls: @Comp
 @Composable
 private fun SettingsGeneral(activity: SettingsActivity) {
     val store = activity.store
-    SettingsScrollPane("General", "Make DroidCast fit the way you work.") {
+    SettingsScrollPane("General", "Make Droidcast fit the way you work.") {
         SettingsSectionLabel("Activation")
         SettingsCard {
             SettingsPreferenceRow("Global shortcut", "Show or hide the palette from another app.") {
@@ -224,7 +224,7 @@ private fun SettingsGeneral(activity: SettingsActivity) {
                 OutlinedButton(onClick = { activity.configure(ShortcutRules.PALETTE, "hotkey") }, contentPadding = PaddingValues(12.dp, 4.dp), modifier = Modifier.heightIn(min = 36.dp).testTag("settings-edit-global")) { Text("Change", fontSize = 12.sp) }
             }
             HorizontalDivider(color = PaletteTheme.separator, modifier = Modifier.padding(vertical = 8.dp))
-            SettingsPreferenceRow("Keyboard service", if (activity.serviceEnabled) "Enabled · shortcuts work outside DroidCast." else "Optional · required for shortcuts in other apps.") {
+            SettingsPreferenceRow("Keyboard service", if (activity.serviceEnabled) "Enabled · shortcuts work outside Droidcast." else "Optional · required for shortcuts in other apps.") {
                 TextButton(onClick = activity::enableService, contentPadding = PaddingValues(8.dp), modifier = Modifier.testTag("settings-service")) { Text(if (activity.serviceEnabled) "Manage service" else "Enable service", fontSize = 12.sp) }
             }
         }
@@ -238,10 +238,10 @@ private fun SettingsGeneral(activity: SettingsActivity) {
                 }
             }
         }
-        Text("These keys take precedence inside DroidCast. Existing global assignments still work in other apps.", color = PaletteTheme.tertiary, fontSize = 11.sp, lineHeight = 17.sp, modifier = Modifier.padding(start = 2.dp, bottom = 18.dp))
+        Text("These keys take precedence inside Droidcast. Existing global assignments still work in other apps.", color = PaletteTheme.tertiary, fontSize = 11.sp, lineHeight = 17.sp, modifier = Modifier.padding(start = 2.dp, bottom = 18.dp))
         SettingsSectionLabel("Your workspace")
         SettingsCard {
-            SettingsPreferenceRow("Search folders", "Choose which folders DroidCast can index.") { TextButton(onClick = { activity.selectPage("folders") }) { Text("Manage", fontSize = 12.sp) } }
+            SettingsPreferenceRow("Search folders", "Choose which folders Droidcast can index.") { TextButton(onClick = { activity.selectPage("folders") }) { Text("Manage", fontSize = 12.sp) } }
             HorizontalDivider(color = PaletteTheme.separator, modifier = Modifier.padding(vertical = 6.dp))
             SettingsPreferenceRow("Backup and restore", "Export collections or inspect an import.") { TextButton(onClick = { activity.selectPage("backup") }) { Text("Open", fontSize = 12.sp) } }
         }
@@ -255,8 +255,9 @@ private fun shortcutRows(store: PaletteStore): List<ShortcutSettingsRow> {
     val commands = store.configurationCommands()
     val rows = commands.filter { ShortcutRules.targetAllowed(it.id) }.map { ShortcutSettingsRow(it.id, it.title, it.subtitle, it.alias, it.kind, true) }
     val known = rows.map { it.id }.toSet() + ShortcutRules.PALETTE
-    val unavailable = store.shortcutConfiguration.bindings.keys.filterNot { it in known }.map { ShortcutSettingsRow(it, "Unavailable command", it, "", null, false) }
-    return listOf(ShortcutSettingsRow(ShortcutRules.PALETTE, "Show or hide DroidCast", "Global palette shortcut", "", null, true)) + rows.sortedBy { it.title.lowercase() } + unavailable
+    val unavailableIds = store.shortcutConfiguration.bindings.keys + store.aliases.filterValues { it.isNotBlank() }.keys
+    val unavailable = unavailableIds.filterNot { it in known }.map { ShortcutSettingsRow(it, "Unavailable command", it, store.aliases[it].orEmpty(), if (it.startsWith("files:")) Kind.FILE else null, false) }
+    return listOf(ShortcutSettingsRow(ShortcutRules.PALETTE, "Show or hide Droidcast", "Global palette shortcut", "", null, true)) + rows.sortedBy { it.title.lowercase() } + unavailable
 }
 @Composable
 private fun SettingsShortcuts(activity: SettingsActivity) {
@@ -388,7 +389,7 @@ private fun ShortcutInspector(activity: SettingsActivity, row: ShortcutSettingsR
         Text(row.title, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, lineHeight = 20.sp, modifier = Modifier.padding(start = 10.dp))
     }
     Text(row.detail, fontSize = 11.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 10.dp, bottom = 18.dp))
-    if (!row.available) Text("This command is unavailable. Its binding is retained so you can change or clear it.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(bottom = 14.dp))
+    if (!row.available) Text("This command is unavailable. Its saved shortcut and alias are retained. You can clear them here.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(bottom = 14.dp))
     if (store.dialog == "shortcut-reset") {
         ShortcutDialogs(store, activity.serviceEnabled, activity::enableService, { store.dialog = null }, embedded = true)
         return
@@ -412,7 +413,7 @@ private fun ShortcutInspector(activity: SettingsActivity, row: ShortcutSettingsR
             aliasError?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 11.sp, modifier = Modifier.padding(top = 8.dp).bringIntoViewRequester(aliasErrorVisibility).onGloballyPositioned { aliasErrorPlaced = true }.testTag("settings-alias-error")) }
             Row(Modifier.padding(top = 10.dp)) {
                 Button(onClick = { saveAlias() }, enabled = !recording && row.available, modifier = Modifier.testTag("settings-save-alias")) { Text("Save alias", fontSize = 12.sp) }
-                TextButton(onClick = { saveAlias("") }, enabled = !recording && row.available, modifier = Modifier.testTag("settings-clear-alias")) { Text("Clear", fontSize = 12.sp) }
+                TextButton(onClick = { saveAlias("") }, enabled = !recording && (row.available || row.alias.isNotBlank()), modifier = Modifier.testTag("settings-clear-alias")) { Text("Clear", fontSize = 12.sp) }
             }
         }
     }
@@ -445,12 +446,12 @@ private fun SettingsSearchResults(activity: SettingsActivity, query: String, sel
 }
 @Composable
 private fun SettingsAbout(activity: SettingsActivity) {
-    SettingsScrollPane("About", "DroidCast · native Android command palette") {
+    SettingsScrollPane("About", "Droidcast · native Android command palette") {
         SettingsCard {
             Text("0.4.0-preview · Development", fontWeight = FontWeight.Medium, fontSize = 16.sp)
             Text("An unofficial Android adaptation of Tinycast. Preferences take inspiration from Raycast; the launcher keeps its compact transparent palette.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 12.dp))
-            Text("AGPL-3.0-or-later. Tinycast © 2026 Abue Ammar. Android modifications © DroidCast contributors. React is distributed under the MIT license. No warranty.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 12.dp))
-            TextButton(onClick = { activity.command(Command("web", "Source", "", payload = "https://github.com/moikdev/DroidCast")) }) { Text("Source and notices") }
+            Text("AGPL-3.0-or-later. Tinycast © 2026 Abue Ammar. Android modifications © Droidcast contributors. React is distributed under the MIT license. No warranty.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 12.dp))
+            TextButton(onClick = { activity.command(Command("web", "Source", "", payload = "https://github.com/moikdev/droidcast")) }) { Text("Source and notices") }
         }
         SettingsCard { Text("Compatibility remains partial", fontSize = 14.sp, fontWeight = FontWeight.Medium); Text("Android equivalents, extension APIs and advanced hotkeys are still being developed. See the repository's parity tracker for the tested scope.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 10.dp)) }
     }

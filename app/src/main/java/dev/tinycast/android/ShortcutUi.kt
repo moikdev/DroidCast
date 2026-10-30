@@ -50,7 +50,7 @@ internal fun ShortcutDialogs(store: PaletteStore, enabled: Boolean, enable: () -
             }
         }
         "shortcut-reset" -> Shell("Reset all shortcuts?", "Restore the original keyboard configuration.", { store.dialog = "shortcut-settings" }, embedded = embedded) {
-            Text("This removes all command bindings and restores Ctrl + Space for showing or hiding DroidCast. Your notes, links, pins and Android service consent stay unchanged.", fontSize = 13.sp)
+            Text("This removes all command bindings and restores Ctrl + Space for showing or hiding Droidcast. Your notes, links, pins and Android service consent stay unchanged.", fontSize = 13.sp)
             Row(Modifier.fillMaxWidth().padding(top = 20.dp), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = { store.dialog = "shortcut-settings" }) { Text("Cancel", fontSize = 12.sp) }
                 Button(onClick = { store.resetShortcuts(); store.dialog = "shortcut-settings" }, modifier = Modifier.testTag("shortcut-reset-confirm")) { Text("Reset shortcuts") }

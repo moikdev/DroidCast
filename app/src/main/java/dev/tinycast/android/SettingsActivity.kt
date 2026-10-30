@@ -116,7 +116,7 @@ class SettingsActivity : ComponentActivity() {
     fun command(command: Command) {
         when (command.id) {
             "open-file-search" -> openFileSearch()
-            "backup-write" -> store.prepareExport { createBackup.launch("DroidCast-${java.time.LocalDate.now()}.json") }
+            "backup-write" -> store.prepareExport { createBackup.launch("Droidcast-${java.time.LocalDate.now()}.json") }
             "backup-read" -> importBackup.launch(arrayOf("application/json", "text/plain", "application/octet-stream"))
             "folder-add", "folder-reauthorize" -> {
                 val root = command.payload.takeIf { it.isNotBlank() }

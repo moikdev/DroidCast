@@ -84,12 +84,12 @@ object BackupCodec {
         try {
             val root = android.util.JsonReader(java.io.StringReader(text)).use { reader ->
                 reader.isLenient = false
-                val value = parse(reader) as? JSONObject ?: throw IllegalArgumentException("Choose a DroidCast JSON backup")
+                val value = parse(reader) as? JSONObject ?: throw IllegalArgumentException("Choose a Droidcast JSON backup")
                 require(reader.peek() == android.util.JsonToken.END_DOCUMENT) { "Unexpected data after backup" }
                 value
             }
             keys(root, setOf("format", "version", "categories"))
-            require(root.get("format") == "dev.droidcast.backup") { "Choose a DroidCast JSON backup" }
+            require(root.get("format") == "dev.droidcast.backup") { "Choose a Droidcast JSON backup" }
             require(root.get("version") is Int && root.getInt("version") == 1) { "Unsupported backup version" }
             val sections = root.getJSONObject("categories")
             val names = sections.keys().asSequence().toSet()
@@ -139,7 +139,7 @@ object BackupCodec {
             require(shortcuts.bindings.keys.none { it.startsWith("files:") }) { "Document shortcuts cannot be imported" }
             return BackupDocument(BackupData(items(BackupCategory.NOTES, "notes"), items(BackupCategory.LINKS, "links"), items(BackupCategory.CLIPS, "clips"), pins, aliases, usage, shortcuts), categories)
         } catch (e: IllegalArgumentException) { throw e }
-        catch (_: Exception) { throw IllegalArgumentException("Invalid DroidCast backup") }
+        catch (_: Exception) { throw IllegalArgumentException("Invalid Droidcast backup") }
     }
     fun encode(data: BackupData, categories: Set<BackupCategory>): String {
         require(categories.isNotEmpty()) { "Select at least one category" }

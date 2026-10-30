@@ -102,20 +102,20 @@ class MainActivity : ComponentActivity() {
         }
     }
     override fun onProvideKeyboardShortcuts(data: MutableList<KeyboardShortcutGroup>?, menu: Menu?, deviceId: Int) {
-        data?.add(KeyboardShortcutGroup("DroidCast", listOf(
+        data?.add(KeyboardShortcutGroup("Droidcast", listOf(
             KeyboardShortcutInfo("Focus search", KeyEvent.KEYCODE_L, KeyEvent.META_CTRL_ON),
             KeyboardShortcutInfo("Actions", KeyEvent.KEYCODE_K, KeyEvent.META_CTRL_ON),
             KeyboardShortcutInfo("New note", KeyEvent.KEYCODE_N, KeyEvent.META_CTRL_ON),
             KeyboardShortcutInfo("Pin or unpin", KeyEvent.KEYCODE_D, KeyEvent.META_CTRL_ON)
         )))
-        val titles = store.commands().associate { it.id to it.title } + (ShortcutRules.PALETTE to "Show or hide DroidCast")
+        val titles = store.commands().associate { it.id to it.title } + (ShortcutRules.PALETTE to "Show or hide Droidcast")
         val bindings = store.shortcutConfiguration.bindings.entries.take(50).map { (id, chord) -> KeyboardShortcutInfo(titles[id] ?: "Unavailable command · $id", chord.keyCode, chord.nativeModifiers()) }
         if (bindings.isNotEmpty()) data?.add(KeyboardShortcutGroup(if (store.shortcutConfiguration.bindings.size > 50) "Configured shortcuts (first 50)" else "Configured shortcuts", bindings))
         super.onProvideKeyboardShortcuts(data, menu, deviceId)
     }
     private fun enableShortcut() { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
     fun copyText(text: String) {
-        getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("DroidCast", text))
+        getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("Droidcast", text))
         store.message = "Copied to clipboard"
     }
     private fun open(intent: Intent, unavailableMessage: String = "No available app can open this item") {
@@ -170,7 +170,7 @@ class MainActivity : ComponentActivity() {
             Kind.COMMAND -> when (command.id) {
                 "backup", "backup-export" -> openSettings("backup")
                 "backup-import" -> openSettings("backup", operation = "import")
-                "backup-write" -> store.prepareExport { createBackup.launch("DroidCast-${java.time.LocalDate.now()}.json") }
+                "backup-write" -> store.prepareExport { createBackup.launch("Droidcast-${java.time.LocalDate.now()}.json") }
                 "backup-read" -> importBackup.launch(arrayOf("application/json", "text/plain", "application/octet-stream"))
                 "extensions" -> store.dialog = "extensions"
                 "calculator" -> { store.category = "All"; store.search("= "); store.focusEpoch++ }

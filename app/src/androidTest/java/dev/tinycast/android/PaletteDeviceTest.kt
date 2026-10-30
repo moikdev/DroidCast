@@ -164,7 +164,7 @@ class PaletteDeviceTest {
         assertEquals(id, compose.activity.store.results().first().id)
         key(KeyEvent.KEYCODE_K, true)
         repeat(7) { key(KeyEvent.KEYCODE_DPAD_DOWN) }
-        compose.onNodeWithTag("action-Delete from DroidCast").assertIsSelected().assertIsDisplayed()
+        compose.onNodeWithTag("action-Delete from Droidcast").assertIsSelected().assertIsDisplayed()
         key(KeyEvent.KEYCODE_ENTER)
         compose.onNodeWithTag("confirm-delete").performClick()
         assertFalse(compose.activity.store.notes.any { it.id == id })

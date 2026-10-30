@@ -36,7 +36,7 @@ internal fun BackupDialog(store: PaletteStore, run: (Command) -> Unit, close: ()
         return
     }
     val importing = preview != null && store.dialog == "backup-preview"
-    Shell(if (importing) "Preview backup" else "Backup and restore", if (importing) "Review categories and conflicts before applying." else "Portable collections · DroidCast JSON format v1", ::dismiss, embedded = embedded) {
+    Shell(if (importing) "Preview backup" else "Backup and restore", if (importing) "Review categories and conflicts before applying." else "Portable collections · Droidcast JSON format v1", ::dismiss, embedded = embedded) {
         val available = if (importing) preview!!.categories else BackupCategory.entries.toSet()
         val selected = if (importing) store.restoreCategories else store.backupCategories
         val data = if (importing) preview!!.data else store.backupSnapshot()

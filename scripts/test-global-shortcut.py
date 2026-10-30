@@ -46,7 +46,7 @@ adb("shell", "am", "force-stop", "dev.tinycast.android")
 adb("shell", "am", "start", "-W", "-n", "dev.tinycast.android/.MainActivity")
 adb("shell", "settings", "put", "secure", "enabled_accessibility_services", "dev.tinycast.android/dev.tinycast.android.PaletteShortcutService")
 adb("shell", "settings", "put", "secure", "accessibility_enabled", "1")
-wait_for(lambda: "Bound services:{Service[label=DroidCast" in adb("shell", "dumpsys", "accessibility"), "Shortcut service did not bind")
+wait_for(lambda: "Bound services:{Service[label=Droidcast" in adb("shell", "dumpsys", "accessibility"), "Shortcut service did not bind")
 devices = adb("shell", "getevent", "-pl")
 keyboard = re.search(r"add device \d+: (/dev/input/event\d+)\s+name:\s+\"qwerty2\"", devices).group(1)
 

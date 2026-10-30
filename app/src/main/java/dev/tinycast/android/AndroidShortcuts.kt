@@ -103,7 +103,7 @@ object ShortcutRuntime {
         val activity = foreground.get()?.takeUnless { it.isFinishing || it.isDestroyed }
         if (activity != null) activity.acceptShortcut(token, toggleExisting = true)
         else try { context.startActivity(Intent(context, MainActivity::class.java).setAction(ACTION).putExtra(TOKEN, token).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_REORDER_TO_FRONT)) }
-        catch (_: Exception) { requests.consume(token); Toast.makeText(context, "Could not open DroidCast", Toast.LENGTH_SHORT).show() }
+        catch (_: Exception) { requests.consume(token); Toast.makeText(context, "Could not open Droidcast", Toast.LENGTH_SHORT).show() }
     }
 }
 

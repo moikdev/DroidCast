@@ -1,9 +1,9 @@
 {
   "source_base": "6ea2b328c6d860d4944c94318649fecc058b5042",
   "development_build_after_tag": "v0.4.0-preview",
-  "apk_sha256": "dd30be86133fb420b4a94e593a6781413d10ed5dce3bda6a2c9fe6c666da9cca",
-  "android_test_apk_sha256": "31db3ec6f3662db982b788fb72c00513bacadd03e16fbe4f2d18808ac06836af",
-  "installed_apk_sha256": "dd30be86133fb420b4a94e593a6781413d10ed5dce3bda6a2c9fe6c666da9cca",
+  "apk_sha256": "d766d953c51667faea871a16de1360e0dc8bdf4bbde4d03e15cecb8bc1b1bbf5",
+  "android_test_apk_sha256": "8600d892e9176661e26a4e934e53ad3ea8edcdbce68ede29b83d00a34413d682",
+  "installed_apk_sha256": "d766d953c51667faea871a16de1360e0dc8bdf4bbde4d03e15cecb8bc1b1bbf5",
   "installed_matches": true,
   "local_validation_only": true,
   "github_ci_active": false,
@@ -30,7 +30,7 @@
     "lint_errors": 0,
     "lint_warnings": 39,
     "jvm": {
-      "tests": 64,
+      "tests": 66,
       "failures": 0,
       "errors": 0,
       "skipped": 0
@@ -56,21 +56,21 @@
   },
   "final_native": {
     "tablet": {
-      "passed": 17,
-      "total": 17,
+      "passed": 21,
+      "total": 21,
       "log": "artifacts/settings-tablet-final-focused.log",
       "scope": "SettingsDeviceTest, SettingsRouteDeviceTest, FolderDeviceTest",
-      "elapsed_seconds": 86.858
+      "elapsed_seconds": 92.723
     },
     "phone": {
-      "passed": 17,
-      "total": 17,
+      "passed": 21,
+      "total": 21,
       "log": "artifacts/settings-phone-final-focused.log",
       "scope": "SettingsDeviceTest, SettingsRouteDeviceTest, FolderDeviceTest",
-      "elapsed_seconds": 83.9
+      "elapsed_seconds": 93.355
     }
   },
-  "final_correction_after_full_suite": "Settings recorder focus restoration now skips the absent Record button while reset confirmation replaces the inspector. Folder revalidation also updates the status count after grant changes; the final test asserts zero after revocation. File search evidence waits for settled status. Review corrections add cancellation-safe grant ownership and clear stale alias feedback; final targeted tests cover those paths, and eleven deterministic JVM tests cover the grant transaction, with a three-failure negative control for the old bookkeeping placement. The final storage correction uses a process-wide coordinator, verifies committed bytes, and passes two real Android AtomicFile interleaving/failure regressions. Restoring the instance-local mutex deterministically deletes the paused pending write. Full suites/hardware use the earlier APK listed under full_suite_build; final targeted suites and screenshots use the final APK.",
+  "final_correction_after_full_suite": "Settings recorder focus restoration now skips the absent Record button while reset confirmation replaces the inspector. Folder revalidation also updates the status count after grant changes; the final test asserts zero after revocation. File search evidence waits for settled status. Review corrections add cancellation-safe grant ownership and clear stale alias feedback; final targeted tests cover those paths, and thirteen deterministic JVM tests cover the grant transaction, with a three-failure negative control for the old bookkeeping placement. The final storage correction uses a process-wide coordinator, verifies committed bytes, and passes two real Android AtomicFile interleaving/failure regressions. Restoring the instance-local mutex deterministically deletes the paused pending write. Full suites use the earlier APK listed under full_suite_build; the final hardware run independently passes sixteen main cases and five Alt+Q cases with restoration; final targeted suites and screenshots use the final APK.",
   "hardware": {
     "device": "emulator-5580",
     "app_requires_root": false,
@@ -139,6 +139,26 @@
       {
         "name": "service disable/reconnect respects persisted configuration",
         "passed": true
+      },
+      {
+        "name": "record and persist Alt + Q",
+        "passed": true
+      },
+      {
+        "name": "Alt + Q summons and dismisses from Settings",
+        "passed": true
+      },
+      {
+        "name": "Alt + Q summons and dismisses from Home",
+        "passed": true
+      },
+      {
+        "name": "Alt + Q cannot activate globally without service consent",
+        "passed": true
+      },
+      {
+        "name": "Alt + Q persists across service disable and reconnect",
+        "passed": true
       }
     ],
     "original_service_consent_restored": true,
@@ -149,9 +169,38 @@
       "u0_a213      dev.tinycast.android"
     ],
     "app_unprivileged": true,
-    "apk_sha256": "8bcf5edd2f0d9f6d74e3c2a32e0eae62799247ae2761a63839e9516cdce9a777",
+    "apk_sha256": "d766d953c51667faea871a16de1360e0dc8bdf4bbde4d03e15cecb8bc1b1bbf5",
     "rounds": 1,
-    "log": "artifacts/settings-hardware-final.log"
+    "log": "artifacts/settings-hardware-current.log",
+    "alt_q": {
+      "cases": [
+        {
+          "name": "record and persist Alt + Q",
+          "passed": true
+        },
+        {
+          "name": "Alt + Q summons and dismisses from Settings",
+          "passed": true
+        },
+        {
+          "name": "Alt + Q summons and dismisses from Home",
+          "passed": true
+        },
+        {
+          "name": "Alt + Q cannot activate globally without service consent",
+          "passed": true
+        },
+        {
+          "name": "Alt + Q persists across service disable and reconnect",
+          "passed": true
+        }
+      ],
+      "log": "artifacts/settings-hardware-alt-q.log",
+      "original_preferences_restored": true,
+      "original_service_consent_restored": true,
+      "adbd_unprivileged": true,
+      "app_unprivileged": true
+    }
   },
   "earlier_runs": [
     {
@@ -185,7 +234,7 @@
       "P2 SAF acquisition/commit cancellation ownership",
       "P3 stale alias validation after Clear"
     ],
-    "ownership_jvm_tests": 11,
+    "ownership_jvm_tests": 13,
     "negative_control_expected_failures": 3,
     "negative_control_observed_failures": 3,
     "negative_control_log": "artifacts/settings-grant-negative-control.log"
@@ -210,6 +259,32 @@
       "pending_write_preserved": false
     },
     "log": "artifacts/settings-storage-negative-control.log"
+  },
+  "latest_ownership_corrections": {
+    "prior_head": "7e5464abeabf1bc97a1d0610cb5dc8ec972d2f66",
+    "grant_transaction_jvm_tests": 13,
+    "new_native_cases": 4,
+    "negative_controls": {
+      "provisional": {
+        "expected_failures": 1,
+        "observed_failures": 1,
+        "log": "artifacts/settings-ownership-negative-provisional.log"
+      },
+      "verification": {
+        "expected_failures": 1,
+        "observed_failures": 1,
+        "log": "artifacts/settings-ownership-negative-verification.log"
+      }
+    },
+    "provisional_rollback": {
+      "replacement_waited_for_validation": true,
+      "cancelled_validation_released_grant": true,
+      "replacement_entries": 0,
+      "replacement_matches": 0,
+      "expired_scope_reported": true
+    },
+    "indeterminate_result": "Permission retained after two failed post-rename verification reads; reopening checks actual stored roots; process-death recovery not certified",
+    "branding": "Droidcast; repository moikdev/droidcast"
   },
   "manual_rotation": {
     "original_rotation": "free",
@@ -247,7 +322,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/alias-cleared.png",
-      "sha256": "dbfd1b6a9f31d31d18ae3ed0ed4ba966b3019f3639c17966f5e5a65b55529b51",
+      "sha256": "b4809b8615f3b90496676899d57534f195ff6e311a4b6826f34fb3c011dfd188",
       "pixels": [
         1080,
         2340
@@ -255,7 +330,15 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/alias-conflict.png",
-      "sha256": "792a8a7aea85f7d742f89a3f3f7b4ab1899c6e9b66285a4cf6aa5222f1425c9e",
+      "sha256": "783eb83b217f25f7b94679e584ecfaefeb6e69e18c3cb86a38d01bf083b6a926",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/alias-reused.png",
+      "sha256": "223a60ef3bebe8f8963f8f8d8d116f4e3fcdc708c301dd285dfba8739d48557f",
       "pixels": [
         1080,
         2340
@@ -263,7 +346,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/command-inspector.png",
-      "sha256": "3a8c7026c0cbaeee16658ef8b9db3176ad6fab1817671ad9fce861e78379271c",
+      "sha256": "be222a13553119909671bd641ced1e8c75d065ae1ada7b4fa5d417926aa90e30",
       "pixels": [
         1080,
         2340
@@ -271,7 +354,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/general.png",
-      "sha256": "8e37b22b652e964af3d66c17258b7d9e98959a02f3aa454646eade98155cd75b",
+      "sha256": "c7c55d47c57817baf54e54f4ef244654606b8567e0c7a22daf0c60609275d3e7",
       "pixels": [
         1080,
         2340
@@ -279,7 +362,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/inline-backup-confirm.png",
-      "sha256": "686ce08371cf43d854f9e85ef672701727d0cfeab1d90942407176c0de15dcc8",
+      "sha256": "c4efd8dd9ed2b088782fc340174eb389ff6fdfde8e35756545a4f92f23a1a32f",
       "pixels": [
         1080,
         2340
@@ -287,7 +370,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/inline-conflict.png",
-      "sha256": "f89b378dc3d5a27d753d7e9b1751aba66d056b5b941578fb34c9df3753274805",
+      "sha256": "aaae94451287ffd183ec72a964761f835a55d9d70754a8ab96b1f4bacd4f0cb9",
       "pixels": [
         1080,
         2340
@@ -295,7 +378,15 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/inline-recording.png",
-      "sha256": "0d238d06d2991d7649d6df5974ce29db01e0278975d70a15742cf62f8fafc525",
+      "sha256": "61b3e708a041635fcd21c2eff066d8b78ecb26e3b1f67768023ae8b5ad23a568",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/unavailable-alias.png",
+      "sha256": "1bccaa00655856be27cd00e20fcdad587e90ef5b6a4dcc3e32d5555ca9dcbe5c",
       "pixels": [
         1080,
         2340
@@ -303,7 +394,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/alias-cleared.png",
-      "sha256": "60b965f912faec6a7a0950dad93c8e53080461f1803008c37dfd77b59843453c",
+      "sha256": "f7642980d99a7a4f167657becb6298dcca5cd51488271e4d3c85817f20dfe5b5",
       "pixels": [
         1920,
         1200
@@ -311,7 +402,15 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/alias-conflict.png",
-      "sha256": "7d9d8c056359b5fc93f3fb74b4d0cbb2e7457534c9d7e6438fd5bb2310da5499",
+      "sha256": "ebf09ffdb9e9f72bbbe57ce86c27ee66064e96080ec8830ed4d22e8917b2be44",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/alias-reused.png",
+      "sha256": "642194baf38d43f2640f5b867b55e5944ed7ceb2ee09bd55917ed26d7033d241",
       "pixels": [
         1920,
         1200
@@ -319,7 +418,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/command-inspector.png",
-      "sha256": "fec2c224dbdc002566a45a7d3f9a6f21308c3a1f4367405726b6c04ede4c634e",
+      "sha256": "d30a5553cf5a0eb3c72a45e91f8f9a4fa8fbb067512a98a32e9ae31a5caefc69",
       "pixels": [
         1920,
         1200
@@ -327,7 +426,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/filtered-commands.png",
-      "sha256": "c3750963f1381c989949fd18a3dbc789ae8597568c7cee63fab0f049f9317cc6",
+      "sha256": "4a953397d3a40d34d5b8bf06bf4b5512b045fb870d73a541a3d96f5c87724830",
       "pixels": [
         1920,
         1200
@@ -335,7 +434,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/general.png",
-      "sha256": "b428f6dceb98b19d87ec3196c17b100af178b60b54e6a698ce02a124517f2360",
+      "sha256": "b99bc7e11ce6c4f508686bfd62165c8c381eb13a6e4f08acccb31b69d3f32822",
       "pixels": [
         1920,
         1200
@@ -343,7 +442,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/inline-backup.png",
-      "sha256": "4b02bc9f9f370f91902cab17f9ab5fe24ea352daa6d0d37ea59e698c11ea6a25",
+      "sha256": "7d32754be4f8219a11b5edd49e5d39fca927cf5e2fbb11314ec276048d88bcac",
       "pixels": [
         1920,
         1200
@@ -351,7 +450,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/inline-conflict.png",
-      "sha256": "4f9e9495e9874caff72110bb48ee302967e1f1c9536fdffaf201fdf353d8b5d5",
+      "sha256": "d73904de2641ec3d17d0364dc2ba7aef88b13f9b8ff88727af37e557baf38a68",
       "pixels": [
         1920,
         1200
@@ -359,7 +458,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/inline-recording.png",
-      "sha256": "5efa89ab0e4d70aba959beb199d7e9dfc1f84084187451f9ea66cf32af168986",
+      "sha256": "2991aae13fa3515c4252d524e4835f4592d999e3195b6e8592b1051690078a51",
       "pixels": [
         1920,
         1200
@@ -367,10 +466,18 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/portrait-inspector.png",
-      "sha256": "01f324b823c90c97f4d3de18b68a5c45e5393b3756c2f18cf544977685bd8cb9",
+      "sha256": "b794ae652b8ee8919026834e25a3832b087ed18aa692807a86d9ee38b83fad80",
       "pixels": [
         1200,
         1920
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/unavailable-alias.png",
+      "sha256": "6252f200db2952c920fc69fbc6ea5631e107fe6aca5992d2050b5aa6680bff06",
+      "pixels": [
+        1920,
+        1200
       ]
     },
     {
@@ -383,7 +490,7 @@
     },
     {
       "path": "docs/screenshots/parity-folders/folder-configured.png",
-      "sha256": "096a50d07ddd06138c4f786fa4f937d0ee128c72ae1b3b112402c15e95db1b3d",
+      "sha256": "590fc19a02ed136fdeb94cf8e9316b97163e883aa51cd4e0363ce359e2f5a5ba",
       "pixels": [
         1920,
         1200
@@ -391,7 +498,7 @@
     },
     {
       "path": "docs/screenshots/parity-folders/folder-removed.png",
-      "sha256": "6d2d97d3d36e6cd5af764e90b9fce0f26c236d78e7cae4422e7afbefdb2a186e",
+      "sha256": "7ab1543875978ac9a5c671857933ec2cfe0d07d8e2434686e43b73fcb91510c6",
       "pixels": [
         1920,
         1200
@@ -399,7 +506,7 @@
     },
     {
       "path": "docs/screenshots/parity-folders/native-folder-picker.png",
-      "sha256": "827a13f9b436fd45bcfebf01ce773bae5d1ae797231af4070dbaced88f88a149",
+      "sha256": "1c72bf8bc2fe0e9f2956a56298ff2509b31116ec48dd24b46864b4127abde795",
       "pixels": [
         1920,
         1200
@@ -407,7 +514,7 @@
     },
     {
       "path": "docs/screenshots/parity-folders/opened-document.png",
-      "sha256": "bfbe99a5348508cc4f377a23142c1da6b16fe686f02bc648aa63925f36d00366",
+      "sha256": "be9bea1eb3f84d33674fa1e95f1974f37bae68e886f5f939a94fbf9dae854dad",
       "pixels": [
         1920,
         1200
@@ -415,7 +522,7 @@
     },
     {
       "path": "docs/screenshots/parity-folders/permission-expired.png",
-      "sha256": "6da10ff4a71f2b89181696ab88c695b418dfe0cbf8faa806f16eb91800180187",
+      "sha256": "119ae8e355305b6be0b6bbec34b57056f51df6a633654576f37d150f735ee046",
       "pixels": [
         1920,
         1200
@@ -423,7 +530,7 @@
     },
     {
       "path": "docs/screenshots/parity-folders/replacement-palette.png",
-      "sha256": "fedc08b7cfc6dbd2a13f84ad9ac498dab7537ccc7a6921af1af79cef9a9d15ef",
+      "sha256": "a2271285c8d1631759c96d66e63317ce095c2e78d72be480a03cb3c14fb106f4",
       "pixels": [
         1920,
         1200
@@ -431,7 +538,7 @@
     },
     {
       "path": "docs/screenshots/parity-folders/search-result.png",
-      "sha256": "f106e7f0fda466f6dd3729b7c1c92cb4a805c5e4eae419855a0e7e39c0901cfe",
+      "sha256": "597aae66fe26ac24b9ce14eed0958d78b400f7b9485530db239fd5915d2efb2e",
       "pixels": [
         1920,
         1200

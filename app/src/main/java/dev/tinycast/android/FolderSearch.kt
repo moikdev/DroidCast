@@ -30,7 +30,7 @@ private data class ProviderListing(val documents: List<ProviderDocument>, val pa
 /** One bounded worker for the process, even if a provider ignores cancellation. */
 private object FolderProviderQueries {
     private val executor = ThreadPoolExecutor(1, 1, 0, TimeUnit.MILLISECONDS, ArrayBlockingQueue(1), { task ->
-        Thread(task, "DroidCast-folder-provider").apply { isDaemon = true }
+        Thread(task, "Droidcast-folder-provider").apply { isDaemon = true }
     })
     suspend fun query(app: Application, uri: Uri): ProviderListing = withTimeout(5000) {
         suspendCancellableCoroutine { continuation ->
@@ -69,7 +69,8 @@ class FolderSearch internal constructor(
     private val app: Application,
     private val scope: CoroutineScope,
     atomicFile: (File) -> AtomicFile = { AtomicFile(it) },
-    private val initialReadDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val initialReadDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val beforeFolderValidation: suspend () -> Unit = {}
 ) {
     private val directory = File(app.filesDir, "folder-search")
     private val configFile = atomicFile(File(directory, "config.json"))
@@ -164,7 +165,11 @@ class FolderSearch internal constructor(
             file.finishWrite(stream); finished = true
             // AtomicFile can log a failed rename without throwing. Do not transfer
             // permission ownership until the saved bytes have been verified.
-            check(readBytes(file, limit).contentEquals(bytes)) { "Folder storage write could not be verified" }
+            val saved = try { readBytes(file, limit) } catch (_: Exception) {
+                // Reconcile a transient verification failure while storage remains serialized.
+                try { readBytes(file, limit) } catch (failure: Exception) { throw IndeterminateFolderWrite(failure) }
+            }
+            check(saved.contentEquals(bytes)) { "Folder storage write could not be verified" }
             return true
         } catch (error: Exception) { if (!finished) file.failWrite(stream); throw error }
     }
@@ -230,22 +235,24 @@ class FolderSearch internal constructor(
                 storageMutex = disk
             )
             try {
-                ownership.acquire()
-                val root = FolderProviderQueries.query(app, DocumentsContract.buildDocumentUriUsingTree(uri, DocumentsContract.getTreeDocumentId(uri))).documents.firstOrNull()
-                    ?: throw IOException("Folder unavailable")
-                require(root.mime == DocumentsContract.Document.MIME_TYPE_DIR)
-                val existing = folders.firstOrNull { it.uri == value }
-                val added = SearchFolder(value, root.title, existing?.ownsGrant == true || ownership.newlyAcquired)
-                val next = folders.filterNot { it.uri == value } + added
-                ownership.commit(disk) { check(write(configFile, config(next, true, includeInLauncher), 65536)) }
+                val next: List<SearchFolder>
+                try {
+                    ownership.acquire()
+                    beforeFolderValidation()
+                    val root = FolderProviderQueries.query(app, DocumentsContract.buildDocumentUriUsingTree(uri, DocumentsContract.getTreeDocumentId(uri))).documents.firstOrNull()
+                        ?: throw IOException("Folder unavailable")
+                    require(root.mime == DocumentsContract.Document.MIME_TYPE_DIR)
+                    val existing = folders.firstOrNull { it.uri == value }
+                    val added = SearchFolder(value, root.title, existing?.ownsGrant == true || ownership.newlyAcquired)
+                    next = folders.filterNot { it.uri == value } + added
+                    ownership.commit(disk) { check(write(configFile, config(next, true, includeInLauncher), 65536)) }
+                } finally { ownership.releaseIfUncommitted() }
                 folders = next; enabled = true; readable = readGrants(); errors = errors - value; error = null
                 refresh()
             } catch (cancelled: CancellationException) { throw cancelled }
+            catch (_: IndeterminateFolderWrite) { error = "Folder save could not be verified. Permission was retained. Reopen Settings to check the saved folders." }
             catch (_: Exception) { error = "Folder access could not be kept. Choose an available folder from a provider that supports persistent access." }
-            finally {
-                try { ownership.releaseIfUncommitted() }
-                finally { changing = false }
-            }
+            finally { changing = false }
         }
     }
     fun changeEnabled(value: Boolean) = changeSettings(folders, value, includeInLauncher)
