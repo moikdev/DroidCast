@@ -23,7 +23,7 @@ DroidCast reproduces the central summon → search → run → dismiss workflow.
 | Snippet templates | Missing | Saved clips and notes are plain content, not variable-aware templates. No keyword expansion or nested snippets. |
 | Shell/custom commands | Replacement | The Android host exposes no process execution. macOS tools and native helpers do not port directly; scoped Android intents are a more useful first replacement. |
 | Window management | Missing | No half/quarter/third placement, resizing, display movement or snap commands. System split-screen and divider resizing were exercised separately; that is not an implemented DroidCast command. |
-| System actions | Partial | Opens Android Settings. Wi-Fi/Bluetooth search keywords lead to the root Settings command; they do not yet open dedicated settings pages or toggle hardware. |
+| System actions | Partial | Root Settings plus 11 dedicated Android destinations, including Wi-Fi, Bluetooth, display, sound, storage, accessibility and DroidCast app-info/notification settings. Missing hardware toggles and other upstream privileged actions remain open. Battery/security destination validation is tracked separately in [#22](https://github.com/moikdev/DroidCast/issues/22). |
 | Calendar and meeting actions | Missing | No calendar permission flow, event search, upcoming-meeting card or join command. |
 | Notes | Partial | Persistent text/Markdown source, search and an editor. No rendered Markdown, file-backed notebook, floating companion editor or note import/export. |
 | Emoji and symbol picker | Missing | No local catalog, search grid or recent emoji collection. |
@@ -59,4 +59,4 @@ The following affect the design of improvements; they do not excuse labeling an 
 - Window behavior depends on device/version. The accessibility API's split-screen toggle is a device-dependent action, not a general 34-action desktop window manager. [Multi-window](https://developer.android.com/develop/ui/views/layout/support-multi-window-mode), [split-screen action](https://developer.android.com/reference/android/accessibilityservice/AccessibilityService#GLOBAL_ACTION_TOGGLE_SPLIT_SCREEN).
 - Dedicated settings destinations have public intents; hardware toggles and privileged actions need separate capability checks and cannot be inferred from those intents. [Settings intents](https://developer.android.com/reference/android/provider/Settings#ACTION_WIFI_SETTINGS).
 
-The recommended implementation order and acceptance criteria are in [ROADMAP.md](ROADMAP.md).
+The recommended implementation order and acceptance criteria are in [ROADMAP.md](ROADMAP.md). The live enhancement/PR loop is tracked in [docs/PARITY-TRACKER.md](docs/PARITY-TRACKER.md) and [issue #1](https://github.com/moikdev/DroidCast/issues/1).

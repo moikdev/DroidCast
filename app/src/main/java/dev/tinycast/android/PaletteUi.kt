@@ -84,7 +84,7 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
         LaunchedEffect(store.selected, results.map { it.id }) {
             if(results.isNotEmpty()) { store.selected=store.selected.coerceIn(results.indices); list.animateScrollToItem(store.selected) }
         }
-        LaunchedEffect(store.message) { store.message?.let { store.message=null; snack.showSnackbar(it, duration=SnackbarDuration.Short) } }
+        LaunchedEffect(store.message) { store.message?.let { snack.showSnackbar(it, duration=SnackbarDuration.Short); if (store.message == it) store.message=null } }
         BoxWithConstraints(Modifier.fillMaxSize().onPreviewKeyEvent { handleKey(it.nativeKeyEvent) }.safeDrawingPadding()) {
             val wide = maxWidth >= 700.dp
             val top = if(wide && maxHeight > 600.dp) maxHeight * .18f else 12.dp
