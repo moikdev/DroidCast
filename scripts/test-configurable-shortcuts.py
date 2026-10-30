@@ -269,6 +269,9 @@ try:
         # Android may already name the remembered viewer in the chooser title.
         click("Just once")
     wait(lambda: "com.android.htmlviewer/" in focused(), "Recent-document binding did not reach its viewer")
+    node("tinycast-soak-document.txt")
+    node("Tinycast extended text file test.", contains=True)
+    (output / "document-viewer.xml").write_bytes(ET.tostring(tree()))
     (output / "document-viewer.png").write_bytes(raw("exec-out", "screencap", "-p"))
     passed("recent-document binding opens the persisted TXT fixture")
 

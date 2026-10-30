@@ -28,6 +28,7 @@ internal fun ShortcutDialogs(store: PaletteStore, enabled: Boolean, enable: () -
                     event.action != KeyEvent.ACTION_DOWN -> false
                     event.keyCode == KeyEvent.KEYCODE_ESCAPE && event.asChord().modifiers == 0 -> { store.cancelShortcutRecording(); true }
                     KeyEvent.isModifierKey(event.keyCode) -> false
+                    event.keyCode == KeyEvent.KEYCODE_TAB && event.asChord().modifiers == ShortcutRules.SHIFT -> false
                     event.asChord().modifiers == 0 && event.keyCode in setOf(KeyEvent.KEYCODE_TAB, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_SPACE) -> false
                     event.repeatCount > 0 -> key in captured
                     else -> { captured.add(key); store.captureShortcut(event.asChord()); true }
@@ -36,7 +37,7 @@ internal fun ShortcutDialogs(store: PaletteStore, enabled: Boolean, enable: () -
                 Surface(border = BorderStroke(1.dp, PaletteTheme.border), modifier = Modifier.fillMaxWidth().testTag("shortcut-candidate")) {
                     Text(store.recordingCandidate?.label() ?: "Press a shortcut…", fontSize = 21.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(20.dp))
                 }
-                Text("Use Ctrl, Alt or Meta with a key, or F1–F12. Known Android and palette conflicts are rejected. Tab moves between controls; Escape cancels.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 16.dp))
+                Text("Use Ctrl, Alt or Meta with a key, or F1–F12. Known Android and palette conflicts are rejected. Tab / Shift+Tab move between controls; Escape cancels.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 16.dp))
                 Text("Global shortcuts are paused while this recorder is open. Nothing changes until you save.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 12.dp))
                 store.recordingError?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp, modifier = Modifier.padding(top = 14.dp).testTag("shortcut-record-error")) }
                 Row(Modifier.fillMaxWidth().padding(top = 20.dp), horizontalArrangement = Arrangement.End) {

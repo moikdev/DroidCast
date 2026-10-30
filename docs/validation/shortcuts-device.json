@@ -1,15 +1,15 @@
 {
   "tablet": {
     "passed": 51,
-    "seconds": 264.14
+    "seconds": 228.03
   },
   "phone": {
     "passed": 22,
-    "seconds": 123.77
+    "seconds": 101.85
   },
   "tablet_restored": true,
   "adbd_unprivileged": true,
-  "apk_sha256": "2b6b8c3a47a5895606470d091811959f47fbc1c95b459055d5c64cb43a95290e",
+  "apk_sha256": "d0b73918d045e8975c8d93496f2ef7c718f2f00f99412d995d4c12edd7974576",
   "installed_apk_matches": true,
   "jvm_passed": 46,
   "build_and_lint": "passed",
