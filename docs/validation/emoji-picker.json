@@ -1,0 +1,167 @@
+{
+  "base": "34dd0cd4e1f1ee7fbe836d8475ee92f0b6f4797e",
+  "application": "dev.tinycast.android",
+  "version": "0.4.0-preview (5)",
+  "emulator": "Tinycast_Tablet_API_36 / emulator-5580 / API 36 / arm64",
+  "layouts": {
+    "tablet": "1920×1200 / 240 dpi",
+    "phone": "1080×2340 / 420 dpi"
+  },
+  "apk_sha256": "81233a8aae3d5a30da83e418d1e3288b603a11afd948c934c7405012ddd820f2",
+  "test_apk_sha256": "afcb044b6f42de444d23752e4f18a0e39f574aea463096bd5df42d6f7937c93f",
+  "installed_apk_matches": true,
+  "before_apk_sha256": "fe44ce5611ccb22e8634baaddfd19dcdc6a155aafb5a3117695d58ae9eded04c",
+  "jvm": {
+    "tests": 71,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "Error": 0,
+    "Warning": 41
+  },
+  "instrumentation": {
+    "tablet": {
+      "passed": 8,
+      "total": 8,
+      "log": "artifacts/emoji-tablet.log"
+    },
+    "phone": {
+      "passed": 8,
+      "total": 8,
+      "log": "artifacts/emoji-phone.log"
+    }
+  },
+  "restart": "{\"airplane_mode\": true, \"process_force_stopped\": true, \"favorite_restored\": true, \"recent_restored\": true}\nPreferences and airplane mode restored after force-stop\n",
+  "final_adbd_identity": "uid=2000(shell) gid=2000(shell) groups=2000(shell),1004(input),1007(log),1011(adb),1015(sdcard_rw),1028(sdcard_r),1078(ext_data_rw),1079(ext_obb_rw),3001(net_bt_admin),3002(net_bt),3003(inet),3006(net_bw_stats),3009(readproc),3011(uhid),3012(readtracefs) context=u:r:shell:s0",
+  "final_size": "Physical size: 1920x1200",
+  "final_density": "Physical density: 240",
+  "final_airplane_mode": "0",
+  "app_process": [
+    "u0_a213      dev.tinycast.android"
+  ],
+  "ci": "inactive; local/android reports local validation only",
+  "screenshots": [
+    {
+      "path": "docs/screenshots/parity-emoji/before-tablet.png",
+      "sha256": "5289db578b640964f3fd202ad2b5c5acfce23067b3785a5c99b75c6384a026c1",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-alias-search.png",
+      "sha256": "518b95ebbc616e16364175005903d694fe54450639bd9bb0b3a36e2e0b0959c8",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-empty-favorites.png",
+      "sha256": "733995027336262cea6bd5a72a1d9a54bce56d7ed4543b2ebc90dc6999c59f04",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-family-copied.png",
+      "sha256": "b0f61d8a5586d749f8f6dfc7753ed1311e5daba36170a931bb13b7803c944c96",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-favorites.png",
+      "sha256": "ff451f7a6403e228165a9bb45dd8a32875a223ef7e7172681434f58955a353f4",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-grid.png",
+      "sha256": "94dbd24279219905ff1112b662d91629c49e0d0a93a11a25e8d7699fc86daca1",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-keyboard-copy.png",
+      "sha256": "bfffc1b3f685e315c16a237c3ef93ce09842abb70233e685d4489c80c647ac14",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-no-results.png",
+      "sha256": "b52e020dc70ffa3afc1017a88ff7c489bc68cf78874373460f3af76a5a4da20e",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-recent.png",
+      "sha256": "04f12781c7a5208d9d030a561ae5c64dc3ce3f14d7d59988dbbc5652a334638f",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/phone-symbols.png",
+      "sha256": "c9d8163985d89e9a722fead49abe0751ad57563a61bdd2607d01eaf009543f2a",
+      "width": 1080,
+      "height": 2340
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-alias-search.png",
+      "sha256": "caa0a544bcd73799192cee831b8b37a358a2284f7b4b46db74818196fcf127ef",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-empty-favorites.png",
+      "sha256": "681ff7794f34a8ca0d964b2c7a76208c550eba2d25406ba14fa6583ec8369250",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-family-copied.png",
+      "sha256": "d15fa4e67b5ed4ad7beb00f98c2d5b85b33e405dbc74e4828818d65fa7ad3165",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-favorites.png",
+      "sha256": "fa0838e8dd781813cc498b200d209422d78861d78614e0c6d8c757abf01a0d57",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-grid.png",
+      "sha256": "9846634bc0d1078a26def83556d7966ce7f6d14bac7d5417448b5e11c8d13636",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-keyboard-copy.png",
+      "sha256": "19cf37ab86f92dabea46a35dbbe7faf74331d49cb65cfdddd75f9c279dad8bce",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-no-results.png",
+      "sha256": "3d32f644f2a703017687820a7c755dba83f0304a965023451e8bce410099b074",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-recent.png",
+      "sha256": "3aa41e52ed994082d7fbb0a71555bb3471550e006c72ffcea2ccb1b356a8f2f8",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-restart-favorite.png",
+      "sha256": "62e6fcd120783493791466171ae8849e679fc5ba09c80b757888f2d3856bb049",
+      "width": 1920,
+      "height": 1200
+    },
+    {
+      "path": "docs/screenshots/parity-emoji/tablet-symbols.png",
+      "sha256": "7d3dd974409a53f86c3c90183c8dc3f8e9232d1ff1706e8129af672cfef1f094",
+      "width": 1920,
+      "height": 1200
+    }
+  ]
+}

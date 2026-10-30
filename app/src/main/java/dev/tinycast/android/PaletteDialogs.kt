@@ -74,7 +74,7 @@ fun PaletteDialogs(store: PaletteStore, provided: Command?, globalEnabled: Boole
         }
         "licenses" -> Shell("License and attribution", "Droidcast · Android adaptation of Tinycast", close) {
             Text("Tinycast Copyright (C) 2026 Abue Ammar. Android implementation and modifications: Droidcast contributors, 2026.", fontSize = 13.sp, lineHeight = 20.sp)
-            Text("Licensed under the GNU Affero General Public License, version 3 or later. Distributed without warranty. React is distributed under the MIT license. Full notices and corresponding source are included in the source repository.", color = muted, fontSize = 12.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 12.dp))
+            Text("Licensed under the GNU Affero General Public License, version 3 or later. Distributed without warranty. React and the GitHub gemoji dataset are distributed under their MIT licenses. Full notices and corresponding source are included in the source repository and app assets.", color = muted, fontSize = 12.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 12.dp))
             TextButton(onClick = { run(Command("web", "License", "", payload = "https://github.com/moikdev/droidcast/blob/main/LICENSE")) }) { Text("View full license") }
             TextButton(onClick = { run(Command("web", "Source code", "", payload = "https://github.com/moikdev/droidcast")) }) { Text("Get source code") }
         }

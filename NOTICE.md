@@ -10,5 +10,6 @@ Tinycast Copyright (C) 2026 Abue Ammar. Android implementation and modifications
 - The runtime includes React under the MIT license. The React license is retained in `third_party/tinycast-runtime/REACT-LICENSE` and bundled as `app/src/main/assets/REACT-LICENSE`.
 - The translucent Android activity interaction was informed by [Launchpad Search](https://github.com/jaxparrow07/launchpad-search); its implementation was not copied.
 - Store extensions are downloaded at runtime under their respective licenses. No Store extension bundles are shipped in the APK or this repository.
+- The offline emoji data is derived from GitHub's gemoji under its MIT license. The exact source and revision are in `third_party/gemoji`; the full license is bundled in `app/src/main/assets/GEMOJI-LICENSE`. Common text-symbol annotations are authored for Droidcast. Glyph artwork is rendered by the device font.
 
 Android/Compose dependencies and the Gradle wrapper retain their own upstream licenses. No upstream copyright or license notice is replaced by the Droidcast branding.

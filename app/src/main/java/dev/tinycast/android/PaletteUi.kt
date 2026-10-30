@@ -52,6 +52,10 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
         onBackground = PaletteTheme.ink, outline = PaletteTheme.border, secondary = PaletteTheme.secondary,
         surfaceContainer = PaletteTheme.surface)) {
       CompositionLocalProvider(LocalContentColor provides PaletteTheme.ink) {
+        if (store.dialog == "emoji") {
+            EmojiPicker(store.emoji, { store.dialog = null; store.focusEpoch++ }, { copy(it); store.message = null })
+            return@CompositionLocalProvider
+        }
         val focus = remember { FocusRequester() }
         var searchValue by remember { mutableStateOf(TextFieldValue(store.query, TextRange(store.query.length))) }
         // Programmatic mode changes place typing after the prefix; user edits retain their selection/composition.

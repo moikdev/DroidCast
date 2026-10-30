@@ -453,7 +453,7 @@ private fun SettingsAbout(activity: SettingsActivity) {
         SettingsCard {
             Text("0.4.0-preview · Development", fontWeight = FontWeight.Medium, fontSize = 16.sp)
             Text("An unofficial Android adaptation of Tinycast. Preferences take inspiration from Raycast; the launcher keeps its compact transparent palette.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 12.dp))
-            Text("AGPL-3.0-or-later. Tinycast © 2026 Abue Ammar. Android modifications © Droidcast contributors. React is distributed under the MIT license. No warranty.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 12.dp))
+            Text("AGPL-3.0-or-later. Tinycast © 2026 Abue Ammar. Android modifications © Droidcast contributors. React and the GitHub gemoji dataset are distributed under their MIT licenses. Full notices are bundled with the source and app. No warranty.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 12.dp))
             TextButton(onClick = { activity.command(Command("web", "Source", "", payload = "https://github.com/moikdev/droidcast")) }) { Text("Source and notices") }
         }
         SettingsCard { Text("Compatibility remains partial", fontSize = 14.sp, fontWeight = FontWeight.Medium); Text("Android equivalents, extension APIs and advanced hotkeys are still being developed. See the repository's parity tracker for the tested scope.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 10.dp)) }
