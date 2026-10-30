@@ -61,3 +61,5 @@ Global-shortcut onboarding follow-up: [#39](https://github.com/moikdev/droidcast
 Assistant activation and immediate search: [#40](https://github.com/moikdev/droidcast/issues/40), implemented in PR #38 pending final validation and independent audits. The custom global hotkey remains separate from the system assistant mapping.
 
 Validation limitation [#41](https://github.com/moikdev/droidcast/issues/41): HTML Viewer rendered the correct TXT body but omitted it from accessibility XML in one hardware run; an unchanged rerun passed. Cause and fix remain unestablished.
+
+Tablet Settings fullscreen polish: [#42](https://github.com/moikdev/droidcast/issues/42), pending exact-head audits; the palette remains floating.

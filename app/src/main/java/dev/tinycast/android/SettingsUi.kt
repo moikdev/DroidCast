@@ -14,7 +14,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -78,7 +77,7 @@ internal fun AdvancedSettings(activity: SettingsActivity) {
             bodySmall = TextStyle(fontSize = 11.sp, lineHeight = 16.sp), labelLarge = TextStyle(fontSize = 12.sp, lineHeight = 16.sp))) {
         LaunchedEffect(store.message) { store.message?.let { snackbar.showSnackbar(it); if (store.message == it) store.message = null } }
         CompositionLocalProvider(LocalContentColor provides PaletteTheme.ink) {
-        BoxWithConstraints(Modifier.fillMaxSize().focusRequester(initialFocus).onFocusChanged { hasFocus = it.hasFocus }.onGloballyPositioned { placed = true }.background(Color(0xFF101113)).safeDrawingPadding().semantics { testTagsAsResourceId = true }
+        BoxWithConstraints(Modifier.fillMaxSize().focusRequester(initialFocus).onFocusChanged { hasFocus = it.hasFocus }.onGloballyPositioned { placed = true }.background(settingsBackground).safeDrawingPadding().semantics { testTagsAsResourceId = true }
             .testTag("settings-workspace").onPreviewKeyEvent { event ->
                 val key = event.nativeKeyEvent
                 val command = (key.isCtrlPressed xor key.isMetaPressed) && !key.isAltPressed
@@ -92,12 +91,8 @@ internal fun AdvancedSettings(activity: SettingsActivity) {
             val wide = maxWidth >= 760.dp
             val compactHeight = maxHeight < 540.dp
             CompositionLocalProvider(LocalSettingsCompact provides compactHeight) {
-            Box(Modifier.fillMaxSize().padding(if (wide) { if (compactHeight) 12.dp else 28.dp } else 0.dp), contentAlignment = Alignment.Center) {
-            Row(Modifier.widthIn(max = 1160.dp).fillMaxWidth().fillMaxHeight()
-                .shadow(if (wide) 24.dp else 0.dp, RoundedCornerShape(if (wide) 16.dp else 0.dp))
-                .clip(RoundedCornerShape(if (wide) 16.dp else 0.dp))
-                .border(if (wide) 1.dp else 0.dp, Color.White.copy(alpha = .10f), RoundedCornerShape(if (wide) 16.dp else 0.dp))
-                .background(settingsBackground)) {
+            Box(Modifier.fillMaxSize().testTag("settings-viewport")) {
+            Row(Modifier.fillMaxSize().background(settingsBackground).testTag("settings-frame")) {
                 if (wide) Column(Modifier.width(204.dp).fillMaxHeight().background(settingsSidebar).padding(12.dp)) {
                     Column(Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState())) {
                     Row(Modifier.padding(10.dp, 16.dp), verticalAlignment = Alignment.CenterVertically) {

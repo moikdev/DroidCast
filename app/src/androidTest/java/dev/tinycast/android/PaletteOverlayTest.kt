@@ -37,6 +37,9 @@ class PaletteOverlayTest {
             val style=it.obtainStyledAttributes(intArrayOf(android.R.attr.windowIsTranslucent))
             assertTrue(style.getBoolean(0,false));style.recycle()
         }
+        device.waitForIdle()
+        val evidence = java.io.File(compose.activity.filesDir, "fullscreen-settings-evidence").apply { mkdirs() }
+        assertTrue(device.takeScreenshot(java.io.File(evidence, "floating-palette.png")))
         device.click((bounds.left-24).toInt().coerceAtLeast(1),bounds.center.y.toInt())
         compose.waitUntil(5000){compose.activityRule.scenario.state==Lifecycle.State.DESTROYED}
         assertTrue(device.wait(Until.hasObject(By.pkg("com.android.settings")),5000))

@@ -1,0 +1,140 @@
+{
+  "base": "62100080bf247f979d08a236e9e67d7503300154",
+  "apk_sha256": "fe44ce5611ccb22e8634baaddfd19dcdc6a155aafb5a3117695d58ae9eded04c",
+  "android_test_apk_sha256": "f662497abd51372e860db1705d0a7f979fc62ba29102f0234a1d3a0dd7e051c1",
+  "installed_matches": true,
+  "github_ci_active": false,
+  "device": {
+    "avd": "Tinycast_Tablet_API_36",
+    "api": 36,
+    "tablet": "1920x1200 at 240 dpi",
+    "phone": "1080x2340 at 420 dpi",
+    "portrait": "1200x1920",
+    "viewport_restored": true,
+    "adbd_unprivileged": true,
+    "app_process": [
+      "u0_a213      dev.tinycast.android"
+    ],
+    "app_unprivileged": true
+  },
+  "build": {
+    "log": "artifacts/fullscreen-settings-build.log",
+    "jvm": {
+      "tests": 66,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "lint_errors": 0,
+    "lint_warnings": 39
+  },
+  "native": {
+    "tablet": {
+      "passed": 16,
+      "total": 16,
+      "log": "artifacts/fullscreen-settings-tablet.log",
+      "assistant_and_keyboard_consent_restoration": {
+        "assistant_role_restored": true,
+        "keyboard_service_consent_restored": true
+      }
+    },
+    "phone": {
+      "passed": 16,
+      "total": 16,
+      "log": "artifacts/fullscreen-settings-phone.log",
+      "assistant_and_keyboard_consent_restoration": {
+        "assistant_role_restored": true,
+        "keyboard_service_consent_restored": true
+      }
+    }
+  },
+  "native_scope": "SettingsDeviceTest, SettingsRouteDeviceTest, AssistantDeviceTest, PaletteOverlayTest compact-translucent and immediate-search cases",
+  "rotation": {
+    "original_rotation": "free",
+    "cases": [
+      {
+        "orientation": "portrait",
+        "shortcut_label": "Ctrl + Space",
+        "inspector_preserved": true
+      },
+      {
+        "orientation": "landscape",
+        "shortcut_label": "Ctrl + Space",
+        "inspector_preserved": true
+      }
+    ],
+    "shortcut_preferences_unchanged": true,
+    "rotation_restored": true
+  },
+  "screenshots": [
+    {
+      "path": "docs/screenshots/parity-settings-fullscreen/after-phone-general.png",
+      "pixels": [
+        1080,
+        2340
+      ],
+      "sha256": "8f0c7406a7f7104697ac706c3b8ba0fc4b9104927066747b18618f67b3668781"
+    },
+    {
+      "path": "docs/screenshots/parity-settings-fullscreen/after-phone-palette.png",
+      "pixels": [
+        1080,
+        2340
+      ],
+      "sha256": "889f027aa49327047b108a3c677b2c5c2da884d798abe964614eb01742abfd84"
+    },
+    {
+      "path": "docs/screenshots/parity-settings-fullscreen/after-phone-shortcuts.png",
+      "pixels": [
+        1080,
+        2340
+      ],
+      "sha256": "0e9c873e0f70896cada0741da704b5813ed0a3dceff3b80678b42580d6e71d6e"
+    },
+    {
+      "path": "docs/screenshots/parity-settings-fullscreen/after-tablet-general.png",
+      "pixels": [
+        1920,
+        1200
+      ],
+      "sha256": "22d0f424b1327666bda9f583b8d9552d167c5a586a32d331f94fa7aca825a6dd"
+    },
+    {
+      "path": "docs/screenshots/parity-settings-fullscreen/after-tablet-palette.png",
+      "pixels": [
+        1920,
+        1200
+      ],
+      "sha256": "2831eac0733736edf3057bc5ec30bac357961178ecd950d690224821ee31a922"
+    },
+    {
+      "path": "docs/screenshots/parity-settings-fullscreen/after-tablet-portrait-shortcuts.png",
+      "pixels": [
+        1200,
+        1920
+      ],
+      "sha256": "d6ef1b1de6ff6b753da7d51d9dc66f1b258fa616ab6e86b8e17b71436a9f0070"
+    },
+    {
+      "path": "docs/screenshots/parity-settings-fullscreen/after-tablet-shortcuts.png",
+      "pixels": [
+        1920,
+        1200
+      ],
+      "sha256": "01cee1078b415ea4b5ed8e6aeddf53eb6ef3eecdf2ed6929ee1f957e9466cfa7"
+    },
+    {
+      "path": "docs/screenshots/parity-settings-fullscreen/before-tablet.png",
+      "pixels": [
+        1920,
+        1200
+      ],
+      "sha256": "ec0c93af9b182d8986f0296f219e4f3c214778ea336447cce437319dac8784c4"
+    }
+  ],
+  "limitations": [
+    "Local emulator layout checks; physical/OEM and large-font/TalkBack coverage remain unclaimed",
+    "No new hardware/endurance/provider certification; previous records remain version-scoped",
+    "System bars and IME safe insets remain respected; this is not immersive mode"
+  ]
+}
