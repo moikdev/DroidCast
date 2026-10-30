@@ -37,7 +37,7 @@ Other destination captures are alongside these in the same directory.
 
 ## Independent audit remediation
 
-Both initial gpt-6.1-sol/high audits flagged that the original generic Settings check could accept an unrelated page; the original app-info capture showed Accessibility. Investigation reproduced a warm-task routing bug: NEW_TASK could foreground the previous Settings page for app-info. Dedicated settings intents now include CLEAR_TOP. Every destination has specific UI assertions, app-scoped identity/arguments are checked, all destination captures were replaced, and the 29 tablet tests were rerun successfully. Both phone checks passed again on the same updated application. The initial evidence is superseded by this validation.
+Both initial gpt-6.1-sol/high audits flagged that the original generic Settings check could accept an unrelated page; the original app-info capture showed Accessibility. Investigation reproduced a warm-task routing bug: NEW_TASK could foreground the previous Settings page for app-info. Dedicated settings intents now include CLEAR_TOP. Every destination has specific UI assertions, app-scoped identity/arguments are checked, all destination captures were replaced, and the 29 tablet tests were rerun successfully. Both phone checks passed again on the same updated application. A second audit caught an incorrect tablet error PNG; that single test was rerun successfully and its replacement capture was visually verified to contain the preserved query and snackbar. No application or test code changed for that evidence correction. The initial evidence is superseded by this validation.
 
 ## Boundaries
 
