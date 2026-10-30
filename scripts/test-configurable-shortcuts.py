@@ -120,6 +120,7 @@ original_xml = raw("exec-out", "run-as", APP, "cat", "shared_prefs/palette.xml")
 rooted = False
 keyboard = None
 initial = [] if original_enabled != "1" or original_services == "null" else original_services.split(":")
+other_services = [service for service in initial if service != SERVICE]
 
 
 def emit(events):
@@ -129,6 +130,7 @@ def emit(events):
 
 def chord(key, modifiers=(29, 56), repeats=0):
     wait(bound, "Shortcut service is not bound")
+    wait(lambda: "InputFilterEnabled: true" in adb("shell", "dumpsys", "input"), "Accessibility input filter is not installed")
     events = []
     for modifier in modifiers:
         events += [(1, modifier, 1), (0, 0, 0)]
@@ -169,7 +171,14 @@ def restore_setting(name, value):
     if value == "null":
         adb("shell", "settings", "delete", "secure", name)
     else:
-        adb("shell", "settings", "put", "secure", name, value)
+        adb("shell", f"settings put secure {name} {shlex.quote(value)}")
+
+
+def set_services(services):
+    if services:
+        adb("shell", "settings", "put", "secure", "enabled_accessibility_services", ":".join(services))
+    else:
+        adb("shell", "settings", "delete", "secure", "enabled_accessibility_services")
 
 
 try:
@@ -192,7 +201,10 @@ try:
     click("Reset all shortcuts…"); click("Reset shortcuts")
     click("Change global shortcut")
     node("Record a shortcut")
+    chord(57)
+    node("Ctrl + Alt + Space")
     chord(57, (29,))
+    node("Ctrl + Space")
     node("Record a shortcut")  # The existing global chord must record, not dismiss.
     click("Save shortcut")
     passed("recording pauses the existing global shortcut")
@@ -214,8 +226,7 @@ try:
             wait(lambda: APP + "/" in focused(), "Configured global chord did not summon")
             if index == 0 and origin == "Settings": palette_snapshot("summon-from-settings")
             chord(57)
-            tree()
-            assert APP + "/" not in focused(), "Repeated summon should hide the visible palette"
+            wait(lambda: APP + "/" not in focused(), "Repeated summon should hide the visible palette")
             passed(f"round {index + 1}: summon/toggle from {origin}")
 
     settings(); chord(57, (29,)); tree()
@@ -252,7 +263,11 @@ try:
     settings(); chord(25)
     visible = tree()
     if any(item.get("text", "").startswith("Open with") for item in visible.iter("node")):
-        click("HTML Viewer"); click("Just once")
+        choice = next((item for item in visible.iter("node") if item.get("text") == "HTML Viewer"), None)
+        if choice is not None:
+            tap(choice)
+        # Android may already name the remembered viewer in the chooser title.
+        click("Just once")
     wait(lambda: "com.android.htmlviewer/" in focused(), "Recent-document binding did not reach its viewer")
     (output / "document-viewer.png").write_bytes(raw("exec-out", "screencap", "-p"))
     passed("recent-document binding opens the persisted TXT fixture")
@@ -265,6 +280,9 @@ try:
     type_text("12*7")
     snapshot("calculator", "84")
     passed("calculator binding enters the same calculator mode")
+    chord(46); tree()
+    assert APP + "/" not in focused(), "Repeated calculator shortcut should close its existing mode"
+    passed("calculator shortcut toggles its existing mode")
 
     assign("Create a note", 49, "Ctrl + Alt + N")
     chord(57)
@@ -277,28 +295,36 @@ try:
     tap(search); tree()
     for key in (16, 17, 18, 19, 20, 21): chord(key, ())
     assert any(item.get("class") == "android.widget.EditText" and item.get("text") == "qwerty" for item in tree().iter("node")), "Unrelated typing was lost"
+    search_package = re.search(r"u\d+ ([^/\s]+)/", focused()).group(1)
+    assert search_package in ("com.android.settings", "com.google.android.settings.intelligence")
     chord(44); tree()
-    assert "com.android.settings/" in focused(), "Unbound chord activated palette"
+    assert search_package + "/" in focused(), "Unbound chord changed the focused search app"
+    assert any(item.get("class") == "android.widget.EditText" and item.get("text") == "qwerty" for item in tree().iter("node")), "Unbound chord changed the search text"
     passed("unrelated typing and an unbound chord pass through")
 
-    adb("shell", "settings", "put", "secure", "enabled_accessibility_services", ":".join(initial))
+    set_services(other_services)
     wait(lambda: not bound(), "Service did not disconnect")
     adb("shell", "input", "keyevent", "KEYCODE_HOME")
     # Without the service, this raw chord cannot invoke the app.
     emit([(1, 29, 1), (1, 56, 1), (0, 0, 0), (1, 57, 1), (0, 0, 0), (1, 57, 0), (1, 56, 0), (1, 29, 0), (0, 0, 0)])
     tree(); assert APP + "/" not in focused()
     adb("shell", "settings", "put", "secure", "enabled_accessibility_services", enabled_services)
+    adb("shell", "settings", "put", "secure", "accessibility_enabled", "1")
     wait(bound, "Service did not reconnect")
     chord(57)
     wait(lambda: APP + "/" in focused(), "Persisted chord failed after reconnect")
     palette_snapshot("reconnected")
     passed("service disable/reconnect respects persisted configuration")
+except Exception:
+    (output / "failure.png").write_bytes(raw("exec-out", "screencap", "-p"))
+    (output / "failure.xml").write_bytes(ET.tostring(tree()))
+    raise
 finally:
     if rooted:
         try:
             if keyboard:
                 emit([(1, code, 0) for code in (1, 16, 17, 25, 29, 33, 42, 44, 46, 49, 56, 57, 125)] + [(0, 0, 0)])
-            adb("shell", "settings", "put", "secure", "enabled_accessibility_services", ":".join(initial))
+            set_services(other_services)
             adb("shell", "am", "force-stop", APP)
             adb("shell", "run-as", APP, "rm", "-f", "shared_prefs/palette.xml.bak")
             subprocess.run(base + ["shell", "run-as dev.tinycast.android sh -c 'cat > shared_prefs/palette.xml'"], input=original_xml, check=True, capture_output=True)

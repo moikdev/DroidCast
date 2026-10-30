@@ -221,4 +221,18 @@ class ShortcutDeviceTest {
         compose.waitUntil(10000) { !compose.activity.store.backupBusy }
         assertEquals(before, compose.activity.store.shortcutConfiguration)
     }
+    @OptIn(ExperimentalTestApi::class)
+    @Test fun calculatorShortcutTogglesItsExistingPaletteMode() {
+        compose.activityRule.scenario.onActivity { it.store.setShortcut("calculator", KeyChord(KeyEvent.KEYCODE_C, ShortcutRules.CTRL or ShortcutRules.ALT)) }
+        key(KeyEvent.KEYCODE_C, ctrlAlt)
+        compose.onNodeWithTag("search").assertTextEquals("= ")
+        compose.onNodeWithTag("search").performTextInput("12*7")
+        compose.onNodeWithTag("result-result").assertTextContains("84")
+        compose.onNodeWithTag("search").performTextInputSelection(androidx.compose.ui.text.TextRange(2, 4))
+        compose.onNodeWithTag("search").performTextInput("3")
+        compose.onNodeWithTag("search").assertTextEquals("= 3*7")
+        compose.onNodeWithTag("result-result").assertTextContains("21")
+        compose.waitForIdle(); device.waitForIdle(); device.pressKeyCode(KeyEvent.KEYCODE_C, ctrlAlt)
+        compose.waitUntil(5000) { compose.activityRule.scenario.state == Lifecycle.State.DESTROYED }
+    }
 }

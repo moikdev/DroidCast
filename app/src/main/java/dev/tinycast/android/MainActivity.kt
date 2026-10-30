@@ -77,6 +77,7 @@ class MainActivity : ComponentActivity() {
         if (request == null || !ShortcutRuntime.requests.isFresh(request) || store.shortcutConfiguration.bindings[request.target] != request.chord) { store.message = "Shortcut changed or expired. Try again."; return }
         if (store.backupBusy || ShortcutRuntime.recordingOwner != null) { store.message = "Finish the current operation before running a shortcut."; return }
         if (request.target == ShortcutRules.PALETTE) { if (toggleExisting) finish() else store.reset() }
+        else if (toggleExisting && request.target == "calculator" && store.dialog == null && store.category == "All" && store.query.trimStart().startsWith("=")) finish()
         else { store.reset(); store.pendingShortcut = request }
     }
     public override fun onNewIntent(intent: Intent) {
@@ -164,7 +165,7 @@ class MainActivity : ComponentActivity() {
                     else { store.editing = SavedItem("", text.take(60).lineSequence().first(), text); store.dialog = "clip" }
                 }
                 "shortcuts" -> store.dialog = "shortcut-settings"
-                "settings" -> open(Intent(Settings.ACTION_SETTINGS))
+                "settings" -> open(Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
                 "app-settings" -> store.dialog = "preferences"
                 "web" -> open(Intent(Intent.ACTION_VIEW, Uri.parse(command.payload)))
             }

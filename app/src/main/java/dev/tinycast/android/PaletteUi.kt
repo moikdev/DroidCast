@@ -34,8 +34,10 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import kotlinx.coroutines.delay
@@ -51,6 +53,10 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
         surfaceContainer = PaletteTheme.surface)) {
       CompositionLocalProvider(LocalContentColor provides PaletteTheme.ink) {
         val focus = remember { FocusRequester() }
+        var searchValue by remember { mutableStateOf(TextFieldValue(store.query, TextRange(store.query.length))) }
+        // Programmatic mode changes place typing after the prefix; user edits retain their selection/composition.
+        val displayedSearch = if (searchValue.text == store.query) searchValue else TextFieldValue(store.query, TextRange(store.query.length))
+        SideEffect { if (searchValue != displayedSearch) searchValue = displayedSearch }
         val keyboard = LocalSoftwareKeyboardController.current
         val list = rememberLazyListState()
         val results = store.results()
@@ -110,7 +116,7 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
                 .clickable(indication=null, interactionSource=remember { MutableInteractionSource() }) {}.testTag("palette")) {
                 Row(Modifier.fillMaxWidth().height(PaletteTheme.header).padding(horizontal=16.dp),verticalAlignment=Alignment.CenterVertically) {
                     Glyph("search",PaletteTheme.secondary,22);Spacer(Modifier.width(12.dp))
-                    BasicTextField(value=store.query,onValueChange=store::search,modifier=Modifier.weight(1f).focusRequester(focus).testTag("search"),
+                    BasicTextField(value=displayedSearch,onValueChange={ searchValue = it; store.search(it.text) },modifier=Modifier.weight(1f).focusRequester(focus).testTag("search"),
                         textStyle=TextStyle(color=PaletteTheme.ink,fontSize=20.sp,lineHeight=26.sp),singleLine=true,cursorBrush=SolidColor(PaletteTheme.accent),
                         keyboardOptions=KeyboardOptions(imeAction=ImeAction.Search,showKeyboardOnFocus=!wide),keyboardActions=KeyboardActions(onSearch={selected?.let(run)}),
                         decorationBox={inner -> Box{if(store.query.isEmpty())Text("Search for apps and commands…",color=PaletteTheme.secondary,fontSize=20.sp,maxLines=1,overflow=TextOverflow.Ellipsis);inner()}})

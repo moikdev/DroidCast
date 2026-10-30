@@ -1,0 +1,22 @@
+{
+  "tablet": {
+    "passed": 51,
+    "seconds": 264.14
+  },
+  "phone": {
+    "passed": 22,
+    "seconds": 123.77
+  },
+  "tablet_restored": true,
+  "adbd_unprivileged": true,
+  "apk_sha256": "2b6b8c3a47a5895606470d091811959f47fbc1c95b459055d5c64cb43a95290e",
+  "installed_apk_matches": true,
+  "jvm_passed": 46,
+  "build_and_lint": "passed",
+  "avd": "Tinycast_Tablet_API_36",
+  "api": 36,
+  "tablet_pixels": "1920x1200",
+  "tablet_density": 240,
+  "phone_pixels": "1080x2340",
+  "phone_density": 420
+}

@@ -35,14 +35,14 @@ The downloadable APK is a debug-signed preview, not a production-signed release.
 - The circular bottom-left menu opens category filters, Preferences, shortcuts and dismissal. Actions appear in an anchored menu above the bottom-right capsule; Ctrl+K and long-press open the same menu. Calculator answers use source → result columns with unit badges.
 - The area outside the palette is fully transparent, with no dark scrim or screen dimming.
 - Tap outside or close to return to the previous app. App and URL commands dismiss the palette when launching their destination.
-- Summon using the app icon, Android assistant intent, the optional DroidCast search Quick Settings tile, or Ctrl + Space after explicitly enabling the keyboard service.
+- Summon using the app icon, Android assistant intent, the optional DroidCast search Quick Settings tile, or the configurable global shortcut (default Ctrl + Space) after explicitly enabling the keyboard service. Assign command shortcuts through Actions; see [Keyboard shortcuts](docs/SHORTCUTS.md).
 - Fuzzy app/command search, aliases, pins and usage ranking.
 - Dedicated Android settings commands: Wi-Fi, Bluetooth, display, sound, app notifications/info, installed apps, storage, accessibility, date/time and language. These open Android controls; they do not silently toggle hardware.
 - Prefixes: `@` apps, `#` notes, `:` quicklinks, `>` built-in commands, `=` calculator.
 - Local calculator and conversions: `200 * 15%`, `sqrt(81)`, `10 km to mi`, `32 f to c`, `1.5 h to min`, `1 gib to mib`. Trigonometric inputs use radians. No currency rates.
 - Persistent plain-text/Markdown notes, custom HTTP/HTTPS quicklinks with `{query}` arguments, saved clips and shared/selected-text input.
 - Android document picker, persistent URI grants where supported, and searchable recent files. This does not index the device filesystem.
-- Backup and restore: select notes, quicklinks, saved clips, pins/aliases and usage ranking; export a DroidCast JSON file, preview its contents, then merge or replace selected categories. Imports leave document grants, accessibility consent and extension data untouched. This does not read Tinycast `.tinycast` or Raycast containers. See [Backup and restore](docs/BACKUP.md).
+- Backup and restore: select notes, quicklinks, saved clips, pins/aliases, usage ranking and keyboard bindings; export a DroidCast JSON file, preview its contents, then merge or replace selected categories. Imports leave document grants, accessibility consent and extension data untouched. This does not read Tinycast `.tinycast` or Raycast containers. See [Backup and restore](docs/BACKUP.md).
 
 ## Raycast Store extensions
 
@@ -71,7 +71,7 @@ Store searches/downloads contact Raycast. Running third-party code can make HTTP
 
 | Shortcut | Action |
 | --- | --- |
-| Ctrl + Space | Summon globally, after optional service setup |
+| Ctrl + Space (configurable) | Show/hide globally, after optional service setup |
 | Ctrl + L | Focus search/show keyboard |
 | Up / Down, Enter | Select and run |
 | Ctrl + K | Actions |
@@ -81,7 +81,7 @@ Store searches/downloads contact Raycast. Running third-party code can make HTTP
 | Ctrl + S / Ctrl + Enter | Save editor |
 | Escape | Close dialog, clear search/back, then dismiss palette |
 
-Enable the global shortcut through Preferences → Open accessibility settings → DroidCast keyboard shortcut. The service does not retrieve screen content or record keystrokes. In-app shortcuts do not require it. Global key delivery can vary with other accessibility services and OEM shortcuts.
+Configure global and per-command chords in **Keyboard shortcuts**. Enable global use through **Open accessibility settings → DroidCast keyboard shortcuts**. The service does not retrieve screen content or record keystrokes. In-app shortcuts do not require it. Global key delivery can vary with other accessibility services and OEM shortcuts.
 
 ## Verify
 
@@ -98,13 +98,10 @@ The Store tests require internet access and intentionally install/run public Sto
 Global shortcut testing runs outside UiAutomation because UI instrumentation can suppress accessibility services:
 
 ```sh
-python3 scripts/test-global-shortcut.py --serial emulator-5580
-# Ten rounds from Settings and Home (20 global shortcut activations):
-python3 scripts/test-global-shortcut.py --serial emulator-5580 --rounds 10
-adb -s emulator-5580 unroot
+python3 scripts/test-configurable-shortcuts.py --serial emulator-5580 --rounds 3
 ```
 
-That helper is restricted to the dedicated `Tinycast_Tablet_API_36` emulator. Root adbd is used only to inject hardware-style Linux key events; the app stays unprivileged and does not require root.
+The helper restores preferences, accessibility consent and unprivileged adbd in a finally block. It requires the saved TXT fixture from the extended workflow below. It is restricted to the dedicated `Tinycast_Tablet_API_36` emulator. Root adbd is used only to inject hardware-style Linux key events; the app stays unprivileged and does not require root.
 
 ## Extended workflow test
 
@@ -133,14 +130,15 @@ Enhancements and audited PRs are tracked in [issue #1](https://github.com/moikde
 
 ## What to improve next
 
-The highest-value next steps are verified extension compatibility and richer native views, cross-platform backup-container import, configurable command hotkeys, further Android intent/automation commands, selected-folder search and supported multitasking actions. These are proposals, not advertised preview features. [ROADMAP.md](ROADMAP.md) gives priorities and acceptance criteria; [PARITY.md](PARITY.md) compares the current implementation with upstream.
+The highest-value next steps are verified extension compatibility and richer native views, cross-platform backup-container import, advanced hotkeys, further Android intent/automation commands, selected-folder search and supported multitasking actions. These are proposals, not advertised preview features. [ROADMAP.md](ROADMAP.md) gives priorities and acceptance criteria; [PARITY.md](PARITY.md) compares the current implementation with upstream.
 
 ## Source and attribution
 
 - `PaletteTheme.kt`, `PaletteUi.kt`: adapted Tinycast design tokens, floating palette, grouped rows, calculator card and keyboard controls.
 - `third_party/tinycast-palette/`: unchanged Swift reference sources and exact commit provenance for the visual port, licensed AGPL-3.0.
 - `CommandEngine.kt`, `PaletteStore.kt`: search, calculation, persistence and command dispatch.
-- `MainActivity.kt`, `PaletteTileService.kt`: Android entry points, intents, file grants and shortcut service.
+- `MainActivity.kt`, `PaletteTileService.kt`: Android entry points, intents and file grants.
+- `Shortcuts.kt`, `AndroidShortcuts.kt`, `ShortcutUi.kt`: chord rules, key filtering, authenticated dispatch and shortcut recording.
 - `extensions/ExtensionCatalog.kt`: Store networking, archive validation, install/update/uninstall and manifest state.
 - `extensions/ExtensionRuntime.kt`, `assets/android-runtime.js`: Android host and JavaScript engine adapter.
 - `extensions/ExtensionUi.kt`: native Store, preferences and extension rendering.

@@ -1,0 +1,90 @@
+{
+  "device": "emulator-5580",
+  "app_requires_root": false,
+  "injection": "dedicated emulator Linux qwerty2 device",
+  "cases": [
+    {
+      "name": "recording pauses the existing global shortcut",
+      "passed": true
+    },
+    {
+      "name": "record and persist Ctrl + Alt + Space",
+      "passed": true
+    },
+    {
+      "name": "round 1: summon/toggle from Settings",
+      "passed": true
+    },
+    {
+      "name": "round 1: summon/toggle from Home",
+      "passed": true
+    },
+    {
+      "name": "round 2: summon/toggle from Settings",
+      "passed": true
+    },
+    {
+      "name": "round 2: summon/toggle from Home",
+      "passed": true
+    },
+    {
+      "name": "round 3: summon/toggle from Settings",
+      "passed": true
+    },
+    {
+      "name": "round 3: summon/toggle from Home",
+      "passed": true
+    },
+    {
+      "name": "old global chord stops activating after reassignment",
+      "passed": true
+    },
+    {
+      "name": "live conflict names its owner and cannot overwrite it",
+      "passed": true
+    },
+    {
+      "name": "Wi-Fi command uses normal destination and suppresses repeats",
+      "passed": true
+    },
+    {
+      "name": "installed-app binding launches real Files app",
+      "passed": true
+    },
+    {
+      "name": "recent-document binding opens the persisted TXT fixture",
+      "passed": true
+    },
+    {
+      "name": "calculator binding enters the same calculator mode",
+      "passed": true
+    },
+    {
+      "name": "calculator shortcut toggles its existing mode",
+      "passed": true
+    },
+    {
+      "name": "note command binding opens the normal native editor",
+      "passed": true
+    },
+    {
+      "name": "unrelated typing and an unbound chord pass through",
+      "passed": true
+    },
+    {
+      "name": "service disable/reconnect respects persisted configuration",
+      "passed": true
+    }
+  ],
+  "original_preferences_restored": true,
+  "adbd_unprivileged": true,
+  "app_process": [
+    "u0_a213      dev.tinycast.android"
+  ],
+  "app_unprivileged": true,
+  "apk_sha256": "2b6b8c3a47a5895606470d091811959f47fbc1c95b459055d5c64cb43a95290e",
+  "avd": "Tinycast_Tablet_API_36",
+  "api": 36,
+  "tablet_pixels": "1920x1200",
+  "density": 240
+}

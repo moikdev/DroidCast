@@ -44,3 +44,9 @@ The Store tests fetch and execute actual public bundles. They need network acces
 The template in [`ci/android.yml`](../ci/android.yml) runs build, JVM tests and lint once enabled. It is not installed under `.github/workflows/` because the publishing OAuth credential lacks the `workflow` scope. It does **not** run the emulator endurance suite, install third-party extensions, or certify OEM global shortcut behavior.
 
 Selected screenshots are in [`screenshots/`](screenshots). Local raw logs, private machine paths, caches, signing material and APK build outputs are excluded from the source repository.
+
+## Development parity slices
+
+- [Dedicated Settings routing](validation/system-settings.md): destination-specific UI and warm-task checks.
+- [Selectable backup/restore](validation/backup.md): reviewed PR #25; 31 JVM, 39 tablet, 10 phone checks and 18 screenshots.
+- [Configurable shortcuts](validation/shortcuts.md): PR #33, ordinary global/per-command chords and guarded hardware-event validation. See that record for exact build/test scope; earlier preview numbers are not reused as new evidence.
