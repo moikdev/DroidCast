@@ -6,6 +6,8 @@ import android.view.KeyEvent
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.text.AnnotatedString
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
@@ -146,6 +148,12 @@ class SettingsDeviceTest {
         compose.onNodeWithTag("settings-alias-error").assertIsDisplayed()
         evidence("alias-conflict", "That alias is already in use")
         assertEquals("calc", compose.activity.store.command("calculator")!!.alias)
+        compose.onNodeWithTag("settings-clear-alias").performScrollTo().performClick()
+        compose.onNodeWithTag("settings-alias").assert(SemanticsMatcher.expectValue(SemanticsProperties.EditableText, AnnotatedString("")))
+        compose.onNodeWithTag("settings-alias-error").assertDoesNotExist()
+        assertEquals("", compose.activity.store.command("calculator")!!.alias)
+        assertEquals("", PaletteStore(context.applicationContext as android.app.Application).command("calculator")!!.alias)
+        evidence("alias-cleared", "Alias cleared")
         compose.onNodeWithTag("settings-alias").performScrollTo().performTextReplacement("mathinline")
         compose.onNodeWithTag("settings-alias").performImeAction()
         assertEquals("mathinline", PaletteStore(context.applicationContext as android.app.Application).command("calculator")!!.alias)

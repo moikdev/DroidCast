@@ -366,9 +366,12 @@ private fun ShortcutInspector(activity: SettingsActivity, row: ShortcutSettingsR
     var alias by remember(row.id, row.alias) { mutableStateOf(row.alias) }
     var aliasError by remember(row.id) { mutableStateOf<String?>(null) }
     val keyboard = LocalSoftwareKeyboardController.current
-    fun saveAlias() {
+    fun saveAlias(value: String = alias) {
         keyboard?.hide()
-        runCatching { store.setAlias(row.id, alias) }.onSuccess { store.message = "Alias saved" }.onFailure { aliasError = it.message }
+        runCatching { store.setAlias(row.id, value) }.onSuccess {
+            alias = value.trim().lowercase(); aliasError = null
+            store.message = if (alias.isEmpty()) "Alias cleared" else "Alias saved"
+        }.onFailure { aliasError = it.message }
     }
     val aliasErrorVisibility = remember(row.id) { BringIntoViewRequester() }
     var aliasErrorPlaced by remember(row.id, aliasError) { mutableStateOf(false) }
@@ -404,12 +407,12 @@ private fun ShortcutInspector(activity: SettingsActivity, row: ShortcutSettingsR
         Spacer(Modifier.height(16.dp))
         SettingsCard {
             Text("ALIAS", fontSize = 10.sp, color = PaletteTheme.secondary)
-            SettingsInput(alias, { alias = it; aliasError = null }, "Add an alias", "settings-alias", enabled = !recording && row.available, done = ::saveAlias,
+            SettingsInput(alias, { alias = it; aliasError = null }, "Add an alias", "settings-alias", enabled = !recording && row.available, done = { saveAlias() },
                 modifier = Modifier.padding(top = 10.dp).focusRequester(aliasFocus).onGloballyPositioned { aliasReady = true })
             aliasError?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 11.sp, modifier = Modifier.padding(top = 8.dp).bringIntoViewRequester(aliasErrorVisibility).onGloballyPositioned { aliasErrorPlaced = true }.testTag("settings-alias-error")) }
             Row(Modifier.padding(top = 10.dp)) {
-                Button(onClick = ::saveAlias, enabled = !recording && row.available, modifier = Modifier.testTag("settings-save-alias")) { Text("Save alias", fontSize = 12.sp) }
-                TextButton(onClick = { store.setAlias(row.id, ""); alias = "" }, enabled = !recording && row.available) { Text("Clear", fontSize = 12.sp) }
+                Button(onClick = { saveAlias() }, enabled = !recording && row.available, modifier = Modifier.testTag("settings-save-alias")) { Text("Save alias", fontSize = 12.sp) }
+                TextButton(onClick = { saveAlias("") }, enabled = !recording && row.available, modifier = Modifier.testTag("settings-clear-alias")) { Text("Clear", fontSize = 12.sp) }
             }
         }
     }

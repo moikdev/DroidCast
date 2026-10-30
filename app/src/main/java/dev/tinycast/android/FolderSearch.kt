@@ -213,25 +213,27 @@ class FolderSearch(private val app: Application, private val scope: CoroutineSco
         if (changing || (folders.size >= FolderIndexRules.MAX_FOLDERS && folders.none { it.uri == value })) { error = "You can select up to ${FolderIndexRules.MAX_FOLDERS} folders."; return }
         stopScan(); changing = true
         scope.launch {
-            var acquired = false
+            val ownership = FolderGrantTransaction(
+                hasReadGrant = { value in grants() },
+                takeReadGrant = { app.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) },
+                releaseReadGrant = { app.contentResolver.releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
+            )
             try {
-                val prior = withContext(Dispatchers.IO) { grants() }
-                withContext(Dispatchers.IO) { app.contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
-                acquired = value !in prior
+                ownership.acquire()
                 val root = FolderProviderQueries.query(app, DocumentsContract.buildDocumentUriUsingTree(uri, DocumentsContract.getTreeDocumentId(uri))).documents.firstOrNull()
                     ?: throw IOException("Folder unavailable")
                 require(root.mime == DocumentsContract.Document.MIME_TYPE_DIR)
                 val existing = folders.firstOrNull { it.uri == value }
-                val added = SearchFolder(value, root.title, existing?.ownsGrant == true || acquired)
+                val added = SearchFolder(value, root.title, existing?.ownsGrant == true || ownership.newlyAcquired)
                 val next = folders.filterNot { it.uri == value } + added
-                withContext(Dispatchers.IO) { disk.withLock { write(configFile, config(next, true, includeInLauncher), 65536) } }
+                ownership.commit(disk) { check(write(configFile, config(next, true, includeInLauncher), 65536)) }
                 folders = next; enabled = true; readable = withContext(Dispatchers.IO) { grants() }; errors = errors - value; error = null
-                acquired = false; refresh()
+                refresh()
             } catch (cancelled: CancellationException) { throw cancelled }
             catch (_: Exception) { error = "Folder access could not be kept. Choose an available folder from a provider that supports persistent access." }
             finally {
-                if (acquired) withContext(NonCancellable + Dispatchers.IO) { runCatching { app.contentResolver.releasePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) } }
-                changing = false
+                try { ownership.releaseIfUncommitted() }
+                finally { changing = false }
             }
         }
     }
@@ -242,18 +244,24 @@ class FolderSearch(private val app: Application, private val scope: CoroutineSco
         stopScan(); changing = true
         scope.launch {
             try {
-                val cacheCleared = withContext(Dispatchers.IO) { disk.withLock {
-                    write(configFile, config(next, on, launcher), 65536)
-                    if (!on || removed != null) runCatching { deleteIndex() }.isSuccess else true
-                } }
+                val cacheCleared = commitFolderConfiguration(disk,
+                    writeConfiguration = {
+                        check(write(configFile, config(next, on, launcher), 65536))
+                        if (!on || removed != null) runCatching { deleteIndex() }.isSuccess else true
+                    },
+                    onCommitted = {
+                        if (removed?.ownsGrant == true) runCatching {
+                            app.contentResolver.releasePersistableUriPermission(Uri.parse(removed.uri), Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
+                    })
                 folders = next; enabled = on; includeInLauncher = launcher
-                if (removed?.ownsGrant == true) withContext(Dispatchers.IO) { runCatching { app.contentResolver.releasePersistableUriPermission(Uri.parse(removed.uri), Intent.FLAG_GRANT_READ_URI_PERMISSION) } }
                 readable = withContext(Dispatchers.IO) { grants() }
                 publish(if (on) entries.filter { it.folder in next.map(SearchFolder::uri) && it.folder in readable } else emptyList())
                 errors = errors.filterKeys { key -> next.any { it.uri == key } }; error = if (cacheCleared) null else "Settings saved, but the old private index could not be cleared. Try disabling again."
                 status = if (on) "${entries.size} indexed items · Refresh to check for changes." else "Folder search is off; cached index removed."
                 if (on && (removed != null || entries.isEmpty())) refresh()
-            } catch (_: Exception) { error = "Folder settings could not be saved. Try again." }
+            } catch (cancelled: CancellationException) { throw cancelled }
+            catch (_: Exception) { error = "Folder settings could not be saved. Try again." }
             finally { changing = false }
         }
     }
