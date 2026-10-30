@@ -32,7 +32,7 @@ DroidCast reproduces the central summon → search → run → dismiss workflow.
 | Raycast extension installation | Partial | Real Store search, package download, validation, install, update and uninstall. Uses unofficial endpoints. Store installation is not a compatibility guarantee. |
 | Extension views | Partial | Native lists, basic forms, selectable Detail text and actions/navigation. Grid is a list; Markdown, metadata, images, advanced fields and validation are incomplete. |
 | Extension host APIs | Partial | HTTPS, clipboard, timers, local storage/cache, preferences/arguments, limited crypto and scoped files. OAuth, menu bars, shell/native helpers, browser/window management, WebSockets and Raycast AI are not available. |
-| Backup and import | Missing | Local persistence exists. No user export/restore or Tinycast/Raycast import; Android OS backup is disabled. |
+| Backup and import | Partial | Selectable versioned DroidCast JSON export/import for notes, quicklinks, saved clips, pins/aliases and usage ranking, with preview, content inspection and merge/replace confirmation. Capability grants and extension data are excluded. Tinycast AppleArchive and Raycast container compatibility remain open in [#24](https://github.com/moikdev/DroidCast/issues/24); Android OS backup stays disabled. |
 | Appearance, localization, accessibility | Partial | Dark theme and extensive keyboard handling. No light/system appearance, language translations or comprehensive TalkBack/large-font/physical-device audit. |
 
 ## Evidence and boundaries

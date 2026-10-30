@@ -27,6 +27,13 @@ The live backlog is [GitHub issue #1](https://github.com/moikdev/DroidCast/issue
 
 - [#22: Validate battery and security destinations across Android builds](https://github.com/moikdev/DroidCast/issues/22)
 
+- [#24: Import supported Tinycast and Raycast export categories on Android](https://github.com/moikdev/DroidCast/issues/24)
+- [#26: Add modifier-tap hotkeys and verified Android Hyper/Fn equivalents](https://github.com/moikdev/DroidCast/issues/26)
+
+## Active slice
+
+Backup/restore is [PR #25](https://github.com/moikdev/DroidCast/pull/25). Its live review/merge state is authoritative; it is not counted as completed before both independent audits clear the verified head.
+
 ## Completed slices
 
-The direct-settings slice is [PR #23](https://github.com/moikdev/DroidCast/pull/23). Its live review/merge state and [issue #1](https://github.com/moikdev/DroidCast/issues/1) are authoritative. Record subsequent slices here after their verified merges; the baseline preview is not full parity.
+The direct-settings slice merged in [PR #23](https://github.com/moikdev/DroidCast/pull/23), closing #2 after both independent audits cleared head `39fc5f8` and local checks passed. Its live review/merge state and [issue #1](https://github.com/moikdev/DroidCast/issues/1) are authoritative. Record subsequent slices here after their verified merges; the baseline preview is not full parity.

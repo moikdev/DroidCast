@@ -57,7 +57,14 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
         val selected = results.getOrNull(store.selected.coerceIn(0, (results.size - 1).coerceAtLeast(0)))
         val snack = remember { SnackbarHostState() }
         var menu by remember { mutableStateOf(false) }
-        fun close() { if (store.dialog == "extension-run" || store.dialog == "extension-setup") store.extensions.close(); store.dialog = null; store.focusEpoch++ }
+        fun close() {
+            if (store.dialog?.startsWith("backup") == true) {
+                if (store.backupBusy) return
+                store.discardImport()
+            }
+            if (store.dialog == "extension-run" || store.dialog == "extension-setup") store.extensions.close()
+            store.dialog = null; store.focusEpoch++
+        }
         fun escape() {
             when { store.dialog != null -> close(); menu -> menu = false; store.query.isNotEmpty() -> store.search(""); store.category != "All" -> store.filter("All"); else -> dismiss() }
         }
