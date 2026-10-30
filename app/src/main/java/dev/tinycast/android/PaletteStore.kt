@@ -35,6 +35,13 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
     var dialog by mutableStateOf<String?>(null)
     var editing by mutableStateOf<SavedItem?>(null)
     var message by mutableStateOf<String?>(null)
+    var backupCategories by mutableStateOf(BackupCategory.entries.toSet())
+    var restoreCategories by mutableStateOf<Set<BackupCategory>>(emptySet())
+    var restorePolicy by mutableStateOf(RestorePolicy.MERGE)
+    var backupDocument by mutableStateOf<BackupDocument?>(null); private set
+    var backupError by mutableStateOf<String?>(null)
+    var backupBusy by mutableStateOf(false); private set
+    var pendingExport: String? = null; private set
 
     init { refreshApps() }
 
@@ -54,7 +61,7 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun commands(): List<Command> = (listOf(
+    private fun catalog(): List<Command> = (listOf(
         Command("calculator", "Calculator", "Math, percentages & unit conversions", icon = "calculator", keywords = "math convert units temperature length weight", alias = "calc"),
         Command("new-note", "Create a note", "Capture a thought without breaking your flow", icon = "note", keywords = "write markdown new memo", alias = "note"),
         Command("browse-files", "Open a document", "Browse device & connected storage", icon = "folder", keywords = "file document storage picker", alias = "files"),
@@ -62,14 +69,102 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
         Command("save-clip", "Save clipboard text", "Keep the current clip in your local collection", icon = "clipboard", keywords = "copy paste history save", alias = "clip"),
         Command("shortcuts", "Keyboard shortcuts", "A faster way around your command palette", icon = "keyboard", keywords = "help hotkey keys ctrl space global", alias = "keys"),
         Command("settings", "Android settings", "Open device settings", icon = "settings", keywords = "android system device configuration preferences", alias = "settings"),
-        Command("app-settings", "DroidCast preferences", "Global shortcut, privacy & app information", icon = "settings", keywords = "accessibility global keyboard permission setup", alias = "prefs")
+        Command("app-settings", "DroidCast preferences", "Global shortcut, privacy & app information", icon = "settings", keywords = "accessibility global keyboard permission setup", alias = "prefs"),
+        Command("backup", "Backup and restore", "Export your collections or preview an import", icon = "folder", keywords = "export import restore json data transfer"),
+        Command("backup-export", "Export DroidCast backup", "Choose categories and save a JSON backup", icon = "folder", keywords = "backup save collections"),
+        Command("backup-import", "Import DroidCast backup", "Preview a backup before applying changes", icon = "folder", keywords = "backup restore collections")
     ) + SystemSettings.commands() + listOf(Command("extensions", "Raycast Store", "Find, install & manage extensions", icon = "extension", keywords = "plugins addons marketplace extensions store", alias = "store")) + apps +
         extensions.installed.flatMap { extension -> extension.commands.map { cmd -> Command("ext:${extension.listing.id}/${cmd.name}", cmd.title, extension.listing.title, Kind.EXTENSION, "extension", "${extension.listing.title} ${cmd.description}", "${extension.listing.id}/${cmd.name}") } } +
         notes.map { Command(it.id, it.title, it.body.lineSequence().firstOrNull().orEmpty().ifBlank { "Empty note" }, Kind.NOTE, "note", it.body, it.body) } +
         links.map { Command(it.id, it.title, it.body, Kind.LINK, "link", it.body, it.body, it.alias) } +
         clips.map { Command(it.id, it.title, "Saved text · Enter to copy", Kind.CLIP, "clipboard", it.body, it.body) } +
         files.map { Command(it.id, it.title, "Recent document · permission granted by you", Kind.FILE, "folder", it.title, it.body) }
-    ).map { it.copy(alias = aliases[it.id] ?: it.alias) }
+    )
+    fun commands(): List<Command> = catalog().map { it.copy(alias = aliases[it.id] ?: it.alias) }
+
+    fun backupSnapshot() = BackupData(notes, links, clips, pins.filterNot { it.startsWith("files:") }.toSet(), aliases.filterKeys { !it.startsWith("files:") }, usage.filterKeys { !it.startsWith("files:") })
+    fun restorePlan(): RestorePlan = BackupPlanner.plan(backupSnapshot(), requireNotNull(backupDocument), restoreCategories, restorePolicy,
+        catalog().filter { it.kind !in listOf(Kind.NOTE, Kind.LINK, Kind.CLIP) }.associate { it.id to it.alias })
+    fun beginBackup() { backupError = null; backupDocument = null; dialog = "backup" }
+    fun discardImport() { if (!backupBusy) { backupDocument = null; backupError = null; dialog = "backup" } }
+    fun prepareExport(ready: () -> Unit) {
+        if (backupBusy) return
+        val snapshot = backupSnapshot(); val selected = backupCategories.toSet()
+        backupBusy = true; backupError = null
+        viewModelScope.launch {
+            try { pendingExport = withContext(Dispatchers.IO) { BackupCodec.encode(snapshot, selected) }; ready() }
+            catch (e: kotlinx.coroutines.CancellationException) { throw e }
+            catch (e: Exception) { backupError = e.message ?: "Could not prepare backup" }
+            finally { backupBusy = false }
+        }
+    }
+    fun writeExport(uri: android.net.Uri?) {
+        val text = pendingExport; pendingExport = null
+        if (uri == null) { message = "Export cancelled"; return }
+        if (text == null) { backupError = "Export expired. Please try again."; return }
+        backupBusy = true; backupError = null
+        viewModelScope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    requireNotNull(getApplication<Application>().contentResolver.openOutputStream(uri, "wt")) { "Cannot write this document" }.use { it.write(text.toByteArray(Charsets.UTF_8)) }
+                }
+                message = "Backup exported"
+            } catch (e: kotlinx.coroutines.CancellationException) { throw e }
+            catch (e: Exception) { backupError = e.message ?: "Could not export backup" }
+            finally { backupBusy = false }
+        }
+    }
+    fun readBackup(uri: android.net.Uri?) {
+        if (uri == null) { message = "Import cancelled"; return }
+        if (backupBusy) return
+        backupBusy = true; backupError = null; backupDocument = null
+        viewModelScope.launch {
+            try {
+                val document = withContext(Dispatchers.IO) {
+                    requireNotNull(getApplication<Application>().contentResolver.openInputStream(uri)) { "Cannot read this document" }.use(BackupCodec::read)
+                }
+                backupDocument = document; restoreCategories = document.categories; restorePolicy = RestorePolicy.MERGE; dialog = "backup-preview"
+            } catch (e: kotlinx.coroutines.CancellationException) { throw e }
+            catch (e: Exception) { backupError = e.message ?: "Could not read backup"; dialog = "backup" }
+            finally { backupBusy = false }
+        }
+    }
+    fun applyBackup() {
+        if (backupBusy) return
+        val plan = runCatching { restorePlan() }.getOrElse { backupError = it.message; return }
+        // One SharedPreferences transaction: no category is published independently.
+        val data = plan.data
+        val original = prefs.all
+        val editor = prefs.edit().putString("notes", encodeItems(data.notes)).putString("links", encodeItems(data.links)).putString("clips", encodeItems(data.clips))
+            .putStringSet("pins", data.pins + pins.filter { it.startsWith("files:") })
+            .putString("aliases", JSONObject(data.aliases + aliases.filterKeys { it.startsWith("files:") }).toString())
+            .putString("usage", JSONObject(data.usage + usage.filterKeys { it.startsWith("files:") }).toString())
+        backupBusy = true; backupError = null
+        viewModelScope.launch {
+            try {
+                val saved = withContext(Dispatchers.IO) {
+                    if (editor.commit()) true else {
+                        // commit also changes the preference memory map on failure. Roll it back.
+                        prefs.edit().also { rollback ->
+                            listOf("notes", "links", "clips", "pins", "aliases", "usage").forEach { key ->
+                                when (val value = original[key]) {
+                                    is String -> rollback.putString(key, value)
+                                    is Set<*> -> rollback.putStringSet(key, value.filterIsInstance<String>().toSet())
+                                    else -> rollback.remove(key)
+                                }
+                            }
+                        }.apply()
+                        false
+                    }
+                }
+                if (!saved) { backupError = "Could not save restored data. Your collections were kept."; return@launch }
+                notes = data.notes; links = data.links; clips = data.clips
+                pins = prefs.getStringSet("pins", emptySet())!!.toSet(); aliases = readAliases(); usage = readMap("usage")
+                backupDocument = null; dialog = "backup"; selected = 0
+                message = "Backup restored · ${plan.added} items applied, ${plan.skipped} duplicates kept"
+            } finally { backupBusy = false }
+        }
+    }
 
     fun results(): List<Command> {
         val prefixKind = when (query.firstOrNull()) { '@' -> Kind.APP; '#' -> Kind.NOTE; ':' -> Kind.LINK; '>' -> Kind.COMMAND; else -> null }
@@ -107,8 +202,8 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
         catch (e: Throwable) { extensions.error = e.message ?: "Uninstallation failed" }
     } }
     fun filter(value: String) { category = value; search(""); focusEpoch++ }
-    fun reset() { category = "All"; search(""); dialog = null; focusEpoch++ }
-    fun used(id: String) { usage = usage + (id to ((usage[id] ?: 0) + 1)); prefs.edit().putString("usage", JSONObject(usage).toString()).apply() }
+    fun reset() { if (backupBusy) return; category = "All"; search(""); dialog = null; focusEpoch++ }
+    fun used(id: String) { usage = usage + (id to ((usage[id] ?: 0).coerceAtMost(Int.MAX_VALUE - 1) + 1)); prefs.edit().putString("usage", JSONObject(usage).toString()).apply() }
     fun togglePin(id: String) { pins = if (id in pins) pins - id else pins + id; prefs.edit().putStringSet("pins", pins).apply() }
     fun setAlias(id: String, value: String) {
         val alias = value.trim().lowercase()
@@ -149,9 +244,12 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
         (0 until array.length()).map { array.getJSONObject(it).let { o -> SavedItem(o.getString("id"), o.getString("title"), o.getString("body"), o.optString("alias")) } }
     }.getOrDefault(emptyList())
     private fun write(key: String, items: List<SavedItem>) {
+        prefs.edit().putString(key, encodeItems(items)).apply()
+    }
+    private fun encodeItems(items: List<SavedItem>): String {
         val array = JSONArray()
         items.forEach { array.put(JSONObject().put("id", it.id).put("title", it.title).put("body", it.body).put("alias", it.alias)) }
-        prefs.edit().putString(key, array.toString()).apply()
+        return array.toString()
     }
     private fun readMap(key: String): Map<String, Int> = runCatching { val o = JSONObject(prefs.getString(key, "{}")!!); o.keys().asSequence().associateWith { o.getInt(it) } }.getOrDefault(emptyMap())
     private fun readAliases(): Map<String, String> = runCatching { val o = JSONObject(prefs.getString("aliases", "{}")!!); o.keys().asSequence().associateWith { o.getString(it) } }.getOrDefault(emptyMap())

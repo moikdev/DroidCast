@@ -37,6 +37,7 @@ fun PaletteDialogs(store: PaletteStore, selected: Command?, globalEnabled: Boole
                    run: (Command) -> Unit, copy: (String) -> Unit, close: () -> Unit) {
     val dialog = store.dialog ?: return
     if (dialog.startsWith("extension")) { dev.tinycast.android.extensions.ExtensionDialogs(store, close); return }
+    if (dialog.startsWith("backup")) { BackupDialog(store, run, close); return }
     when (dialog) {
         "note", "link", "clip" -> Editor(store, dialog, close)
         "shortcuts" -> Shell("Keyboard shortcuts", "Less reaching. More doing.", close) {
@@ -57,6 +58,7 @@ fun PaletteDialogs(store: PaletteStore, selected: Command?, globalEnabled: Boole
             Text("No account, analytics or background clipboard monitoring. Your collections stay local. Store searches and downloads contact Raycast; extensions can make HTTPS requests when you run them. Files are limited to documents you choose and each extension's own data folder.", color = muted, fontSize = 12.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 10.dp))
             Text("Raycast Store extensions run with a subset of the Raycast API. Desktop automation, native Mac helpers and OAuth are unavailable. AI commands are not included.", color = muted, fontSize = 12.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 12.dp))
             TextButton(onClick = { store.refreshApps(); store.message = "Application list refreshed" }, modifier = Modifier.padding(top = 12.dp)) { Text("Refresh installed apps") }
+            TextButton(onClick = { store.beginBackup() }) { Text("Backup and restore") }
             TextButton(onClick = { run(Command("web", "Source code", "", payload = "https://github.com/moikdev/DroidCast")) }) { Text("Source code") }
             TextButton(onClick = { store.dialog = "licenses" }) { Text("License and attribution") }
         }
@@ -184,9 +186,9 @@ internal fun ActionsMenu(store: PaletteStore, command: Command, run: (Command) -
 }
 
 @Composable
-private fun Shell(title: String, subtitle: String, close: () -> Unit, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+internal fun Shell(title: String, subtitle: String, close: () -> Unit, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     Dialog(onDismissRequest = close, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-        Surface(shape = RoundedCornerShape(20.dp), color = PaletteTheme.surface, border = BorderStroke(1.dp, line), modifier = Modifier.widthIn(max = 540.dp).fillMaxWidth(.94f).padding(vertical = 20.dp).then(modifier)
+        Surface(shape = RoundedCornerShape(20.dp), color = PaletteTheme.surface, border = BorderStroke(1.dp, line), modifier = Modifier.heightIn(max = (LocalConfiguration.current.screenHeightDp - 64).dp).widthIn(max = 540.dp).fillMaxWidth(.94f).padding(vertical = 20.dp).then(modifier)
             .onPreviewKeyEvent { if (it.type == KeyEventType.KeyDown && it.key == Key.Escape) { close(); true } else false }) {
             Column(Modifier.verticalScroll(rememberScrollState()).padding(28.dp)) {
                 Text(title, fontSize = 24.sp, fontWeight = FontWeight.SemiBold, letterSpacing = (-.5).sp)

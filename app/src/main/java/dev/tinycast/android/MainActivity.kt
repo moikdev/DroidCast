@@ -29,6 +29,8 @@ class MainActivity : ComponentActivity() {
     val store: PaletteStore by viewModels()
     var shortcutEnabled by mutableStateOf(false)
     private var sharedText by mutableStateOf<String?>(null)
+    private val createBackup = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { store.writeExport(it) }
+    private val importBackup = registerForActivityResult(ActivityResultContracts.OpenDocument()) { store.readBackup(it) }
     private val openDocument = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
             runCatching { contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
@@ -61,7 +63,11 @@ class MainActivity : ComponentActivity() {
         shortcutEnabled = Settings.Secure.getString(contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
             ?.split(':')?.any { it == ComponentName(this, PaletteShortcutService::class.java).flattenToString() } == true
     }
-    public override fun onNewIntent(intent: Intent) { super.onNewIntent(intent); store.reset(); receive(intent) }
+    public override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        if (store.backupBusy) { store.message = "Backup in progress. Please try again when it finishes."; return }
+        store.reset(); receive(intent)
+    }
     private fun receive(intent: Intent) {
         sharedText = when (intent.action) {
             Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT)
@@ -95,7 +101,8 @@ class MainActivity : ComponentActivity() {
     }
     fun openSystemSettings(destination: SettingsDestination) = open(destination.intent(packageName), "${destination.title} is unavailable on this device.")
     fun execute(command: Command) {
-        store.used(command.id)
+        if (store.backupBusy) return
+        if (command.id !in setOf("backup", "backup-export", "backup-import", "backup-write", "backup-read")) store.used(command.id)
         if (command.kind == Kind.COMMAND) {
             SystemSettings.find(command.id)?.let { openSystemSettings(it); return }
         }
@@ -120,6 +127,10 @@ class MainActivity : ComponentActivity() {
                 if (extension != null && entry != null) openExtension(extension, entry) else store.message = "This extension is no longer installed"
             }
             Kind.COMMAND -> when (command.id) {
+                "backup", "backup-export" -> store.beginBackup()
+                "backup-import" -> { store.beginBackup(); importBackup.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }
+                "backup-write" -> store.prepareExport { createBackup.launch("DroidCast-${java.time.LocalDate.now()}.json") }
+                "backup-read" -> importBackup.launch(arrayOf("application/json", "text/plain", "application/octet-stream"))
                 "extensions" -> store.dialog = "extensions"
                 "calculator" -> { store.category = "All"; store.search("= "); store.focusEpoch++ }
                 "new-note" -> { store.editing = null; store.dialog = "note" }
