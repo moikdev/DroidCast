@@ -3,7 +3,6 @@ package dev.tinycast.android
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.InputStream
-import java.net.URI
 
 enum class BackupCategory(val label: String) {
     NOTES("Notes"), LINKS("Quicklinks"), CLIPS("Saved clips"), PREFERENCES("Pins and aliases"), LEARNING("Usage ranking")
@@ -107,7 +106,7 @@ object BackupCodec {
                         require(Regex("$prefix:[A-Za-z0-9_-]{1,80}").matches(it.id) && it.title.isNotBlank()) { "Invalid ${category.label} item" }
                         require(it.alias.isEmpty() || (category == BackupCategory.LINKS && aliasPattern.matches(it.alias))) { "Invalid item alias" }
                         if (category == BackupCategory.LINKS) {
-                            val uri = URI(it.body.replace("{query}", "test"))
+                            val uri = android.net.Uri.parse(it.body.replace("{query}", "test"))
                             require(uri.scheme in listOf("https", "http") && !uri.host.isNullOrBlank()) { "Quicklinks must use complete HTTP or HTTPS URLs" }
                         }
                     }
@@ -172,7 +171,8 @@ object BackupPlanner {
             if (policy == RestorePolicy.REPLACE) { added += incoming.size; removed += old.size; return incoming }
             val next = old.toMutableList()
             incoming.forEach { item ->
-                val existing = next.firstOrNull { it.id == item.id || (it.title == item.title && it.body == item.body && it.alias == item.alias) }
+                val existing = next.firstOrNull { it.id == item.id }
+                    ?: next.firstOrNull { it.title == item.title && it.body == item.body && it.alias == item.alias }
                 if (existing != null) { skipped++; remap[item.id] = existing.id } else { next.add(item); added++ }
             }
             require(category != BackupCategory.CLIPS || next.size <= 100) { "Merge would exceed 100 saved clips; replace this category or remove clips first" }

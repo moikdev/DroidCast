@@ -5,10 +5,10 @@ Enhancement [#3](https://github.com/moikdev/DroidCast/issues/3). Baseline `58ea4
 ## Local checks
 
 - App/test APK build and Android lint: pass.
-- JVM tests: **30 passed**, including 9 backup planning tests.
-- Tablet device tests: **36 passed** (7 backup + 29 existing palette/overlay/settings regressions).
-- Phone-layout checks: **7 passed**, including real document-picker round-trip/cancellation, preview rotation, replacement, validation, alias conflict and maximum ranking.
-- Final APK SHA-256: `739b90f221df2acf7d8ace93c2f9dcaff2d94beea794a2608dcca84e4aa5432e`.
+- JVM tests: **31 passed**, including 10 backup planning tests.
+- Tablet device tests: **39 passed** (10 backup + 29 existing palette/overlay/settings regressions).
+- Phone-layout checks: **10 passed**, including real document-picker round-trip/cancellation, preview rotation, replacement, validation, alias conflict, preserved document aliases, internationalized URL round-trip, Escape cancellation and maximum ranking.
+- Final APK SHA-256: `363e288ad5740b78300b793ac16e204bdf132edf4a13a1873159eb426cc78afe`.
 - Dedicated Android 16/API 36 arm64 emulator. Tablet 1920×1200, density 240. Phone configuration 1080×2340, density 420; restored to tablet after checks, adbd/app unprivileged. No physical-device/OEM certification is claimed.
 
 ## Coverage
@@ -25,9 +25,15 @@ Real unedited emulator framebuffer output under [parity-backup](../screenshots/p
 
 Evidence includes category selection, Android export picker, import preview, content inspection, replacement confirmation, restored note search, duplicate summary, alias collision and malformed-file feedback. Phone screenshots are labeled separately.
 
+## Independent audit remediation
+
+Both initial gpt-6.1-sol/high audits reviewed `234d45d`. Focused regressions reproduced identity remapping to an earlier content duplicate, a missing collision against a preserved document alias, and export rejection of URLs accepted by the native editor. Identity lookup now precedes content matching; conflict validation includes local document overrides without exporting them; URL checks use the same Android parser and host/scheme rules as the editor. The new tests cover merge and replace document-alias collisions and native-save → export → import → reopened-store round-trip for internationalized and spaced URLs.
+
+An added Escape regression exposed a dialog with no focused child missing key events. Dialogs now take fallback keyboard focus only when no child already has focus. Escape cancellation passes, and existing editor/keyboard regressions remain in the full tablet run. No TalkBack or complete Tab/Enter traversal certification is claimed.
+
 ## Earlier harness iterations
 
-An assertion initially requested exact equality for a substring; a cancellation assertion matched both the search text and dialog title. Both were corrected to specific checks before successful revalidation. Screenshot inspection caught a preview capture before the pixels had caught up with Compose semantics; capture now requires native UI evidence and idle. Tall dialogs were constrained to keep their scrollable content clear of navigation controls. Earlier failed runs are not counted as passing checks.
+An assertion initially requested exact equality for a substring; a cancellation assertion matched both the search text and dialog title. Both were corrected to specific checks before successful revalidation. Screenshot inspection caught a preview capture before the pixels had caught up with Compose semantics; capture now requires native UI evidence and idle. Tall dialogs were constrained to keep their scrollable content clear of navigation controls. The added URL verifier initially expected a URL subtitle that palette rows do not display; it now opens the restored quicklink editor and checks the actual URL field. Earlier failed runs are not counted as passing checks.
 
 ## Boundaries
 

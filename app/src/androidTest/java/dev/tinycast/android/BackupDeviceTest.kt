@@ -45,7 +45,8 @@ class BackupDeviceTest {
             "inspect-backup" -> By.text("Hide backup contents")
             "replace-confirmation" -> By.text("Apply this backup?")
             "restored-search" -> By.text("Restored tablet note")
-            "alias-conflict" -> By.textStartsWith("Alias conflict:")
+            "alias-conflict", "document-alias-conflict" -> By.textStartsWith("Alias conflict:")
+            "international-links" -> By.textContains("例え.テスト")
             "invalid-backup" -> By.text("Unexpected or missing backup fields")
             else -> error("Define evidence UI marker for $name")
         }
@@ -211,5 +212,58 @@ class BackupDeviceTest {
         compose.waitUntil(10000) { !compose.activity.store.backupBusy && compose.activity.store.dialog == "backup" }
         compose.activityRule.scenario.onActivity { it.store.used("calculator") }
         assertEquals(Int.MAX_VALUE, compose.activity.store.usage["calculator"])
+    }
+    @Test fun preservedDocumentAliasBlocksQuicklinkCollisionsForBothPolicies() {
+        lateinit var documentId: String
+        compose.activityRule.scenario.onActivity {
+            documentId = it.store.save("files", "Document alias fixture", "content://dev.droidcast.test/document")
+            it.store.setAlias(documentId, "docs")
+        }
+        val before = compose.activity.store.backupSnapshot()
+        assertFalse(documentId in before.aliases)
+        val imported = BackupDocument(BackupData(links = listOf(SavedItem("links:document-conflict", "Conflicting docs link", "https://example.com", "docs"))), setOf(BackupCategory.LINKS, BackupCategory.PREFERENCES))
+        load(imported)
+        RestorePolicy.entries.forEach { policy ->
+            compose.activityRule.scenario.onActivity { it.store.restorePolicy = policy }
+            compose.onNodeWithTag("backup-plan-error").performScrollTo().assertTextContains("Alias conflict", substring = true)
+            compose.onNodeWithTag("backup-review").performScrollTo().assertIsNotEnabled()
+            assertTrue(runCatching { compose.activity.store.restorePlan() }.isFailure)
+            assertEquals(before, compose.activity.store.backupSnapshot())
+            assertEquals("docs", compose.activity.store.commands().first { it.id == documentId }.alias)
+        }
+        evidence("document-alias-conflict")
+    }
+    @Test fun editorAcceptedInternationalAndSpacedUrlsSurviveBackupRoundTrip() {
+        val urls = listOf("https://例え.テスト/検索?q={query}", "https://example.com/with a space?q={query}")
+        val ids = mutableListOf<String>()
+        compose.activityRule.scenario.onActivity { activity ->
+            urls.forEachIndexed { index, url -> ids += activity.store.save("links", "International backup link $index", url, "bkintl$index") }
+        }
+        val source = compose.activity.store.backupSnapshot()
+        val encoded = BackupCodec.encode(source, setOf(BackupCategory.LINKS))
+        val decoded = BackupCodec.decode(encoded)
+        assertEquals(source.links, decoded.data.links)
+        compose.activityRule.scenario.onActivity { activity -> ids.forEach { activity.store.delete(it) } }
+        load(decoded)
+        compose.onNodeWithTag("backup-review").performScrollTo().performClick()
+        compose.onNodeWithTag("backup-confirm").performScrollTo().performClick()
+        compose.waitUntil(10000) { !compose.activity.store.backupBusy && compose.activity.store.dialog == "backup" }
+        val reopened = PaletteStore(context.applicationContext as android.app.Application)
+        assertEquals(source.links, reopened.links)
+        compose.activityRule.scenario.onActivity { it.store.dialog = null; it.store.search("International backup link") }
+        ids.forEach { id -> compose.onNodeWithTag("result-$id").assertIsDisplayed() }
+        compose.onNodeWithTag("result-${ids.first()}").performTouchInput { longClick() }
+        compose.onNodeWithTag("action-Edit quicklink").performClick()
+        compose.onNodeWithTag("editor-body").assertTextContains(urls.first())
+        evidence("international-links")
+    }
+    @Test fun escapeCancelsPreviewWithoutApplying() {
+        val before = compose.activity.store.backupSnapshot()
+        load(BackupDocument(BackupData(notes = listOf(SavedItem("notes:keyboard", "Keyboard preview fixture", "Do not apply"))), setOf(BackupCategory.NOTES)))
+        compose.onNodeWithText("Preview backup").assertIsDisplayed()
+        device.pressKeyCode(android.view.KeyEvent.KEYCODE_ESCAPE)
+        compose.waitUntil(5000) { compose.activity.store.dialog == null }
+        assertNull(compose.activity.store.backupDocument)
+        assertEquals(before, compose.activity.store.backupSnapshot())
     }
 }

@@ -55,4 +55,15 @@ class BackupPlannerTest {
         val incoming = BackupData(notes = listOf(note, note.copy(id = "notes:copy")), usage = linkedMapOf(note.id to 8, "notes:copy" to 2))
         assertEquals(mapOf(note.id to 8), plan(BackupData(), incoming).data.usage)
     }
+    @Test fun identityWinsWhenAnEarlierItemAlsoMatchesIncomingContent() {
+        val duplicate = note.copy(id = "notes:duplicate")
+        val editedIdentity = note.copy(body = "Edited on this device")
+        val current = BackupData(notes = listOf(duplicate, editedIdentity))
+        val incoming = BackupData(notes = listOf(note), pins = setOf(note.id), aliases = mapOf(note.id to "trip"), usage = mapOf(note.id to 5))
+        val result = plan(current, incoming)
+        assertEquals(current.notes, result.data.notes)
+        assertEquals(setOf(note.id), result.data.pins)
+        assertEquals(mapOf(note.id to "trip"), result.data.aliases)
+        assertEquals(mapOf(note.id to 5), result.data.usage)
+    }
 }

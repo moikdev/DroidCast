@@ -6,9 +6,9 @@ Select notes, quicklinks, saved clips, pins/aliases and usage ranking independen
 
 Import first reads and validates the selected file. Select available categories, inspect their contents, choose a policy, review the confirmation, then apply. Previewing, cancelling and invalid input do not change stored data. Import does not open imported links or execute commands.
 
-- **Merge** keeps existing versions when identities conflict and skips identical content. Identical content with a different ID is mapped to its existing identity for imported pins, aliases and ranking. Existing alias overrides and ranking entries take precedence. When duplicate incoming identities map to one item, conflicting aliases block the merge and ranking uses the higher count. Pins are combined.
+- **Merge** keeps existing versions when identities conflict and skips identical content. Identity matches take priority over content duplicates, preserving edited items and their references. Identical content with a different ID is mapped to its existing identity for imported pins, aliases and ranking. Existing alias overrides and ranking entries take precedence. When duplicate incoming identities map to one item, conflicting aliases block the merge and ranking uses the higher count. Pins are combined.
 - **Replace selected categories** replaces only categories you select. Unselected collections and recent documents remain. The confirmation explains that current selected data will be removed.
-- Effective alias collisions block the entire plan; nothing is partially applied. Exclude the conflicting category or change the alias first.
+- Effective alias collisions, including aliases on preserved recent documents, block the entire plan; nothing is partially applied. Exclude the conflicting category or change the alias first. Document aliases are checked locally but remain excluded from portable backups.
 - Merging saved clips past their 100-item limit is rejected rather than silently discarding data.
 
 The final apply uses one preferences transaction on an IO dispatcher, then publishes the resulting state. The UI prevents a second operation while it saves. A successful import is available to the next store instance without requiring an app restart.
@@ -17,7 +17,7 @@ The final apply uses one preferences transaction on an IO dispatcher, then publi
 
 DroidCast format identifier `dev.droidcast.backup`, version **1**, accepts only the current version. Root fields are exactly `format`, `version`, `categories`. Categories are `NOTES`, `LINKS`, `CLIPS`, `PREFERENCES` and `LEARNING`; unchecked categories are absent. Items carry `id`, `title`, `body`, `alias`. Preferences carry `pins` and `aliases`; learning is a command-ID-to-count map.
 
-The reader bounds input to **5 MiB**, validates UTF-8, rejects duplicate/unknown fields, trailing data, excessive nesting, invalid identities and unsupported values. Limits: 2,000 notes or quicklinks per category, 100 saved clips, 5,000 pins/aliases/ranking entries, 512-character titles and 131,072-character bodies. Links must use complete HTTP/HTTPS URLs and aliases follow the palette's existing syntax. Export validates against the same schema and limits.
+The reader bounds input to **5 MiB**, validates UTF-8, rejects duplicate/unknown fields, trailing data, excessive nesting, invalid identities and unsupported values. Limits: 2,000 notes or quicklinks per category, 100 saved clips, 5,000 pins/aliases/ranking entries, 512-character titles and 131,072-character bodies. Links use the same HTTP/HTTPS host validation as the Android editor, preserving accepted internationalized URLs and raw values. Aliases follow the palette's existing syntax. Export validates against the same schema and limits.
 
 ## Coverage and exclusions
 

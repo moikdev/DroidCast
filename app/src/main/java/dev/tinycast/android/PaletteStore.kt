@@ -84,7 +84,7 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
 
     fun backupSnapshot() = BackupData(notes, links, clips, pins.filterNot { it.startsWith("files:") }.toSet(), aliases.filterKeys { !it.startsWith("files:") }, usage.filterKeys { !it.startsWith("files:") })
     fun restorePlan(): RestorePlan = BackupPlanner.plan(backupSnapshot(), requireNotNull(backupDocument), restoreCategories, restorePolicy,
-        catalog().filter { it.kind !in listOf(Kind.NOTE, Kind.LINK, Kind.CLIP) }.associate { it.id to it.alias })
+        catalog().filter { it.kind !in listOf(Kind.NOTE, Kind.LINK, Kind.CLIP) }.associate { it.id to it.alias } + aliases.filterKeys { it.startsWith("files:") })
     fun beginBackup() { backupError = null; backupDocument = null; dialog = "backup" }
     fun discardImport() { if (!backupBusy) { backupDocument = null; backupError = null; dialog = "backup" } }
     fun prepareExport(ready: () -> Unit) {

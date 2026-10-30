@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -188,8 +189,13 @@ internal fun ActionsMenu(store: PaletteStore, command: Command, run: (Command) -
 @Composable
 internal fun Shell(title: String, subtitle: String, close: () -> Unit, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     Dialog(onDismissRequest = close, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+        val focus = remember { FocusRequester() }
+        var ready by remember { mutableStateOf(false) }
+        var hasFocus by remember { mutableStateOf(false) }
+        LaunchedEffect(ready) { if (ready && !hasFocus) focus.requestFocus() }
         Surface(shape = RoundedCornerShape(20.dp), color = PaletteTheme.surface, border = BorderStroke(1.dp, line), modifier = Modifier.heightIn(max = (LocalConfiguration.current.screenHeightDp - 64).dp).widthIn(max = 540.dp).fillMaxWidth(.94f).padding(vertical = 20.dp).then(modifier)
-            .onPreviewKeyEvent { if (it.type == KeyEventType.KeyDown && it.key == Key.Escape) { close(); true } else false }) {
+            .focusRequester(focus).onFocusChanged { hasFocus = it.hasFocus }.onGloballyPositioned { ready = true }
+            .onPreviewKeyEvent { if (it.type == KeyEventType.KeyDown && it.key == Key.Escape) { close(); true } else false }.focusable()) {
             Column(Modifier.verticalScroll(rememberScrollState()).padding(28.dp)) {
                 Text(title, fontSize = 24.sp, fontWeight = FontWeight.SemiBold, letterSpacing = (-.5).sp)
                 Text(subtitle, fontSize = 12.sp, color = muted, lineHeight = 18.sp, modifier = Modifier.padding(top = 8.dp, bottom = 24.dp))
