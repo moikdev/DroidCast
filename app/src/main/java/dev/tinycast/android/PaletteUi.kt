@@ -60,7 +60,8 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
         val keyboard = LocalSoftwareKeyboardController.current
         val list = rememberLazyListState()
         val results = store.results()
-        val selected = results.getOrNull(store.selected.coerceIn(0, (results.size - 1).coerceAtLeast(0)))
+        val resultSelected = results.getOrNull(store.selected.coerceIn(0, (results.size - 1).coerceAtLeast(0)))
+        val selected = if (store.dialog in setOf("actions", "alias", "delete")) store.actionCommand ?: resultSelected else resultSelected
         val snack = remember { SnackbarHostState() }
         val shortcutEngine = remember { ShortcutEngine() }
         var menu by remember { mutableStateOf(false) }
@@ -71,22 +72,27 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
                 store.discardImport()
             }
             if (store.dialog == "extension-run" || store.dialog == "extension-setup") store.extensions.close()
-            store.dialog = null; store.focusEpoch++
+            store.dialog = null; store.actionCommand = null; store.focusEpoch++
         }
         fun escape() {
             when { store.dialog != null -> close(); menu -> menu = false; store.query.isNotEmpty() -> store.search(""); store.category != "All" -> store.filter("All"); else -> dismiss() }
         }
         val handleKey: (KeyEvent) -> Boolean = { event ->
             val configured = if (event.action in listOf(KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP)) shortcutEngine.handle(event.asShortcutInput(), store.shortcutConfiguration.byChord, store.dialog != null || store.backupBusy || ShortcutRuntime.recordingOwner != null) else ShortcutEngine.Result(false)
-            if (configured.target != null) shortcut(configured.target, configured.chord!!)
+            if (configured.target != null && !ShortcutRuntime.passesSettingsNavigation(event)) shortcut(configured.target, configured.chord!!)
             val ctrl = (event.isCtrlPressed xor event.isMetaPressed) && !event.isShiftPressed && !event.isAltPressed
-            if (configured.consumed) true
+            val preferencesKey = event.keyCode == KeyEvent.KEYCODE_COMMA && (event.isCtrlPressed xor event.isMetaPressed) && !event.isAltPressed && store.dialog == null
+            if (event.action == KeyEvent.ACTION_DOWN && preferencesKey) {
+                val target = selected?.takeIf { ShortcutRules.targetAllowed(it.id) }
+                run(if (event.isShiftPressed && target != null) Command("configure-command", "Configure command", "", payload = target.id) else Command("app-settings", "Settings", "")); true
+            }
+            else if (configured.consumed) true
             else if (event.action != KeyEvent.ACTION_DOWN) false
             else if (event.keyCode == KeyEvent.KEYCODE_ESCAPE) { escape(); true }
             else if (store.dialog != null) false
             else when {
                 ctrl && event.keyCode == KeyEvent.KEYCODE_L -> { focus.requestFocus(); keyboard?.show(); true }
-                ctrl && event.keyCode == KeyEvent.KEYCODE_K -> { if(selected != null) store.dialog = "actions"; true }
+                ctrl && event.keyCode == KeyEvent.KEYCODE_K -> { if(selected != null) { store.actionCommand = selected; store.dialog = "actions" }; true }
                 ctrl && event.keyCode == KeyEvent.KEYCODE_N -> { store.editing = null; store.dialog = "note"; true }
                 ctrl && event.keyCode == KeyEvent.KEYCODE_D -> { selected?.takeUnless { it.id in listOf("result", "web") }?.let { store.togglePin(it.id) }; true }
                 ctrl && event.keyCode in KeyEvent.KEYCODE_1..KeyEvent.KEYCODE_8 -> { store.filter(categories[event.keyCode-KeyEvent.KEYCODE_1]); true }
@@ -122,9 +128,12 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
                         decorationBox={inner -> Box{if(store.query.isEmpty())Text("Search for apps and commands…",color=PaletteTheme.secondary,fontSize=20.sp,maxLines=1,overflow=TextOverflow.Ellipsis);inner()}})
                     if(wide) IconButton(onClick={focus.requestFocus();keyboard?.show()},modifier=Modifier.size(36.dp).semantics{contentDescription="Show on-screen keyboard"}){Glyph("keyboard",PaletteTheme.tertiary,16)}
                 }
+                if (store.category == "Files") FileSearchToolbar(store, run)
+                LaunchedEffect(store.folderSearch.includeInLauncher) { store.syncFileSearch() }
                 if(results.isEmpty()) Column(Modifier.weight(1f).fillMaxWidth().padding(24.dp),verticalArrangement=Arrangement.Center,horizontalAlignment=Alignment.CenterHorizontally){
                     Glyph("search",PaletteTheme.tertiary,28);Spacer(Modifier.height(12.dp))
                     Text("No matching commands",fontSize=14.sp);Text("Try another name or category.",fontSize=12.sp,color=PaletteTheme.secondary)
+                    if(store.category=="Files") TextButton(onClick={run(Command("search-folders","Search folders",""))}){Text("Choose search folders")}
                     if(store.category=="Extensions") TextButton(onClick={store.dialog="extensions"}){Text("Browse Raycast Store")}
                 } else LazyColumn(state=list,modifier=Modifier.fillMaxWidth().weight(1f).testTag("results"),contentPadding=PaddingValues(horizontal=8.dp,vertical=4.dp)) {
                     itemsIndexed(results,key={_,c->c.id}){i,c->
@@ -132,8 +141,8 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
                         val previous=results.getOrNull(i-1)?.let { sectionTitle(it,store) }
                         if(i==0 || section!=previous) Text(section,color=PaletteTheme.secondary,fontSize=12.sp,fontWeight=FontWeight.Medium,
                             modifier=Modifier.fillMaxWidth().padding(start=8.dp,end=8.dp,top=if(i==0)4.dp else 12.dp,bottom=4.dp))
-                        if(c.kind==Kind.CALC) CalculatorCard(c,i==store.selected,{store.selected=i;run(c)},{store.selected=i;store.dialog="actions"})
-                        else CommandRow(c,i==store.selected,store.shortcutConfiguration.bindings[c.id]?.label(),{store.selected=i;run(c)},{store.selected=i;store.dialog="actions"})
+                        if(c.kind==Kind.CALC) CalculatorCard(c,i==store.selected,{store.selected=i;run(c)},{store.selected=i;store.actionCommand=c;store.dialog="actions"})
+                        else CommandRow(c,i==store.selected,store.shortcutConfiguration.bindings[c.id]?.label(),{store.selected=i;run(c)},{store.selected=i;store.actionCommand=c;store.dialog="actions"})
                     }
                 }
                 Row(Modifier.fillMaxWidth().height(PaletteTheme.footer).padding(horizontal=8.dp),verticalAlignment=Alignment.CenterVertically){
@@ -144,8 +153,8 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
                             categories.forEach { c -> DropdownMenuItem(text={Text(if(c=="Pinned")"Favorites" else c,fontSize=13.sp)},
                                 trailingIcon={if(store.category==c)Text("✓",color=PaletteTheme.secondary)},onClick={store.filter(c);menu=false},modifier=Modifier.testTag("filter-$c")) }
                             HorizontalDivider(color=PaletteTheme.separator)
-                            DropdownMenuItem(text={Text("Preferences…",fontSize=13.sp)},onClick={store.dialog="preferences";menu=false})
-                            DropdownMenuItem(text={Text("Keyboard Shortcuts",fontSize=13.sp)},onClick={store.dialog="shortcut-settings";menu=false})
+                            DropdownMenuItem(text={Text("Preferences…",fontSize=13.sp)},onClick={menu=false;run(Command("app-settings","Settings",""))})
+                            DropdownMenuItem(text={Text("Keyboard Shortcuts",fontSize=13.sp)},onClick={menu=false;run(Command("shortcuts","Shortcuts",""))})
                             DropdownMenuItem(text={Text("Dismiss DroidCast",fontSize=13.sp)},onClick=dismiss)
                         }
                     }
@@ -155,11 +164,11 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
                             Row(Modifier.clip(CircleShape).clickable{run(selected)}.height(30.dp).padding(horizontal=10.dp).testTag("primary-action"),verticalAlignment=Alignment.CenterVertically){
                                 Text(if(wide)primaryActionTitle(selected)else primaryActionTitle(selected).substringBefore(' '),fontSize=12.sp,fontWeight=FontWeight.Medium,maxLines=1);Spacer(Modifier.width(6.dp));KeyCap("↵")
                             }
-                            Row(Modifier.clip(CircleShape).clickable{store.dialog="actions"}.height(30.dp).padding(horizontal=10.dp).testTag("actions-button"),verticalAlignment=Alignment.CenterVertically){
+                            Row(Modifier.clip(CircleShape).clickable{store.actionCommand=selected;store.dialog="actions"}.height(30.dp).padding(horizontal=10.dp).testTag("actions-button"),verticalAlignment=Alignment.CenterVertically){
                                 Text("Actions",fontSize=12.sp,color=PaletteTheme.secondary);Spacer(Modifier.width(6.dp));KeyCap("Ctrl");Spacer(Modifier.width(2.dp));KeyCap("K")
                             }
                         }
-                        if(store.dialog=="actions") ActionsMenu(store,selected,run,copy,::close)
+                        if(store.dialog=="actions") ActionsMenu(store,store.actionCommand ?: selected,run,copy,::close)
                     }
                 }
             }
@@ -172,6 +181,7 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
 
 private fun sectionTitle(command:Command,store:PaletteStore):String = when {
     command.kind==Kind.CALC -> "Calculator"
+    store.category=="Files" && command.kind==Kind.FILE -> if(command.id.startsWith("files:index:"))"Selected folders" else "Recent documents"
     store.query.isBlank() && command.id in store.pins -> "Favorites"
     store.query.isNotBlank() -> "Results"
     else -> command.kind.label
@@ -182,7 +192,7 @@ internal fun primaryActionTitle(command:Command):String = when(command.kind) {
     Kind.CALC -> "Copy Answer"
     Kind.CLIP -> "Copy to Clipboard"
     Kind.NOTE -> "Open Note"
-    Kind.FILE -> "Open File"
+    Kind.FILE -> if(command.mimeType == "vnd.android.document/directory")"Browse Folder" else "Open File"
     Kind.LINK -> "Open Link"
     Kind.EXTENSION -> "Run Command"
     Kind.COMMAND -> if(command.id=="web")"Search Web" else "Open Command"

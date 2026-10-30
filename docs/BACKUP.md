@@ -1,6 +1,6 @@
 # Backup and restore
 
-Search **Backup and restore**, **Export DroidCast backup** or **Import DroidCast backup**. The same entry is in Preferences. Available in development builds after the original 0.4.0-preview release.
+Search **Backup and restore**, **Export DroidCast backup** or **Import DroidCast backup**. These open the Backup pane in the separate settings workspace. Preview, inspection and confirmation stay inline; Android still owns the storage chooser. Available in development builds after the original 0.4.0-preview release.
 
 Select notes, quicklinks, saved clips, pins/aliases usage ranking and keyboard bindings independently. Export opens Android's document picker. The output is readable JSON: notes and saved clips may contain private text, so choose its destination accordingly. Cancelling a picker does not change your collections.
 
@@ -26,8 +26,8 @@ The reader bounds input to **5 MiB**, validates UTF-8, rejects duplicate/unknown
 | `notes`, `links`, `clips` | Selected content categories |
 | `pins`, `aliases` | Selected command preferences; document references excluded |
 | `usage` | Selected launcher learning; document references excluded |
-| `shortcuts` | Selected keyboard bindings; recent-document bindings excluded and preserved locally |
-| `files` | Excluded: recent-document URIs and their grants are device-specific |
+| `shortcuts` | Selected keyboard bindings; recent and indexed-document bindings excluded and preserved locally |
+| `files` | Excluded: recent/indexed-document URIs, folder scopes/indexes and grants are device-specific |
 | Extension preferences, credentials, code and storage | Separate store, never read by backup |
 | Accessibility consent and other Android permissions | Android-owned state, never read or written by import |
 

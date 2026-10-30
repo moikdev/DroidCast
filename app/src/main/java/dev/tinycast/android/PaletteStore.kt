@@ -18,6 +18,7 @@ data class SavedItem(val id: String, val title: String, val body: String, val al
 
 class PaletteStore(application: Application) : AndroidViewModel(application) {
     val extensions = ExtensionCatalog(application)
+    val folderSearch = FolderSearch(application, viewModelScope)
     private val prefs = application.getSharedPreferences("palette", Context.MODE_PRIVATE)
     var apps by mutableStateOf<List<Command>>(emptyList()); private set
     var loading by mutableStateOf(true); private set
@@ -34,6 +35,7 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
     var focusEpoch by mutableIntStateOf(0)
     var dialog by mutableStateOf<String?>(null)
     var editing by mutableStateOf<SavedItem?>(null)
+    var actionCommand by mutableStateOf<Command?>(null)
     var message by mutableStateOf<String?>(null)
     var backupCategories by mutableStateOf(BackupCategory.entries.toSet())
     var restoreCategories by mutableStateOf<Set<BackupCategory>>(emptySet())
@@ -72,6 +74,9 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
         Command("calculator", "Calculator", "Math, percentages & unit conversions", icon = "calculator", keywords = "math convert units temperature length weight", alias = "calc"),
         Command("new-note", "Create a note", "Capture a thought without breaking your flow", icon = "note", keywords = "write markdown new memo", alias = "note"),
         Command("browse-files", "Open a document", "Browse device & connected storage", icon = "folder", keywords = "file document storage picker", alias = "files"),
+        Command("search-files", "Search files", "Search names and paths in folders you choose", icon = "folder", keywords = "file folder filename index find"),
+        Command("search-folders", "Search folders", "Choose, refresh and manage searchable folders", icon = "folder", keywords = "directory scope grant index"),
+        Command("folder-add", "Add search folder", "Choose a folder with Android's system picker", icon = "folder", keywords = "directory scope choose grant"),
         Command("new-link", "Create a quicklink", "Turn a website or search into a command", icon = "link", keywords = "url custom bookmark new", alias = "link"),
         Command("save-clip", "Save clipboard text", "Keep the current clip in your local collection", icon = "clipboard", keywords = "copy paste history save", alias = "clip"),
         Command("shortcuts", "Keyboard shortcuts", "Record global and per-command shortcuts", icon = "keyboard", keywords = "help hotkey keys ctrl space global configure bindings", alias = "keys"),
@@ -85,11 +90,14 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
         notes.map { Command(it.id, it.title, it.body.lineSequence().firstOrNull().orEmpty().ifBlank { "Empty note" }, Kind.NOTE, "note", it.body, it.body) } +
         links.map { Command(it.id, it.title, it.body, Kind.LINK, "link", it.body, it.body, it.alias) } +
         clips.map { Command(it.id, it.title, "Saved text · Enter to copy", Kind.CLIP, "clipboard", it.body, it.body) } +
-        files.map { Command(it.id, it.title, "Recent document · permission granted by you", Kind.FILE, "folder", it.title, it.body) }
-    )
+        files.map { Command(it.id, it.title, "Recent document · permission granted by you", Kind.FILE, "folder", it.title, it.body) } +
+        folderSearch.matches.map { it.command() } + folderSearch.retainedCommands(pins + aliases.keys)
+    ).distinctBy { it.id }
     fun commands(): List<Command> = catalog().map { it.copy(alias = aliases[it.id] ?: it.alias) }
+    fun configurationCommands(): List<Command> = (commands() + folderSearch.configurationCommands().map { it.copy(alias = aliases[it.id] ?: it.alias) }).distinctBy { it.id }
+    fun command(id: String): Command? = commands().firstOrNull { it.id == id } ?: folderSearch.command(id)?.let { it.copy(alias = aliases[id].orEmpty()) }
 
-    fun shortcutTitle(id: String): String = if (id == ShortcutRules.PALETTE) "Show or hide DroidCast" else commands().firstOrNull { it.id == id }?.title ?: "Unavailable command · $id"
+    fun shortcutTitle(id: String): String = if (id == ShortcutRules.PALETTE) "Show or hide DroidCast" else command(id)?.title ?: "Unavailable command · $id"
     private fun saveShortcuts(configuration: ShortcutConfiguration) {
         ShortcutRules.validate(configuration)
         prefs.edit().putString("shortcuts", ShortcutCodec.encode(configuration).toString()).apply()
@@ -97,7 +105,7 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
     }
     fun setShortcut(target: String, chord: KeyChord?) {
         require(!backupBusy) { "Wait for backup to finish" }
-        require(target == ShortcutRules.PALETTE || target in shortcutConfiguration.bindings || commands().any { it.id == target }) { "Command is unavailable" }
+        require(target == ShortcutRules.PALETTE || target in shortcutConfiguration.bindings || command(target) != null) { "Command is unavailable" }
         if (chord != null) {
             require(ShortcutRules.error(chord) == null) { ShortcutRules.error(chord)!! }
             val owner = shortcutConfiguration.bindings.entries.firstOrNull { it.key != target && it.value == chord }?.key
@@ -107,7 +115,7 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
     }
     fun resetShortcuts() { require(!backupBusy); saveShortcuts(ShortcutConfiguration()) }
     fun beginShortcutRecording(target: String) {
-        require(target == ShortcutRules.PALETTE || target in shortcutConfiguration.bindings || commands().any { it.id == target }) { "Command is unavailable" }
+        require(target == ShortcutRules.PALETTE || target in shortcutConfiguration.bindings || command(target) != null) { "Command is unavailable" }
         recordingTarget = target; recordingCandidate = shortcutConfiguration.bindings[target]; recordingError = null
         ShortcutRuntime.recordingOwner = this; dialog = "shortcut-record"
     }
@@ -223,6 +231,7 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
         val q = if (prefixKind != null) query.drop(1).trimStart() else query
         val filter = prefixKind ?: when (category) { "Apps" -> Kind.APP; "Notes" -> Kind.NOTE; "Quicklinks" -> Kind.LINK; "Clips" -> Kind.CLIP; "Files" -> Kind.FILE; "Extensions" -> Kind.EXTENSION; else -> null }
         val all = commands().filter { filter == null || it.kind == filter }.filter { category != "Pinned" || it.id in pins }
+            .filter { category != "Files" || folderSearch.type == FileSearchType.ALL || it.mimeType?.let(folderSearch.type::acceptsMime) == true }
         val result = CommandSearch.find(all, q, pins, usage).toMutableList()
         if (filter == null && category != "Pinned") {
             Calculator.evaluate(q)?.let { result.add(0, Command("result", it.result, it.expression, Kind.CALC, "calculator", payload = it.result)) }
@@ -236,7 +245,8 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
         return if(q.isBlank()) result.sortedWith(compareBy<Command> { if(it.id in pins) 0 else 1 }.thenBy { if(it.id in pins) -1 else it.kind.ordinal }) else result
     }
 
-    fun search(value: String) { query = value; selected = 0 }
+    fun search(value: String) { query = value; selected = 0; syncFileSearch() }
+    fun syncFileSearch() { folderSearch.search(query, category == "Files" || (folderSearch.includeInLauncher && query.isNotBlank() && category in setOf("All", "Pinned"))) }
     fun openExtension(extension: InstalledExtension, command: ExtensionCommand) {
         extensions.launch(extension, command)
         val prefs = extensions.preferences(extension, command)
@@ -253,14 +263,14 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
         catch (e: kotlinx.coroutines.CancellationException) { throw e }
         catch (e: Throwable) { extensions.error = e.message ?: "Uninstallation failed" }
     } }
-    fun filter(value: String) { category = value; search(""); focusEpoch++ }
-    fun reset() { if (backupBusy) return; cancelShortcutRecording(toManager = false); category = "All"; search(""); dialog = null; focusEpoch++ }
+    fun filter(value: String) { category = value; folderSearch.filterType(FileSearchType.ALL); search(""); focusEpoch++ }
+    fun reset() { if (backupBusy) return; cancelShortcutRecording(toManager = false); category = "All"; folderSearch.filterType(FileSearchType.ALL); search(""); dialog = null; actionCommand = null; focusEpoch++ }
     fun used(id: String) { usage = usage + (id to ((usage[id] ?: 0).coerceAtMost(Int.MAX_VALUE - 1) + 1)); prefs.edit().putString("usage", JSONObject(usage).toString()).apply() }
     fun togglePin(id: String) { pins = if (id in pins) pins - id else pins + id; prefs.edit().putStringSet("pins", pins).apply() }
     fun setAlias(id: String, value: String) {
         val alias = value.trim().lowercase()
         require(alias.isEmpty() || Regex("[a-z][a-z0-9_-]{0,23}").matches(alias)) { "Use one word: letters, numbers, _ or -" }
-        require(alias.isEmpty() || commands().none { it.id != id && it.alias == alias }) { "That alias is already in use" }
+        require(alias.isEmpty() || (commands().none { it.id != id && it.alias == alias } && aliases.none { it.key != id && it.value == alias })) { "That alias is already in use" }
         aliases = aliases + (id to alias)
         prefs.edit().putString("aliases", JSONObject(aliases).toString()).apply()
     }

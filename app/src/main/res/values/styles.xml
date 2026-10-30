@@ -8,5 +8,12 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:backgroundDimEnabled">false</item>
     </style>
+    <style name="SettingsTheme" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowBackground">#161719</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:colorAccent">#9CEBC8</item>
+    </style>
     <string name="shortcut_description">Optional keyboard shortcuts: show or hide DroidCast and run commands with the combinations you configure. This service filters matching hardware key pairs. It does not retrieve window content, inspect screen text, or store keystrokes. Enable only if you want shortcuts from other apps.</string>
 </resources>

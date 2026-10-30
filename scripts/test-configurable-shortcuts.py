@@ -110,7 +110,9 @@ def prefs():
 
 assert adb("shell", "getprop", "ro.kernel.qemu") == "1", "Use an emulator"
 assert adb("emu", "avd", "name").splitlines()[0] == "Tinycast_Tablet_API_36", "Use the dedicated AVD"
-assert APP + ".test" not in adb("shell", "dumpsys", "activity", "instrumentation"), "Finish instrumentation before hardware trials"
+instrumentation_state = adb("shell", "dumpsys", "activity", "processes")
+assert "Unknown command" not in instrumentation_state, "Cannot verify instrumentation state"
+assert "ActiveInstrumentation{" not in instrumentation_state, "Finish instrumentation before hardware trials"
 original_services = adb("shell", "settings", "get", "secure", "enabled_accessibility_services")
 original_enabled = adb("shell", "settings", "get", "secure", "accessibility_enabled")
 adb("shell", "input", "keyevent", "KEYCODE_HOME")
@@ -164,7 +166,7 @@ def assign(query, key, label):
     chord(key)
     node(label)
     click("Save shortcut")
-    node("Your commands, one key combination away.")
+    node("Manage command aliases and keyboard shortcuts in one place.")
 
 
 def restore_setting(name, value):
@@ -198,8 +200,8 @@ try:
 
     palette("Keyboard shortcuts")
     adb("shell", "input", "keyevent", "KEYCODE_ENTER")
-    click("Reset all shortcuts…"); click("Reset shortcuts")
-    click("Change global shortcut")
+    click("Reset shortcuts…"); click("Reset shortcuts")
+    click("Record")
     node("Record a shortcut")
     chord(57)
     node("Ctrl + Alt + Space")
@@ -208,7 +210,7 @@ try:
     node("Record a shortcut")  # The existing global chord must record, not dismiss.
     click("Save shortcut")
     passed("recording pauses the existing global shortcut")
-    click("Change global shortcut")
+    click("Record")
     node("Record a shortcut")
     chord(57)
     node("Ctrl + Alt + Space")
@@ -216,6 +218,16 @@ try:
     click("Save shortcut")
     snapshot("configured-global", "Ctrl + Alt + Space")
     passed("record and persist Ctrl + Alt + Space")
+
+    chord(33, (29,))
+    assert any(item.get("resource-id") == "settings-search" and item.get("focused") == "true" for item in tree().iter("node"))
+    passed("Ctrl+F focuses settings search while the service is enabled")
+    chord(57)
+    wait(lambda: APP + "/" in focused() and ".MainActivity" in focused(), "Global chord did not return to the palette")
+    chord(51, (29,))
+    node("Make DroidCast fit the way you work.")
+    snapshot("settings-keyboard-route", "Global shortcut")
+    passed("Ctrl+Comma opens the separate settings workspace with the service enabled")
 
     for index in range(args.rounds):
         for origin in ("Settings", "Home"):
@@ -334,10 +346,18 @@ finally:
             adb("shell", "am", "start", "-W", "-n", APP + "/.MainActivity")
             restore_setting("enabled_accessibility_services", original_services)
             restore_setting("accessibility_enabled", original_enabled)
+            results["original_service_consent_restored"] = (
+                adb("shell", "settings", "get", "secure", "enabled_accessibility_services") == original_services
+                and adb("shell", "settings", "get", "secure", "accessibility_enabled") == original_enabled)
+            assert results["original_service_consent_restored"]
             results["original_preferences_restored"] = raw("exec-out", "run-as", APP, "cat", "shared_prefs/palette.xml") == original_xml
             assert results["original_preferences_restored"]
         finally:
-            adb("unroot"); adb("wait-for-device")
+            # adbd can disconnect before the unroot command receives its reply.
+            # Check the actual identity after reconnect, even on a nonzero reply.
+            unroot = subprocess.run(base + ["unroot"], capture_output=True, text=True)
+            results["unroot_command_exit_code"] = unroot.returncode
+            adb("wait-for-device")
             results["adbd_unprivileged"] = "uid=2000" in adb("shell", "id")
             results["app_process"] = [line for line in adb("shell", "ps", "-A", "-o", "USER,NAME").splitlines() if line.endswith(APP)]
             results["app_unprivileged"] = bool(results["app_process"]) and all(line.split()[0] not in ("root", "system", "shell") for line in results["app_process"])

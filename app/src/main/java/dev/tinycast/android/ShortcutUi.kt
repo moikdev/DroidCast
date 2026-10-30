@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-internal fun ShortcutDialogs(store: PaletteStore, enabled: Boolean, enable: () -> Unit, close: () -> Unit) {
+internal fun ShortcutDialogs(store: PaletteStore, enabled: Boolean, enable: () -> Unit, close: () -> Unit, embedded: Boolean = false) {
     when (store.dialog) {
         "shortcut-record" -> {
             val target = store.recordingTarget ?: return
@@ -35,28 +35,28 @@ internal fun ShortcutDialogs(store: PaletteStore, enabled: Boolean, enable: () -
                     event.repeatCount > 0 -> key in captured
                     else -> { captured.add(key); store.captureShortcut(event.asChord()); true }
                 }
-            }) {
+            }, embedded = embedded) {
                 Surface(border = BorderStroke(1.dp, PaletteTheme.border), modifier = Modifier.fillMaxWidth().testTag("shortcut-candidate")) {
-                    Text(store.recordingCandidate?.label() ?: "Press a shortcut…", fontSize = 21.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(20.dp))
+                    Text(store.recordingCandidate?.label() ?: "Press a shortcut…", fontSize = if (embedded) 18.sp else 21.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(if (embedded) 14.dp else 20.dp))
                 }
-                Text("Use Ctrl, Alt or Meta with a key, or F1–F12. Known Android and palette conflicts are rejected. Tab / Shift+Tab move between controls; Escape cancels.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 16.dp))
-                Text("Global shortcuts are paused while this recorder is open. Nothing changes until you save.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 12.dp))
+                Text(if (embedded) "Use Ctrl, Alt or Meta with a key, or F1–F12. Tab moves focus; Escape cancels." else "Use Ctrl, Alt or Meta with a key, or F1–F12. Known Android and palette conflicts are rejected. Tab / Shift+Tab move between controls; Escape cancels.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 14.dp))
+                Text("Global shortcuts are paused until you save or cancel.", fontSize = 11.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 10.dp))
                 store.recordingError?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp, modifier = Modifier.padding(top = 14.dp).testTag("shortcut-record-error")) }
                 Row(Modifier.fillMaxWidth().padding(top = 20.dp), horizontalArrangement = Arrangement.End) {
-                    if (target in store.shortcutConfiguration.bindings) TextButton(onClick = { store.setShortcut(target, null); store.cancelShortcutRecording() }, modifier = Modifier.testTag("shortcut-clear")) { Text("Clear binding") }
-                    TextButton(onClick = { store.cancelShortcutRecording() }) { Text("Cancel") }
-                    Button(onClick = store::saveRecordedShortcut, enabled = store.recordingCandidate != null && store.recordingError == null, modifier = Modifier.testTag("shortcut-save")) { Text("Save shortcut") }
+                    if (target in store.shortcutConfiguration.bindings) TextButton(onClick = { store.setShortcut(target, null); store.cancelShortcutRecording() }, modifier = Modifier.testTag("shortcut-clear")) { Text(if (embedded) "Clear" else "Clear binding", fontSize = 12.sp) }
+                    TextButton(onClick = { store.cancelShortcutRecording() }) { Text("Cancel", fontSize = 12.sp) }
+                    Button(onClick = store::saveRecordedShortcut, enabled = store.recordingCandidate != null && store.recordingError == null, contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp), modifier = Modifier.testTag("shortcut-save")) { Text("Save shortcut", fontSize = 12.sp) }
                 }
             }
         }
-        "shortcut-reset" -> Shell("Reset all shortcuts?", "Restore the original keyboard configuration.", { store.dialog = "shortcut-settings" }) {
+        "shortcut-reset" -> Shell("Reset all shortcuts?", "Restore the original keyboard configuration.", { store.dialog = "shortcut-settings" }, embedded = embedded) {
             Text("This removes all command bindings and restores Ctrl + Space for showing or hiding DroidCast. Your notes, links, pins and Android service consent stay unchanged.", fontSize = 13.sp)
             Row(Modifier.fillMaxWidth().padding(top = 20.dp), horizontalArrangement = Arrangement.End) {
-                TextButton(onClick = { store.dialog = "shortcut-settings" }) { Text("Cancel") }
+                TextButton(onClick = { store.dialog = "shortcut-settings" }) { Text("Cancel", fontSize = 12.sp) }
                 Button(onClick = { store.resetShortcuts(); store.dialog = "shortcut-settings" }, modifier = Modifier.testTag("shortcut-reset-confirm")) { Text("Reset shortcuts") }
             }
         }
-        "shortcut-settings" -> Shell("Keyboard shortcuts", "Your commands, one key combination away.", close) {
+        "shortcut-settings" -> Shell("Keyboard shortcuts", "Your commands, one key combination away.", close, embedded = embedded) {
             Text("SHOW OR HIDE DROIDCAST", fontSize = 11.sp, color = PaletteTheme.secondary)
             Text(store.shortcutConfiguration.bindings[ShortcutRules.PALETTE]?.label() ?: "Not assigned", fontSize = 20.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(top = 8.dp).testTag("shortcut-global-value"))
             Row(Modifier.fillMaxWidth().padding(top = 10.dp)) {

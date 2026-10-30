@@ -30,15 +30,20 @@ The live backlog is [GitHub issue #1](https://github.com/moikdev/DroidCast/issue
 - [#24: Import supported Tinycast and Raycast export categories on Android](https://github.com/moikdev/DroidCast/issues/24)
 - [#26: Add modifier-tap hotkeys and verified Android Hyper/Fn equivalents](https://github.com/moikdev/DroidCast/issues/26)
 
+- [#36: Compact Raycast-style settings workspace](https://github.com/moikdev/DroidCast/issues/36)
+- [#37: Diagnose intermittent Quick Settings tile activation timeout](https://github.com/moikdev/DroidCast/issues/37)
+
 ## Active slice
 
-Configurable global/per-command ordinary chords are [PR #33](https://github.com/moikdev/DroidCast/pull/33), addressing #4. Advanced modifier-tap/Fn/Hyper cases remain open in #26. This slice is not completed before both audits clear the verified head.
+Raycast-style advanced settings [#36](https://github.com/moikdev/DroidCast/issues/36) takes priority at the user’s request. It integrates selected-folder management/search from #5. Independent audits and a verified expected-head merge are required; #5 remains open for wider provider and lifecycle certification.
 
 ## Completed slices
 
 The direct-settings slice merged in [PR #23](https://github.com/moikdev/DroidCast/pull/23), closing #2 after both independent audits cleared head `39fc5f8` and local checks passed. Its live review/merge state and [issue #1](https://github.com/moikdev/DroidCast/issues/1) are authoritative. Record subsequent slices here after their verified merges; the baseline preview is not full parity.
 
 Backup/restore merged in [PR #25](https://github.com/moikdev/DroidCast/pull/25), closing #3 after both independent audits cleared `d144ae0`: 31 JVM, 39 tablet and 10 phone tests, build/lint, and 18 inspected screenshots. CI remains inactive.
+
+Configurable ordinary keyboard shortcuts merged in [PR #33](https://github.com/moikdev/DroidCast/pull/33), closing #4 and #34 after both sol/high audits cleared `8ccd87d`: 46 JVM, 52 tablet, 23 phone and 18 Linux hardware cases, plus build/lint and 21 screenshots. The unexplained phone backup timeout remains tracked in #35.
 
 ## Additional upstream gaps
 

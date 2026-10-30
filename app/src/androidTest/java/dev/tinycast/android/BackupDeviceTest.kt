@@ -56,8 +56,8 @@ class BackupDeviceTest {
         assertTrue(device.takeScreenshot(File(directory, "$name.png")))
     }
     private fun openBackup() {
-        compose.onNodeWithTag("search").performTextReplacement("Backup and restore")
-        compose.onNodeWithTag("result-backup").performClick()
+        // Shared backup component regression; SettingsDeviceTest covers its production settings host.
+        compose.activityRule.scenario.onActivity { it.store.beginBackup() }
         compose.onNodeWithText("Portable collections · DroidCast JSON format v1").assertIsDisplayed()
     }
     private fun load(document: BackupDocument) {
@@ -253,7 +253,7 @@ class BackupDeviceTest {
         compose.activityRule.scenario.onActivity { it.store.dialog = null; it.store.search("International backup link") }
         ids.forEach { id -> compose.onNodeWithTag("result-$id").assertIsDisplayed() }
         compose.onNodeWithTag("result-${ids.first()}").performTouchInput { longClick() }
-        compose.onNodeWithTag("action-Edit quicklink").performClick()
+        compose.onNodeWithTag("action-Edit quicklink").performScrollTo().performClick()
         compose.onNodeWithTag("editor-body").assertTextContains(urls.first())
         evidence("international-links")
     }

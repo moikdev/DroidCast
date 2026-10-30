@@ -14,7 +14,7 @@ DroidCast reproduces the central summon → search → run → dismiss workflow.
 | App search and launch | Partial | Fuzzy search, aliases, pins and usage ranking work. No running-app indicators, focus/hide toggles or quit-all behavior. |
 | Global activation | Partial | Configurable ordinary chord (default Ctrl+Space) through an opt-in key-filter service; icon, assistant intent and Quick Settings tile. Advanced modifier taps/Fn/Hyper remain open in #26. Universal OEM delivery is not established. |
 | Per-app / per-command hotkeys | Partial | Record, clear/reset and conflict-check ordinary command/app/item chords; result keycaps and existing execution paths. Advanced upstream hotkeys remain open in #26. |
-| File search | Partial | System picker, searchable recent documents, persisted URI grants and external viewers. No selected-folder search, filename index or folder preview. |
+| File search | Partial | System picker, searchable recent documents, opt-in bounded filename/path index for selected folder trees, type filters, persisted read grants and external viewers. No content index/preview or certified cloud-provider behavior; remaining validation is tracked in #5. |
 | Dictionary lookup | Missing | No dictionary command, dataset or definition view. |
 | Clipboard | Partial | Explicitly saved text, shared/selected-text input, foreground clipboard access and copy actions. No automatic history, image collection or paste-back into another app. |
 | Calculator | Partial | Arithmetic, percentages, functions and a fixed set of unit conversions. No live currency/crypto rates, date/time arithmetic or built-in color card. The tested color extension is a separate capability. |
@@ -33,6 +33,7 @@ DroidCast reproduces the central summon → search → run → dismiss workflow.
 | Extension views | Partial | Native lists, basic forms, selectable Detail text and actions/navigation. Grid is a list; Markdown, metadata, images, advanced fields and validation are incomplete. |
 | Extension host APIs | Partial | HTTPS, clipboard, timers, local storage/cache, preferences/arguments, limited crypto and scoped files. OAuth, menu bars, shell/native helpers, browser/window management, WebSockets and Raycast AI are not available. |
 | Backup and import | Partial | Selectable versioned DroidCast JSON export/import for notes, quicklinks, saved clips, pins/aliases, usage ranking and portable keyboard bindings, with preview, content inspection and merge/replace confirmation. Capability grants and extension data are excluded. Tinycast AppleArchive and Raycast container compatibility remain open in [#24](https://github.com/moikdev/DroidCast/issues/24); Android OS backup stays disabled. |
+| Settings workspace | Partial | Separate Raycast-inspired native preferences, settings search, central shortcuts/aliases, inline editing, folder scopes and backup. Appearance and advanced keyboard options remain open. |
 | Settings mirror/history | Missing | No editable settings file mirror or change history; [#27](https://github.com/moikdev/DroidCast/issues/27). |
 | Dictation | Missing | No local speech model, microphone flow or dictation command; [#28](https://github.com/moikdev/DroidCast/issues/28). |
 | Camera | Missing | No camera preview/capture command; [#29](https://github.com/moikdev/DroidCast/issues/29). |

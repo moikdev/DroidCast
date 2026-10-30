@@ -29,7 +29,11 @@ class MainActivity : ComponentActivity() {
     private var sharedText by mutableStateOf<String?>(null)
     private val createBackup = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { store.writeExport(it) }
     private val importBackup = registerForActivityResult(ActivityResultContracts.OpenDocument()) { store.readBackup(it) }
-    private val openDocument = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+    private val openDocument = registerForActivityResult(ActivityResultContracts.OpenDocument()) { rememberDocument(it) }
+    private val browseIndexedFolder = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == RESULT_OK) rememberDocument(result.data?.data)
+    }
+    private fun rememberDocument(uri: Uri?) {
         if (uri != null) {
             runCatching { contentResolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
             val title = runCatching {
@@ -42,16 +46,17 @@ class MainActivity : ComponentActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!ShortcutRuntime.paletteOpening()) { finish(); return }
         enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
         if (resources.configuration.smallestScreenWidthDp >= 600) window.setSoftInputMode((window.attributes.softInputMode and WindowManager.LayoutParams.SOFT_INPUT_MASK_STATE.inv()) or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         if (savedInstanceState == null) receive(intent)
         setContent {
-            LaunchedEffect(store.pendingShortcut, store.loading) {
+            LaunchedEffect(store.pendingShortcut, store.loading, store.folderSearch.loading) {
                 val request = store.pendingShortcut
-                if (request != null && !store.loading) {
+                if (request != null && !store.loading && !store.folderSearch.loading) {
                     store.pendingShortcut = null
                     if (!ShortcutRuntime.requests.isFresh(request) || store.shortcutConfiguration.bindings[request.target] != request.chord) store.message = "Shortcut changed or expired. Try again."
-                    else store.commands().firstOrNull { it.id == request.target }?.let(::execute) ?: run { store.message = "This shortcut's command is unavailable. Clear or reassign it in Keyboard shortcuts." }
+                    else store.command(request.target)?.let(::execute) ?: run { store.message = "This shortcut's command is unavailable. Clear or reassign it in Keyboard shortcuts." }
                 }
             }
             LaunchedEffect(sharedText) {
@@ -67,6 +72,7 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         ShortcutRuntime.resumed(this)
+        store.folderSearch.revalidate()
         shortcutEnabled = Settings.Secure.getString(contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
             ?.split(':')?.any { it == ComponentName(this, PaletteShortcutService::class.java).flattenToString() } == true
     }
@@ -87,6 +93,7 @@ class MainActivity : ComponentActivity() {
         store.reset(); receive(intent)
     }
     private fun receive(intent: Intent) {
+        if (intent.action == "dev.droidcast.SHOW_FILES") { store.filter("Files"); return }
         if (intent.action == ShortcutRuntime.ACTION) { acceptShortcut(intent.getStringExtra(ShortcutRuntime.TOKEN)); return }
         sharedText = when (intent.action) {
             Intent.ACTION_SEND -> intent.getStringExtra(Intent.EXTRA_TEXT)
@@ -122,6 +129,12 @@ class MainActivity : ComponentActivity() {
         }
     }
     fun openSystemSettings(destination: SettingsDestination) = open(destination.intent(packageName), "${destination.title} is unavailable on this device.")
+    private fun openSettings(page: String = "general", command: String? = null, editor: String = "", operation: String? = null) {
+        if (store.backupBusy) return
+        startActivity(Intent(this, SettingsActivity::class.java).putExtra("page", page).putExtra("command", command)
+            .putExtra("editor", editor).putExtra("operation", operation).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP))
+        finish()
+    }
     fun execute(command: Command) {
         if (store.backupBusy) return
         if (command.id !in setOf("backup", "backup-export", "backup-import", "backup-write", "backup-read")) store.used(command.id)
@@ -138,8 +151,14 @@ class MainActivity : ComponentActivity() {
             }
             Kind.FILE -> {
                 val uri = Uri.parse(command.payload)
-                runCatching { contentResolver.getType(uri) ?: "*/*" }
-                    .onSuccess { type -> open(Intent(Intent.ACTION_VIEW).setDataAndType(uri, type).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)) }
+                if (command.mimeType == android.provider.DocumentsContract.Document.MIME_TYPE_DIR) {
+                    browseIndexedFolder.launch(Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*")
+                        .putExtra(android.provider.DocumentsContract.EXTRA_INITIAL_URI, uri))
+                    return
+                }
+                runCatching { command.mimeType ?: contentResolver.getType(uri) ?: "*/*" }
+                    .onSuccess { type -> open(Intent(Intent.ACTION_VIEW).setDataAndType(uri, type)
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_CLEAR_TOP)) }
                     .onFailure { store.message = "Document access expired. Choose it again with Open a document." }
             }
             Kind.EXTENSION -> {
@@ -149,8 +168,8 @@ class MainActivity : ComponentActivity() {
                 if (extension != null && entry != null) openExtension(extension, entry) else store.message = "This extension is no longer installed"
             }
             Kind.COMMAND -> when (command.id) {
-                "backup", "backup-export" -> store.beginBackup()
-                "backup-import" -> { store.beginBackup(); importBackup.launch(arrayOf("application/json", "text/plain", "application/octet-stream")) }
+                "backup", "backup-export" -> openSettings("backup")
+                "backup-import" -> openSettings("backup", operation = "import")
                 "backup-write" -> store.prepareExport { createBackup.launch("DroidCast-${java.time.LocalDate.now()}.json") }
                 "backup-read" -> importBackup.launch(arrayOf("application/json", "text/plain", "application/octet-stream"))
                 "extensions" -> store.dialog = "extensions"
@@ -158,15 +177,21 @@ class MainActivity : ComponentActivity() {
                 "new-note" -> { store.editing = null; store.dialog = "note" }
                 "new-link" -> { store.editing = null; store.dialog = "link" }
                 "browse-files" -> openDocument.launch(arrayOf("*/*"))
+                "search-files" -> store.filter("Files")
+                "search-folders" -> openSettings("folders")
+                "folder-add", "folder-reauthorize" -> openSettings("folders")
                 "save-clip" -> {
                     val manager = getSystemService(ClipboardManager::class.java)
                     val text = manager.primaryClip?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.coerceToText(this)?.toString()
                     if (text.isNullOrBlank()) store.message = "No clipboard text available. Copy some text first."
                     else { store.editing = SavedItem("", text.take(60).lineSequence().first(), text); store.dialog = "clip" }
                 }
-                "shortcuts" -> store.dialog = "shortcut-settings"
+                "shortcuts" -> openSettings("shortcuts")
+                "configure-command" -> openSettings("shortcuts", command.payload)
+                "configure-shortcut" -> openSettings("shortcuts", command.payload, "hotkey")
+                "configure-alias" -> openSettings("shortcuts", command.payload, "alias")
                 "settings" -> open(Intent(Settings.ACTION_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
-                "app-settings" -> store.dialog = "preferences"
+                "app-settings" -> openSettings()
                 "web" -> open(Intent(Intent.ACTION_VIEW, Uri.parse(command.payload)))
             }
         }

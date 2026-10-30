@@ -53,8 +53,8 @@ class ShortcutDeviceTest {
     }
     private fun key(code: Int, modifiers: Int = 0) { compose.waitForIdle(); device.waitForIdle(); device.pressKeyCode(code, modifiers); compose.waitForIdle() }
     private fun settings() {
-        compose.onNodeWithTag("search").performTextReplacement("Keyboard shortcuts")
-        compose.onNodeWithTag("result-shortcuts").performClick()
+        // Exercise the shared recorder component; SettingsRouteDeviceTest covers the real route.
+        compose.activityRule.scenario.onActivity { it.store.dialog = "shortcut-settings" }
         compose.onNodeWithTag("shortcut-global-value").assertTextEquals("Ctrl + Space")
     }
     private fun load(document: BackupDocument) {
@@ -142,7 +142,9 @@ class ShortcutDeviceTest {
     @Test fun actionsAssignCommandKeycapAndLocalKeyRunsTheSameCommand() {
         compose.onNodeWithTag("search").performTextReplacement("Create a note")
         key(KeyEvent.KEYCODE_K, KeyEvent.META_CTRL_ON)
-        compose.onNodeWithTag("action-Set keyboard shortcut").performClick()
+        compose.onNodeWithTag("action-Set keyboard shortcut").assertIsDisplayed()
+        // The separate activity route is tested in SettingsRouteDeviceTest.
+        compose.activityRule.scenario.onActivity { it.store.beginShortcutRecording("new-note") }
         key(KeyEvent.KEYCODE_N, ctrlAlt)
         compose.onNodeWithTag("shortcut-save").assertIsEnabled().performClick()
         key(KeyEvent.KEYCODE_ESCAPE)

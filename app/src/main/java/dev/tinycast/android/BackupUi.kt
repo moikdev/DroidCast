@@ -14,14 +14,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-internal fun BackupDialog(store: PaletteStore, run: (Command) -> Unit, close: () -> Unit) {
+internal fun BackupDialog(store: PaletteStore, run: (Command) -> Unit, close: () -> Unit, embedded: Boolean = false) {
     val preview = store.backupDocument
     val busy = store.backupBusy
-    fun dismiss() { if (!busy) { store.discardImport(); close() } }
+    fun dismiss() { if (!busy) { if (embedded && preview != null) store.discardImport() else { store.discardImport(); close() } } }
     fun command(id: String) = run(Command(id, "Backup", ""))
     if (store.dialog == "backup-confirm" && preview != null) {
         val plan = runCatching { store.restorePlan() }
-        Shell("Apply this backup?", "Only your selected categories will change.", { if (!busy) store.dialog = "backup-preview" }) {
+        Shell("Apply this backup?", "Only your selected categories will change.", { if (!busy) store.dialog = "backup-preview" }, embedded = embedded) {
             Text(if (store.restorePolicy == RestorePolicy.REPLACE) "Replace deletes the current contents of selected categories and uses the backup instead. Other categories and recent documents are kept." else "Merge keeps existing items and their identities. Duplicate or conflicting items keep the existing version.", fontSize = 13.sp, lineHeight = 20.sp)
             plan.getOrNull()?.let { Text("${it.added} collection items applied · ${it.skipped} duplicates kept · ${it.removed} current collection items replaced", color = PaletteTheme.secondary, fontSize = 12.sp, modifier = Modifier.padding(top = 16.dp)) }
             Text("Pins, aliases, ranking and keyboard bindings follow your selected merge/replace policy. Import never grants permissions or runs a command.", color = PaletteTheme.secondary, fontSize = 12.sp, modifier = Modifier.padding(top = 12.dp))
@@ -36,7 +36,7 @@ internal fun BackupDialog(store: PaletteStore, run: (Command) -> Unit, close: ()
         return
     }
     val importing = preview != null && store.dialog == "backup-preview"
-    Shell(if (importing) "Preview backup" else "Backup and restore", if (importing) "Review categories and conflicts before applying." else "Portable collections · DroidCast JSON format v1", ::dismiss) {
+    Shell(if (importing) "Preview backup" else "Backup and restore", if (importing) "Review categories and conflicts before applying." else "Portable collections · DroidCast JSON format v1", ::dismiss, embedded = embedded) {
         val available = if (importing) preview!!.categories else BackupCategory.entries.toSet()
         val selected = if (importing) store.restoreCategories else store.backupCategories
         val data = if (importing) preview!!.data else store.backupSnapshot()

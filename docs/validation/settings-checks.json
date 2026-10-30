@@ -1,0 +1,392 @@
+{
+  "source_base": "6ea2b328c6d860d4944c94318649fecc058b5042",
+  "development_build_after_tag": "v0.4.0-preview",
+  "apk_sha256": "c2303af7370b410b9f12f09f909f78c79dbb7d27e29295f466f43d7ff689044f",
+  "android_test_apk_sha256": "a38cf5032bfbdf2e534182d2f1b96a28db0a9c8274bdcc21b34479df25bb1c69",
+  "installed_apk_sha256": "c2303af7370b410b9f12f09f909f78c79dbb7d27e29295f466f43d7ff689044f",
+  "installed_matches": true,
+  "local_validation_only": true,
+  "github_ci_active": false,
+  "device": {
+    "avd": "Tinycast_Tablet_API_36",
+    "api": 36,
+    "abi": "arm64-v8a",
+    "ram_mib": 6144,
+    "gpu": "host/Metal, Vulkan disabled",
+    "tablet_pixels": "1920x1200",
+    "tablet_density": 240,
+    "phone_pixels": "1080x2340",
+    "phone_density": 420,
+    "viewport_restored": true,
+    "adbd_unprivileged": true
+  },
+  "build": {
+    "success": true,
+    "log": "artifacts/settings-final-build.log",
+    "lint_errors": 0,
+    "lint_warnings": 39,
+    "jvm": {
+      "tests": 53,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "native": {
+    "tablet": {
+      "passed": 71,
+      "total": 71,
+      "log": "artifacts/settings-tablet-verified.log",
+      "elapsed_seconds": 205.76
+    },
+    "phone": {
+      "passed": 71,
+      "total": 71,
+      "log": "artifacts/settings-phone-verified.log",
+      "elapsed_seconds": 210.452
+    }
+  },
+  "full_suite_build": {
+    "apk_sha256": "8bcf5edd2f0d9f6d74e3c2a32e0eae62799247ae2761a63839e9516cdce9a777",
+    "android_test_apk_sha256": "88ece2d37c3ff3c6a64c2f1338d7a5d25c2b677f134f4b0fe07d8f2615e06b57"
+  },
+  "final_native": {
+    "tablet": {
+      "passed": 15,
+      "total": 15,
+      "log": "artifacts/settings-tablet-final-focused.log",
+      "scope": "SettingsDeviceTest, SettingsRouteDeviceTest, FolderDeviceTest",
+      "elapsed_seconds": 72.894
+    },
+    "phone": {
+      "passed": 15,
+      "total": 15,
+      "log": "artifacts/settings-phone-final-focused.log",
+      "scope": "SettingsDeviceTest, SettingsRouteDeviceTest, FolderDeviceTest",
+      "elapsed_seconds": 76.15
+    }
+  },
+  "final_correction_after_full_suite": "Settings recorder focus restoration now skips the absent Record button while reset confirmation replaces the inspector. Folder revalidation also updates the status count after grant changes; the final test asserts zero after revocation. File search evidence waits for settled status. Final targeted tests cover these corrections. Full suites/hardware use the APK from before the two final corrections; final targeted suites and screenshots use the final APK.",
+  "hardware": {
+    "device": "emulator-5580",
+    "app_requires_root": false,
+    "injection": "dedicated emulator Linux qwerty2 device",
+    "cases": [
+      {
+        "name": "recording pauses the existing global shortcut",
+        "passed": true
+      },
+      {
+        "name": "record and persist Ctrl + Alt + Space",
+        "passed": true
+      },
+      {
+        "name": "Ctrl+F focuses settings search while the service is enabled",
+        "passed": true
+      },
+      {
+        "name": "Ctrl+Comma opens the separate settings workspace with the service enabled",
+        "passed": true
+      },
+      {
+        "name": "round 1: summon/toggle from Settings",
+        "passed": true
+      },
+      {
+        "name": "round 1: summon/toggle from Home",
+        "passed": true
+      },
+      {
+        "name": "old global chord stops activating after reassignment",
+        "passed": true
+      },
+      {
+        "name": "live conflict names its owner and cannot overwrite it",
+        "passed": true
+      },
+      {
+        "name": "Wi-Fi command uses normal destination and suppresses repeats",
+        "passed": true
+      },
+      {
+        "name": "installed-app binding launches real Files app",
+        "passed": true
+      },
+      {
+        "name": "recent-document binding opens the persisted TXT fixture",
+        "passed": true
+      },
+      {
+        "name": "calculator binding enters the same calculator mode",
+        "passed": true
+      },
+      {
+        "name": "calculator shortcut toggles its existing mode",
+        "passed": true
+      },
+      {
+        "name": "note command binding opens the normal native editor",
+        "passed": true
+      },
+      {
+        "name": "unrelated typing and an unbound chord pass through",
+        "passed": true
+      },
+      {
+        "name": "service disable/reconnect respects persisted configuration",
+        "passed": true
+      }
+    ],
+    "original_service_consent_restored": true,
+    "original_preferences_restored": true,
+    "unroot_command_exit_code": 0,
+    "adbd_unprivileged": true,
+    "app_process": [
+      "u0_a213      dev.tinycast.android"
+    ],
+    "app_unprivileged": true,
+    "apk_sha256": "8bcf5edd2f0d9f6d74e3c2a32e0eae62799247ae2761a63839e9516cdce9a777",
+    "rounds": 1,
+    "log": "artifacts/settings-hardware-final.log"
+  },
+  "earlier_runs": [
+    {
+      "scope": "tablet before warm viewer launch correction",
+      "passed": 70,
+      "total": 71,
+      "log": "artifacts/settings-before-warm-viewer-fix.log",
+      "finding": "warm viewer resumed another document above the desired root; corrected with CLEAR_TOP and explicit warm-stack regression"
+    },
+    {
+      "scope": "tablet before final keyboard/category corrections",
+      "passed": 68,
+      "total": 70,
+      "log": "artifacts/settings-tablet-final.log",
+      "limitation_issue": 37,
+      "focused_reruns": "2/2 twice; no tile cause or fix established"
+    },
+    {
+      "scope": "three-round hardware run before helper reconnect correction",
+      "behavior_cases_passed": 20,
+      "helper_exit_success": false,
+      "failure": "unroot reply disconnected",
+      "manual_recovery_verified": true,
+      "log": "artifacts/settings-hardware-before-unroot-check.log"
+    }
+  ],
+  "manual_rotation": {
+    "original_rotation": "free",
+    "cases": [
+      {
+        "orientation": "portrait",
+        "shortcut_label": "Ctrl + Space",
+        "inspector_preserved": true
+      },
+      {
+        "orientation": "landscape",
+        "shortcut_label": "Ctrl + Space",
+        "inspector_preserved": true
+      }
+    ],
+    "shortcut_preferences_unchanged": true,
+    "rotation_restored": true,
+    "portrait_pixels": [
+      1200,
+      1920
+    ],
+    "landscape_hierarchy_rotation": "0"
+  },
+  "screenshots": [
+    {
+      "path": "docs/screenshots/parity-settings/before-popup.png",
+      "sha256": "bfc7f8ab71ba561f8ea6a656c35bb7f820c8583fbee4052c9e1b94af55a8e9c9",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/before-tablet.png",
+      "sha256": "2e266f25e921726dda1e55373c1893e4442d376f0640b5e99aa4c221f76801ac",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/alias-conflict.png",
+      "sha256": "76d85ce167bebc0f065a20772405d60d348b53d4c68fbddc9a1401321f78d00b",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/command-inspector.png",
+      "sha256": "e189d2ca1b0baf60a0528fdc794f4b88ca840808c20dad37ef146259f309580d",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/general.png",
+      "sha256": "e2d17c0073030906bb40577b233c12d87bb5eb1d1f369b1ac166638b3bd04391",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/inline-backup-confirm.png",
+      "sha256": "7378aba31f9bebc451e390da581f430779e179b87281ffbfc17ca2f7ad2f27c2",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/inline-conflict.png",
+      "sha256": "bdf246d5bfa30fbd9685b7cdbd7f9b751a0daf606b853d58503492beb960ddea",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/phone/inline-recording.png",
+      "sha256": "0dbc1a655c8d1b52e599ef9b572b973fed7634e56948d16fca143de8acbeb65f",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/alias-conflict.png",
+      "sha256": "8318f2ebed92a18946e7c2bc88bc97eeaece381bc99de9a134a1399bc6478835",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/command-inspector.png",
+      "sha256": "fe58f3fd4c79cee7af49613b3cf1f2cd7daccaf7b8ed9272cde2ca7c2e060b20",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/filtered-commands.png",
+      "sha256": "fc909ffdfe80e1bf7a72c3156147b34b3ae5b78c979b9726161e47df4d8429f3",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/general.png",
+      "sha256": "c94c578966bf59650af923744ac72cb96f9de20c06d6277b0eac5e95ae5e433a",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/inline-backup.png",
+      "sha256": "7484522f6e93a32ef67e4fc6fa75d4b244cb6c2199c5bcc401f82e112b5b84b7",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/inline-conflict.png",
+      "sha256": "389ab1ca140ff42a0b81381efc3a08ad6885b39e1f101d62ae7b8530fd1db5db",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/inline-recording.png",
+      "sha256": "fe9595ffaedbaef2d11d908474eb2d4c4235ef086f8b5e3831e7d541d0a0dd6d",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-settings/tablet/portrait-inspector.png",
+      "sha256": "a67ecd5a2978d9aea092cf7a110da2bfc3ecafed143088e268f36ebe7f32ffae",
+      "pixels": [
+        1200,
+        1920
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/before-search.png",
+      "sha256": "fa1eeb4cf880a88190d4af33b168f5013e36d96aac2550a204ac0e3193c402e8",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/folder-configured.png",
+      "sha256": "6b4921330a3987ed6516401f66a81fcb4fe596a416ffdcc41db23f81b682a8c7",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/folder-removed.png",
+      "sha256": "1b002231f924732791fd801a3ecc17b646f35139542a460c852e9b535f875dfc",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/native-folder-picker.png",
+      "sha256": "338bb3d606cfd2f610cdc05ba6675031343181a269f898a5279e7edc441bfe93",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/opened-document.png",
+      "sha256": "df0fe45defdeeae76368d03b84afdb50998b36871b12a420858c5ab2d3241f73",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/permission-expired.png",
+      "sha256": "246481971dee912727119b0bc0a1b7982157caa92835ccd52899a1c1d58b325a",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-folders/search-result.png",
+      "sha256": "047f53300226db3ed0c4fd1d1e2440b7224029dff3cb11775b3641bdc2534bae",
+      "pixels": [
+        1920,
+        1200
+      ]
+    }
+  ],
+  "limitations": [
+    "Partial selected-folder parity; #5 stays open",
+    "Viewer rendered body requires screenshot review in addition to URI/title checks",
+    "Intermittent backup timeout #35 and tile timeout #37 remain undiagnosed",
+    "Physical/OEM, comprehensive TalkBack, large fonts and advanced #26 shortcuts unverified",
+    "Opt-in EnduranceDeviceTest not rerun for this slice"
+  ]
+}

@@ -4,6 +4,8 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -18,6 +20,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -34,15 +38,17 @@ private val muted = PaletteTheme.secondary
 private val line = PaletteTheme.separator
 
 @Composable
-fun PaletteDialogs(store: PaletteStore, selected: Command?, globalEnabled: Boolean, enableGlobal: () -> Unit,
+fun PaletteDialogs(store: PaletteStore, provided: Command?, globalEnabled: Boolean, enableGlobal: () -> Unit,
                    run: (Command) -> Unit, copy: (String) -> Unit, close: () -> Unit) {
     val dialog = store.dialog ?: return
+    val selected = if (dialog in setOf("actions", "alias", "delete")) store.actionCommand ?: provided else provided
+    if (dialog == "search-folders") { FolderSearchDialog(store, run, close); return }
     if (dialog.startsWith("extension")) { dev.tinycast.android.extensions.ExtensionDialogs(store, close); return }
     if (dialog.startsWith("backup")) { BackupDialog(store, run, close); return }
     if (dialog.startsWith("shortcut-") && dialog != "shortcut-help") { ShortcutDialogs(store, globalEnabled, enableGlobal, close); return }
     when (dialog) {
         "note", "link", "clip" -> Editor(store, dialog, close)
-        "shortcut-help" -> Shell("Keyboard shortcut help", "Less reaching. More doing.", { store.dialog = "shortcut-settings" }) {
+        "shortcut-help" -> Shell("Keyboard shortcut help", "Less reaching. More doing.", close) {
             Text("IN DROIDCAST", color = ink, fontSize = 10.sp, letterSpacing = 1.sp, modifier = Modifier.padding(bottom = 8.dp))
             listOf("Focus search" to "Ctrl + L", "Open actions" to "Ctrl + K", "Navigate results" to "↑ / ↓", "Run selected command" to "Enter", "Pin / unpin selected" to "Ctrl + D", "Create a note" to "Ctrl + N", "Switch category" to "Ctrl + 1…8", "Save an editor" to "Ctrl + S / Ctrl + Enter", "Clear, go back, dismiss" to "Esc").forEach { ShortcutRow(it.first, it.second) }
             HorizontalDivider(color = line, modifier = Modifier.padding(vertical = 14.dp))
@@ -61,6 +67,7 @@ fun PaletteDialogs(store: PaletteStore, selected: Command?, globalEnabled: Boole
             Text("No account, analytics or background clipboard monitoring. Your collections stay local. Store searches and downloads contact Raycast; extensions can make HTTPS requests when you run them. Files are limited to documents you choose and each extension's own data folder.", color = muted, fontSize = 12.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 10.dp))
             Text("Raycast Store extensions run with a subset of the Raycast API. Desktop automation, native Mac helpers and OAuth are unavailable. AI commands are not included.", color = muted, fontSize = 12.sp, lineHeight = 19.sp, modifier = Modifier.padding(top = 12.dp))
             TextButton(onClick = { store.refreshApps(); store.message = "Application list refreshed" }, modifier = Modifier.padding(top = 12.dp)) { Text("Refresh installed apps") }
+            TextButton(onClick = { store.dialog = "search-folders" }) { Text("Search folders") }
             TextButton(onClick = { store.beginBackup() }) { Text("Backup and restore") }
             TextButton(onClick = { run(Command("web", "Source code", "", payload = "https://github.com/moikdev/DroidCast")) }) { Text("Source code") }
             TextButton(onClick = { store.dialog = "licenses" }) { Text("License and attribution") }
@@ -139,14 +146,16 @@ private fun Editor(store: PaletteStore, kind: String, close: () -> Unit) {
 }
 
 @Composable
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 internal fun ActionsMenu(store: PaletteStore, command: Command, run: (Command) -> Unit, copy: (String) -> Unit, close: () -> Unit) {
     data class Action(val label: String, val key: String, val perform: () -> Unit)
     val actions = buildList {
         add(Action(if (command.kind in listOf(Kind.CLIP, Kind.CALC)) "Copy to clipboard" else "Open command", "Enter") { close(); run(command) })
         if (command.id !in listOf("result", "web")) {
             add(Action(if (command.id in store.pins) "Unpin command" else "Pin command", "Ctrl D") { store.togglePin(command.id); close() })
-            add(Action("Set alias", "") { store.dialog = "alias" })
-            if (ShortcutRules.targetAllowed(command.id)) add(Action("Set keyboard shortcut", store.shortcutConfiguration.bindings[command.id]?.label().orEmpty()) { store.beginShortcutRecording(command.id) })
+            add(Action("Configure command", "Ctrl Shift ,") { close(); run(Command("configure-command", "Configure command", "", payload = command.id)) })
+            add(Action("Set alias", "") { close(); run(Command("configure-alias", "Set alias", "", payload = command.id)) })
+            if (ShortcutRules.targetAllowed(command.id)) add(Action("Set keyboard shortcut", store.shortcutConfiguration.bindings[command.id]?.label().orEmpty()) { close(); run(Command("configure-shortcut", "Set keyboard shortcut", "", payload = command.id)) })
         }
         if (command.kind in listOf(Kind.NOTE, Kind.LINK, Kind.CLIP)) {
             add(Action("Edit ${command.kind.label.lowercase().removeSuffix("s")}", "") {
@@ -155,11 +164,14 @@ internal fun ActionsMenu(store: PaletteStore, command: Command, run: (Command) -
             })
             add(Action("Copy content", "") { copy(command.payload); close() })
         }
-        if (command.kind in listOf(Kind.NOTE, Kind.LINK, Kind.CLIP, Kind.FILE)) add(Action("Delete from DroidCast", "") { store.dialog = "delete" })
+        if (command.id.startsWith("files:index:")) add(Action("Manage search folder", "") { close(); run(Command("search-folders", "Search folders", "")) })
+        else if (command.kind in listOf(Kind.NOTE, Kind.LINK, Kind.CLIP, Kind.FILE)) add(Action("Delete from DroidCast", "") { store.dialog = "delete" })
     }
     var index by remember { mutableIntStateOf(0) }
     val focus = remember { FocusRequester() }
     var actionsReady by remember { mutableStateOf(false) }
+    val rowVisibility = remember(actions.map { it.label }) { List(actions.size) { BringIntoViewRequester() } }
+    LaunchedEffect(index, actionsReady) { if (actionsReady) rowVisibility[index].bringIntoView() }
     val offset=with(LocalDensity.current){52.dp.roundToPx()}
     val width=minOf(320.dp,LocalConfiguration.current.screenWidthDp.dp-24.dp)
     Popup(alignment=Alignment.BottomEnd,offset=IntOffset(0,-offset),onDismissRequest=close,properties=PopupProperties(focusable=true)) {
@@ -179,6 +191,7 @@ internal fun ActionsMenu(store: PaletteStore, command: Command, run: (Command) -
             LaunchedEffect(actionsReady){if(actionsReady)focus.requestFocus()}
             actions.forEachIndexed{i,action->
                 Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(10.dp)).background(if(index==i)PaletteTheme.selection else Color.Transparent)
+                    .bringIntoViewRequester(rowVisibility[i]).semantics { selected = index == i }
                     .clickable(onClick=action.perform).padding(10.dp,12.dp).testTag("action-${action.label}"),verticalAlignment=Alignment.CenterVertically){
                     Text(action.label,fontSize=13.sp,color=if(action.label.startsWith("Delete"))Color(0xFFEBABAA)else PaletteTheme.ink,modifier=Modifier.weight(1f))
                     if(action.key.isNotEmpty())KeyCap(action.key)
@@ -190,7 +203,21 @@ internal fun ActionsMenu(store: PaletteStore, command: Command, run: (Command) -
 }
 
 @Composable
-internal fun Shell(title: String, subtitle: String, close: () -> Unit, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+internal fun Shell(title: String, subtitle: String, close: () -> Unit, modifier: Modifier = Modifier, embedded: Boolean = false, content: @Composable ColumnScope.() -> Unit) {
+    if (embedded) {
+        val focus = remember { FocusRequester() }; var ready by remember { mutableStateOf(false) }; var hasFocus by remember { mutableStateOf(false) }
+        LaunchedEffect(ready) { if (ready && !hasFocus) focus.requestFocus() }
+        Surface(shape = RoundedCornerShape(12.dp), color = PaletteTheme.surface, border = BorderStroke(1.dp, line), modifier = Modifier.fillMaxWidth().then(modifier)
+            .focusRequester(focus).onFocusChanged { hasFocus = it.hasFocus }.onGloballyPositioned { ready = true }
+            .onPreviewKeyEvent { if (it.type == KeyEventType.KeyDown && it.key == Key.Escape) { close(); true } else false }.focusable()) {
+            Column(Modifier.padding(16.dp)) {
+                Text(title, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                Text(subtitle, fontSize = 11.sp, color = muted, modifier = Modifier.padding(top = 6.dp, bottom = 16.dp))
+                content()
+            }
+        }
+        return
+    }
     Dialog(onDismissRequest = close, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         val focus = remember { FocusRequester() }
         var ready by remember { mutableStateOf(false) }

@@ -9,7 +9,7 @@ This README follows the development branch. The downloadable tagged preview may 
 
 [Download preview APK](https://github.com/moikdev/DroidCast/releases/tag/v0.4.0-preview) · [Parity audit](PARITY.md) · [Recommended improvements](ROADMAP.md) · [Testing record](docs/TESTING.md)
 
-This preview covers the core palette workflow and a subset of Raycast extension APIs. **Window-snapping commands, automatic clipboard history, folder search and snippets are not implemented. Android-native backup/restore is available in development builds; Tinycast/Raycast export-container import remains open.** See the parity matrix for the full scope. DroidCast is not affiliated with Tinycast's maintainers or Raycast.
+This preview covers the core palette workflow and a subset of Raycast extension APIs. **Window-snapping commands, automatic clipboard history and snippets remain unimplemented. Development builds add Android-native backup/restore, centralized settings and partial selected-folder metadata search; Tinycast/Raycast export-container import remains open.** See the parity matrix for the full scope. DroidCast is not affiliated with Tinycast's maintainers or Raycast.
 
 ![DroidCast floating command palette over Android Settings](docs/screenshots/palette.png)
 
@@ -37,11 +37,12 @@ The downloadable APK is a debug-signed preview, not a production-signed release.
 - Tap outside or close to return to the previous app. App and URL commands dismiss the palette when launching their destination.
 - Summon using the app icon, Android assistant intent, the optional DroidCast search Quick Settings tile, or the configurable global shortcut (default Ctrl + Space) after explicitly enabling the keyboard service. Assign command shortcuts through Actions; see [Keyboard shortcuts](docs/SHORTCUTS.md).
 - Fuzzy app/command search, aliases, pins and usage ranking.
+- A separate Raycast-inspired settings workspace with searchable command shortcuts and aliases, inline recording/conflicts, folder controls and backup. Open with Ctrl/Meta+,; Ctrl/Meta+Shift+, configures the selected command. See [Settings](docs/SETTINGS.md).
 - Dedicated Android settings commands: Wi-Fi, Bluetooth, display, sound, app notifications/info, installed apps, storage, accessibility, date/time and language. These open Android controls; they do not silently toggle hardware.
 - Prefixes: `@` apps, `#` notes, `:` quicklinks, `>` built-in commands, `=` calculator.
 - Local calculator and conversions: `200 * 15%`, `sqrt(81)`, `10 km to mi`, `32 f to c`, `1.5 h to min`, `1 gib to mib`. Trigonometric inputs use radians. No currency rates.
 - Persistent plain-text/Markdown notes, custom HTTP/HTTPS quicklinks with `{query}` arguments, saved clips and shared/selected-text input.
-- Android document picker, persistent URI grants where supported, and searchable recent files. This does not index the device filesystem.
+- Android document picker, searchable recent files and opt-in filename/path search inside selected folders using persisted read grants. Metadata index limits: 5,000 items, 8 folders, 16 levels; refresh explicitly. No whole-device storage permission or file-content index. See [Folder search](docs/FOLDER-SEARCH.md).
 - Backup and restore: select notes, quicklinks, saved clips, pins/aliases, usage ranking and keyboard bindings; export a DroidCast JSON file, preview its contents, then merge or replace selected categories. Imports leave document grants, accessibility consent and extension data untouched. This does not read Tinycast `.tinycast` or Raycast containers. See [Backup and restore](docs/BACKUP.md).
 
 ## Raycast Store extensions
@@ -130,7 +131,7 @@ Enhancements and audited PRs are tracked in [issue #1](https://github.com/moikde
 
 ## What to improve next
 
-The highest-value next steps are verified extension compatibility and richer native views, cross-platform backup-container import, advanced hotkeys, further Android intent/automation commands, selected-folder search and supported multitasking actions. These are proposals, not advertised preview features. [ROADMAP.md](ROADMAP.md) gives priorities and acceptance criteria; [PARITY.md](PARITY.md) compares the current implementation with upstream.
+The highest-value next steps are verified extension compatibility and richer native views, cross-platform backup-container import, advanced hotkeys, further Android intent/automation commands, broader document-provider validation and supported multitasking actions. These are proposals, not advertised preview features. [ROADMAP.md](ROADMAP.md) gives priorities and acceptance criteria; [PARITY.md](PARITY.md) compares the current implementation with upstream.
 
 ## Source and attribution
 
