@@ -57,3 +57,7 @@ Configurable ordinary keyboard shortcuts merged in [PR #33](https://github.com/m
 - [#34: Predictable root Settings routing from warm search](https://github.com/moikdev/droidcast/issues/34), exposed and addressed within PR #33.
 
 Global-shortcut onboarding follow-up: [#39](https://github.com/moikdev/droidcast/issues/39). A Lenovo user reports Alt+Q working after approving restricted settings; broader OEM certification remains open.
+
+Assistant activation and immediate search: [#40](https://github.com/moikdev/droidcast/issues/40), implemented in PR #38 pending final validation and independent audits. The custom global hotkey remains separate from the system assistant mapping.
+
+Validation limitation [#41](https://github.com/moikdev/droidcast/issues/41): HTML Viewer rendered the correct TXT body but omitted it from accessibility XML in one hardware run; an unchanged rerun passed. Cause and fix remain unestablished.

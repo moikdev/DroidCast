@@ -1,9 +1,9 @@
 {
   "source_base": "6ea2b328c6d860d4944c94318649fecc058b5042",
   "development_build_after_tag": "v0.4.0-preview",
-  "apk_sha256": "d766d953c51667faea871a16de1360e0dc8bdf4bbde4d03e15cecb8bc1b1bbf5",
-  "android_test_apk_sha256": "8600d892e9176661e26a4e934e53ad3ea8edcdbce68ede29b83d00a34413d682",
-  "installed_apk_sha256": "d766d953c51667faea871a16de1360e0dc8bdf4bbde4d03e15cecb8bc1b1bbf5",
+  "apk_sha256": "bfd7ca707da305a31f799c40fe7bcc291fe44bb49975665fb9e43eec2e0c09e5",
+  "android_test_apk_sha256": "87ea7f4b94515d4aa7da55c202d5ce5831847cc40f6a6449dc9bb91454bac1ab",
+  "installed_apk_sha256": "bfd7ca707da305a31f799c40fe7bcc291fe44bb49975665fb9e43eec2e0c09e5",
   "installed_matches": true,
   "local_validation_only": true,
   "github_ci_active": false,
@@ -56,18 +56,18 @@
   },
   "final_native": {
     "tablet": {
-      "passed": 21,
-      "total": 21,
+      "passed": 27,
+      "total": 27,
       "log": "artifacts/settings-tablet-final-focused.log",
-      "scope": "SettingsDeviceTest, SettingsRouteDeviceTest, FolderDeviceTest",
-      "elapsed_seconds": 92.723
+      "scope": "SettingsDeviceTest, SettingsRouteDeviceTest, FolderDeviceTest, AssistantDeviceTest, PaletteOverlayTest",
+      "elapsed_seconds": 124.656
     },
     "phone": {
-      "passed": 21,
-      "total": 21,
+      "passed": 27,
+      "total": 27,
       "log": "artifacts/settings-phone-final-focused.log",
-      "scope": "SettingsDeviceTest, SettingsRouteDeviceTest, FolderDeviceTest",
-      "elapsed_seconds": 93.355
+      "scope": "SettingsDeviceTest, SettingsRouteDeviceTest, FolderDeviceTest, AssistantDeviceTest, PaletteOverlayTest",
+      "elapsed_seconds": 121.184
     }
   },
   "final_correction_after_full_suite": "Settings recorder focus restoration now skips the absent Record button while reset confirmation replaces the inspector. Folder revalidation also updates the status count after grant changes; the final test asserts zero after revocation. File search evidence waits for settled status. Review corrections add cancellation-safe grant ownership and clear stale alias feedback; final targeted tests cover those paths, and thirteen deterministic JVM tests cover the grant transaction, with a three-failure negative control for the old bookkeeping placement. The final storage correction uses a process-wide coordinator, verifies committed bytes, and passes two real Android AtomicFile interleaving/failure regressions. Restoring the instance-local mutex deterministically deletes the paused pending write. Full suites use the earlier APK listed under full_suite_build; the final hardware run independently passes sixteen main cases and five Alt+Q cases with restoration; final targeted suites and screenshots use the final APK.",
@@ -169,7 +169,7 @@
       "u0_a213      dev.tinycast.android"
     ],
     "app_unprivileged": true,
-    "apk_sha256": "d766d953c51667faea871a16de1360e0dc8bdf4bbde4d03e15cecb8bc1b1bbf5",
+    "apk_sha256": "bfd7ca707da305a31f799c40fe7bcc291fe44bb49975665fb9e43eec2e0c09e5",
     "rounds": 1,
     "log": "artifacts/settings-hardware-current.log",
     "alt_q": {
@@ -203,6 +203,20 @@
     }
   },
   "earlier_runs": [
+    {
+      "scope": "final APK first hardware run",
+      "apk_sha256": "bfd7ca707da305a31f799c40fe7bcc291fe44bb49975665fb9e43eec2e0c09e5",
+      "passed_cases_before_abort": 10,
+      "planned_cases": 16,
+      "failed_stage": "TXT body missing from accessibility XML despite correct rendered filename/body",
+      "remaining_cases_not_run": 5,
+      "limitation_issue": 41,
+      "log": "artifacts/settings-hardware-body-xml-failure.log",
+      "visual_evidence": "docs/screenshots/parity-activation/hardware-viewer-xml-limitation.png",
+      "automatic_body_assertion_passed": false,
+      "body_visually_reviewed": true,
+      "restoration_verified": true
+    },
     {
       "scope": "tablet before warm viewer launch correction",
       "passed": 70,
@@ -286,6 +300,31 @@
     "indeterminate_result": "Permission retained after two failed post-rename verification reads; reopening checks actual stored roots; process-death recovery not certified",
     "branding": "Droidcast; repository moikdev/droidcast"
   },
+  "assistant_and_motion": {
+    "reference": "https://github.com/jaxparrow07/launchpad-search/tree/67e10897b9d49e6d5aac39816e104a49947293dd",
+    "role_selection": "Real Android default digital-assistant settings UI; cancellation retains prior role",
+    "keyboard_service_disabled_during_assistant_tests": true,
+    "assistant_key_from_home_and_settings": true,
+    "meta_a_from_warm_settings": true,
+    "restoration": {
+      "tablet": {
+        "assistant_role_restored": true,
+        "keyboard_service_consent_restored": true
+      },
+      "phone": {
+        "assistant_role_restored": true,
+        "keyboard_service_consent_restored": true
+      }
+    },
+    "motion": "Fixed palette/search bounds across six queries; selection visible after two layout frames with automatic clock advancement disabled; software keyboard settled before measurement",
+    "animation_negative_control": {
+      "expected_failures": 1,
+      "observed_failures": 1,
+      "log": "artifacts/palette-animation-negative-device.log"
+    },
+    "assist_context": "Disabled in VoiceInteractionService and Session source; no microphone or overlay permission requested",
+    "limitations": "No independently exercised Lenovo assistant-key mapping; system IME animations are not changed"
+  },
   "manual_rotation": {
     "original_rotation": "free",
     "cases": [
@@ -322,7 +361,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/alias-cleared.png",
-      "sha256": "b4809b8615f3b90496676899d57534f195ff6e311a4b6826f34fb3c011dfd188",
+      "sha256": "92172a29cb1a39015f27d7f7ba33df255054ecbbf40c153e0e88116ee7d34ff2",
       "pixels": [
         1080,
         2340
@@ -330,7 +369,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/alias-conflict.png",
-      "sha256": "783eb83b217f25f7b94679e584ecfaefeb6e69e18c3cb86a38d01bf083b6a926",
+      "sha256": "df6ce0fa3dc655cbe0f469db13f1c1315b154ee852b1c93825e230485407c848",
       "pixels": [
         1080,
         2340
@@ -338,7 +377,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/alias-reused.png",
-      "sha256": "223a60ef3bebe8f8963f8f8d8d116f4e3fcdc708c301dd285dfba8739d48557f",
+      "sha256": "cb23e5fdacb0db5603d1a91a5717d6ba1142cbd50fc639a0129eba5a2259a871",
       "pixels": [
         1080,
         2340
@@ -346,7 +385,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/command-inspector.png",
-      "sha256": "be222a13553119909671bd641ced1e8c75d065ae1ada7b4fa5d417926aa90e30",
+      "sha256": "48ac72f9106d2e2af5199f336e2b521cdffe6cfc1c368f945d727a5f3bbbaf14",
       "pixels": [
         1080,
         2340
@@ -354,7 +393,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/general.png",
-      "sha256": "c7c55d47c57817baf54e54f4ef244654606b8567e0c7a22daf0c60609275d3e7",
+      "sha256": "c6753e894264ac2cf83f28a2847a45753ad3f2c6362b026f1d78a157082b8c5e",
       "pixels": [
         1080,
         2340
@@ -362,7 +401,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/inline-backup-confirm.png",
-      "sha256": "c4efd8dd9ed2b088782fc340174eb389ff6fdfde8e35756545a4f92f23a1a32f",
+      "sha256": "b0cbe38ca7e6ff84b5a8fde3c02bbd3b626a8867e6b698911ab68935f22c57ea",
       "pixels": [
         1080,
         2340
@@ -370,7 +409,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/inline-conflict.png",
-      "sha256": "aaae94451287ffd183ec72a964761f835a55d9d70754a8ab96b1f4bacd4f0cb9",
+      "sha256": "7f07644c765b615f46dce6fc594703c77166b959b159d679098a1ee3c12a26da",
       "pixels": [
         1080,
         2340
@@ -378,7 +417,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/inline-recording.png",
-      "sha256": "61b3e708a041635fcd21c2eff066d8b78ecb26e3b1f67768023ae8b5ad23a568",
+      "sha256": "6be389b8b0b87aa7084d419a8e5bd16e7cb605b96a92ba1175fbc84f781e625d",
       "pixels": [
         1080,
         2340
@@ -386,7 +425,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/phone/unavailable-alias.png",
-      "sha256": "1bccaa00655856be27cd00e20fcdad587e90ef5b6a4dcc3e32d5555ca9dcbe5c",
+      "sha256": "6a9f4d6478711f5298628cdf5cc565c4422d72c0319aedbec50b05d8213aa2c0",
       "pixels": [
         1080,
         2340
@@ -394,7 +433,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/alias-cleared.png",
-      "sha256": "f7642980d99a7a4f167657becb6298dcca5cd51488271e4d3c85817f20dfe5b5",
+      "sha256": "18752ef3ab4ed0c1aa1b4538b67145d303ff82883154e2d6752f6489458d660a",
       "pixels": [
         1920,
         1200
@@ -402,7 +441,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/alias-conflict.png",
-      "sha256": "ebf09ffdb9e9f72bbbe57ce86c27ee66064e96080ec8830ed4d22e8917b2be44",
+      "sha256": "57bfbd75a0642d9a1bc2fbd7c4b02fb044c8500a7100a3595460e7d0ea8cdd26",
       "pixels": [
         1920,
         1200
@@ -410,7 +449,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/alias-reused.png",
-      "sha256": "642194baf38d43f2640f5b867b55e5944ed7ceb2ee09bd55917ed26d7033d241",
+      "sha256": "a9f8554d56097cc85cefc88cd69839ef78c86cae772199d999e4d5f5d304de8f",
       "pixels": [
         1920,
         1200
@@ -418,7 +457,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/command-inspector.png",
-      "sha256": "d30a5553cf5a0eb3c72a45e91f8f9a4fa8fbb067512a98a32e9ae31a5caefc69",
+      "sha256": "1512a22c0558ab53548632b3c0d7c4e1a30c2fa865ac01ce5fd9ab620e372631",
       "pixels": [
         1920,
         1200
@@ -426,7 +465,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/filtered-commands.png",
-      "sha256": "4a953397d3a40d34d5b8bf06bf4b5512b045fb870d73a541a3d96f5c87724830",
+      "sha256": "b02e5f4e714447fe0a1562bd26dfa897db9b4822597f01814b08ed7ce55ea724",
       "pixels": [
         1920,
         1200
@@ -434,7 +473,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/general.png",
-      "sha256": "b99bc7e11ce6c4f508686bfd62165c8c381eb13a6e4f08acccb31b69d3f32822",
+      "sha256": "ec0c93af9b182d8986f0296f219e4f3c214778ea336447cce437319dac8784c4",
       "pixels": [
         1920,
         1200
@@ -442,7 +481,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/inline-backup.png",
-      "sha256": "7d32754be4f8219a11b5edd49e5d39fca927cf5e2fbb11314ec276048d88bcac",
+      "sha256": "7eb7e05141aac91bc95522b10d3dd7d84ad70f14adfd404ec20d7696dfc98dd3",
       "pixels": [
         1920,
         1200
@@ -450,7 +489,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/inline-conflict.png",
-      "sha256": "d73904de2641ec3d17d0364dc2ba7aef88b13f9b8ff88727af37e557baf38a68",
+      "sha256": "cccf1d22409343d8e16e77cdf6df1c9185be4abc0eb124b00e7f5eed49e63957",
       "pixels": [
         1920,
         1200
@@ -458,7 +497,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/inline-recording.png",
-      "sha256": "2991aae13fa3515c4252d524e4835f4592d999e3195b6e8592b1051690078a51",
+      "sha256": "6836f92239521deb8b60bba86dee0625dbee0738078d6c9ec3521f23112ba84c",
       "pixels": [
         1920,
         1200
@@ -466,7 +505,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/portrait-inspector.png",
-      "sha256": "b794ae652b8ee8919026834e25a3832b087ed18aa692807a86d9ee38b83fad80",
+      "sha256": "e78f1ba44510022f5171a57655cc1ca873d8f7eca0c29c1cee8bed0e74a5449a",
       "pixels": [
         1200,
         1920
@@ -474,7 +513,7 @@
     },
     {
       "path": "docs/screenshots/parity-settings/tablet/unavailable-alias.png",
-      "sha256": "6252f200db2952c920fc69fbc6ea5631e107fe6aca5992d2050b5aa6680bff06",
+      "sha256": "85db06149a370ba419e170583b30e54990d27a0a6dff4b01b1b56b1d8a416e4c",
       "pixels": [
         1920,
         1200
@@ -490,7 +529,7 @@
     },
     {
       "path": "docs/screenshots/parity-folders/folder-configured.png",
-      "sha256": "590fc19a02ed136fdeb94cf8e9316b97163e883aa51cd4e0363ce359e2f5a5ba",
+      "sha256": "e4f81e22eca8379228341bf9ba25f8f6e97517f68508448beffb2bb1d2fa45b3",
       "pixels": [
         1920,
         1200
@@ -498,7 +537,7 @@
     },
     {
       "path": "docs/screenshots/parity-folders/folder-removed.png",
-      "sha256": "7ab1543875978ac9a5c671857933ec2cfe0d07d8e2434686e43b73fcb91510c6",
+      "sha256": "bf0c53e65f35b930399245157ba75391f0de57c58b6af36a50166d665b787780",
       "pixels": [
         1920,
         1200
@@ -506,7 +545,7 @@
     },
     {
       "path": "docs/screenshots/parity-folders/native-folder-picker.png",
-      "sha256": "1c72bf8bc2fe0e9f2956a56298ff2509b31116ec48dd24b46864b4127abde795",
+      "sha256": "4e28ff61dc9c301a0a226af8d424aff9f2a9e298427bd6d8f42e16ff1b3a9933",
       "pixels": [
         1920,
         1200
@@ -514,7 +553,7 @@
     },
     {
       "path": "docs/screenshots/parity-folders/opened-document.png",
-      "sha256": "be9bea1eb3f84d33674fa1e95f1974f37bae68e886f5f939a94fbf9dae854dad",
+      "sha256": "f9e4387e9089dcf35945b860aafca4c8ce93c5fda0cf8ebac3f0d2d1923b7200",
       "pixels": [
         1920,
         1200
@@ -522,7 +561,7 @@
     },
     {
       "path": "docs/screenshots/parity-folders/permission-expired.png",
-      "sha256": "119ae8e355305b6be0b6bbec34b57056f51df6a633654576f37d150f735ee046",
+      "sha256": "0cf72ffcb373546b34da3b6e257ccdab52b1f7eb122a194b9222cd499df79e4a",
       "pixels": [
         1920,
         1200
@@ -530,7 +569,7 @@
     },
     {
       "path": "docs/screenshots/parity-folders/replacement-palette.png",
-      "sha256": "a2271285c8d1631759c96d66e63317ce095c2e78d72be480a03cb3c14fb106f4",
+      "sha256": "1369ce35092c10988613531863bacee69b31777d6f5bbd68307e9ac6bf209493",
       "pixels": [
         1920,
         1200
@@ -538,7 +577,79 @@
     },
     {
       "path": "docs/screenshots/parity-folders/search-result.png",
-      "sha256": "597aae66fe26ac24b9ce14eed0958d78b400f7b9485530db239fd5915d2efb2e",
+      "sha256": "ad4de11817f9a4f9fe20b9d0f2d54106ffcd6b7c01b4447d980e929a09d36d89",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/hardware-viewer-xml-limitation.png",
+      "sha256": "ef71924617d9d8f10e7c02c81674d069fb06c5b5d50c97756f7278c848a66fa4",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/phone/assistant-home.png",
+      "sha256": "7689f1257bbc59eeee9f33e7fe63440b08921c396daad715d20239ca77ada763",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/phone/assistant-picker.png",
+      "sha256": "b9a59b52bac7637197e62308f66154349ff65c085edf44c02fa2597ef2b2ec44",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/phone/assistant-settings.png",
+      "sha256": "625b042f370c97e7adb3fa69e76ff2d45f90d3f8229af8d5d64784e315d09700",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/phone/snappy-search.png",
+      "sha256": "5a323ba48e5cad340461c4af5b557576f556fb4d1d666ed965ceb2459653f4ef",
+      "pixels": [
+        1080,
+        2340
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/tablet/assistant-home.png",
+      "sha256": "3860518aee05c8999d9e7b83da6cfd27a30a3e2458dbaac3cb1dbe7f9d9b983b",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/tablet/assistant-picker.png",
+      "sha256": "54ecb512d9434afdd4e6d85acec97fc45650d7bd452c04c1b38ca974116ebcd0",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/tablet/assistant-settings.png",
+      "sha256": "8c8a7a83c361fcea5efca6b3abcc03bc746b855c5834b934de9c7392e533e759",
+      "pixels": [
+        1920,
+        1200
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-activation/tablet/snappy-search.png",
+      "sha256": "c0a2e2c072d1a7ed390f73ee538daa650ca8b033c4dec6b939269d6e1525e5de",
       "pixels": [
         1920,
         1200
@@ -548,7 +659,7 @@
   "limitations": [
     "Partial selected-folder parity; #5 stays open",
     "Viewer rendered body requires screenshot review in addition to URI/title checks",
-    "Intermittent backup timeout #35 and tile timeout #37 remain undiagnosed",
+    "Intermittent backup timeout #35, tile timeout #37 and viewer body XML omission #41 remain undiagnosed",
     "Physical/OEM, comprehensive TalkBack, large fonts and advanced #26 shortcuts unverified",
     "Opt-in EnduranceDeviceTest not rerun for this slice"
   ]

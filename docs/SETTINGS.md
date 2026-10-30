@@ -2,7 +2,7 @@
 
 Available in development builds after the original 0.4.0-preview tag. Search **Droidcast preferences** (`prefs`) or press **Ctrl/Meta+,** while the palette is open. This opens a separate native settings workspace. Tablet has a persistent sidebar; phone uses compact page navigation and a command detail page.
 
-- **General:** global shortcut, optional Android keyboard service and data information.
+- **General:** Android assistant selection, custom global shortcut, optional Android keyboard service and data information. The assistant route avoids keyboard-service approval; see [Opening Droidcast](ACTIVATION.md).
 - **Shortcuts:** search command titles, aliases and chords; filter to assigned entries. Select a command to edit its alias or record, clear or reset shortcuts inline. Conflicts identify their owner and disable Save. Clearing a candidate with Escape keeps the saved binding. Tab/Shift+Tab move focus; Enter, keypad Enter and D-pad Center activate the focused control.
 - **Folders:** choose scopes, refresh metadata, reauthorize or remove access. See [Folder search](FOLDER-SEARCH.md).
 - **Backup:** export categories or preview an import; review and confirmation stay in the same pane. See [Backup](BACKUP.md).

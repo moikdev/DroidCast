@@ -20,11 +20,13 @@ class SettingsActivity : ComponentActivity() {
     var requestedCommand by mutableStateOf<String?>(null); private set
     var requestedEditor by mutableStateOf(""); private set
     var serviceEnabled by mutableStateOf(false); private set
+    var assistantSelected by mutableStateOf(false); private set
     var searchFocusEpoch by mutableStateOf(0); private set
     private val navigationKeys = mutableSetOf<Pair<Int, Int>>()
     private var pendingOperation: String? = null
     private val createBackup = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { store.writeExport(it) }
     private val importBackup = registerForActivityResult(ActivityResultContracts.OpenDocument()) { store.readBackup(it) }
+    private val chooseAssistantRole = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { assistantSelected = AssistantActivation.isSelected(this) }
     private val chooseFolder = registerForActivityResult(ActivityResultContracts.OpenDocumentTree()) { store.folderSearch.selected(it) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +50,7 @@ class SettingsActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         ShortcutRuntime.settingsResumed(this)
+        assistantSelected = AssistantActivation.isSelected(this)
         store.folderSearch.revalidate()
         serviceEnabled = Settings.Secure.getString(contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)?.split(':')
             ?.contains(ComponentName(this, PaletteShortcutService::class.java).flattenToString()) == true
@@ -109,6 +112,9 @@ class SettingsActivity : ComponentActivity() {
             page == "backup" && store.backupDocument != null -> store.discardImport()
             else -> finish()
         }
+    }
+    fun chooseAssistant() {
+        runCatching { chooseAssistantRole.launch(AssistantActivation.selectionIntent()) }.onFailure { store.message = "Assistant selection is unavailable on this device. Use the app icon or Quick Settings tile." }
     }
     fun enableService() = startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
     fun returnToPalette() { if (!store.backupBusy) { startActivity(Intent(this, MainActivity::class.java)); finish() } }

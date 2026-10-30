@@ -105,7 +105,7 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
         BackHandler(onBack = ::escape)
         // Headers live inside their command's lazy item, so keyboard and scroll indices stay identical.
         LaunchedEffect(store.selected, results.map { it.id }) {
-            if(results.isNotEmpty()) { store.selected=store.selected.coerceIn(results.indices); list.animateScrollToItem(store.selected) }
+            if(results.isNotEmpty()) { store.selected=store.selected.coerceIn(results.indices); list.scrollToItem(store.selected) }
         }
         LaunchedEffect(store.message) { store.message?.let { snack.showSnackbar(it, duration=SnackbarDuration.Short); if (store.message == it) store.message=null } }
         BoxWithConstraints(Modifier.fillMaxSize().onPreviewKeyEvent { handleKey(it.nativeKeyEvent) }.safeDrawingPadding()) {
@@ -122,10 +122,10 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
                 .clickable(indication=null, interactionSource=remember { MutableInteractionSource() }) {}.testTag("palette")) {
                 Row(Modifier.fillMaxWidth().height(PaletteTheme.header).padding(horizontal=16.dp),verticalAlignment=Alignment.CenterVertically) {
                     Glyph("search",PaletteTheme.secondary,22);Spacer(Modifier.width(12.dp))
-                    BasicTextField(value=displayedSearch,onValueChange={ searchValue = it; store.search(it.text) },modifier=Modifier.weight(1f).focusRequester(focus).testTag("search"),
+                    BasicTextField(value=displayedSearch,onValueChange={ searchValue = it; store.search(it.text) },modifier=Modifier.weight(1f).height(32.dp).focusRequester(focus).testTag("search"),
                         textStyle=TextStyle(color=PaletteTheme.ink,fontSize=20.sp,lineHeight=26.sp),singleLine=true,cursorBrush=SolidColor(PaletteTheme.accent),
                         keyboardOptions=KeyboardOptions(imeAction=ImeAction.Search,showKeyboardOnFocus=!wide),keyboardActions=KeyboardActions(onSearch={selected?.let(run)}),
-                        decorationBox={inner -> Box{if(store.query.isEmpty())Text("Search for apps and commands…",color=PaletteTheme.secondary,fontSize=20.sp,maxLines=1,overflow=TextOverflow.Ellipsis);inner()}})
+                        decorationBox={inner -> Box(Modifier.fillMaxSize(),contentAlignment=Alignment.CenterStart){if(store.query.isEmpty())Text("Search for apps and commands…",color=PaletteTheme.secondary,fontSize=20.sp,lineHeight=26.sp,maxLines=1,overflow=TextOverflow.Ellipsis);inner()}})
                     if(wide) IconButton(onClick={focus.requestFocus();keyboard?.show()},modifier=Modifier.size(36.dp).semantics{contentDescription="Show on-screen keyboard"}){Glyph("keyboard",PaletteTheme.tertiary,16)}
                 }
                 if (store.category == "Files") FileSearchToolbar(store, run)

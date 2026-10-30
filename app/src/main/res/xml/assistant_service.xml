@@ -1,0 +1,6 @@
+<voice-interaction-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:sessionService="dev.tinycast.android.DroidcastSessionService"
+    android:recognitionService=""
+    android:supportsAssist="true"
+    android:supportsLocalInteraction="false"
+    android:settingsActivity="dev.tinycast.android.SettingsActivity" />

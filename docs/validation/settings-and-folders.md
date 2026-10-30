@@ -10,7 +10,7 @@ The application runs under its normal Android app UID. Only the separately guard
 
 The build identity and final results are in [settings-checks.json](settings-checks.json). Local raw build/instrumentation logs, native XML and private restoration snapshots remain under ignored `artifacts/`; private snapshots are not published.
 
-Final targeted runs pass 21/21 on tablet and 21/21 on phone; the preceding complete suites pass 71/71 on each. Final source build/lint and 66 JVM tests pass. Hardware delivery passes 16 main cases plus 5 focused Alt+Q cases on the final APK, with restoration verified for both runs. APK identities are explicitly separated in the JSON.
+Final targeted runs pass 27/27 on tablet and 27/27 on phone; the preceding complete suites pass 71/71 on each. Final source build/lint and 66 JVM tests pass. Hardware delivery passes 16 main cases plus 5 focused Alt+Q cases on the final APK, with restoration verified for both runs. APK identities are explicitly separated in the JSON.
 
 A separate manual tablet rotation check changes landscape → portrait (1200×1920) → landscape, preserves the selected global-shortcut inspector and Ctrl+Space value, and verifies the stored shortcuts are unchanged. The original free-rotation mode is restored. Its portrait PNG is included; this is an emulator check, not physical-device certification.
 
@@ -52,6 +52,16 @@ The official app name is now **Droidcast**, with canonical repository links unde
 
 The published [2026-10-30 nightly checkpoint](https://github.com/moikdev/droidcast/releases/tag/nightly-2026-10-30) deliberately retains source `26d09f6` and APK `b512ba18…988b46e`. Its notes disclose this storage issue and advise keeping selected-folder indexing off. It is not the corrected APK recorded here.
 
+## Assistant activation and immediate search
+
+The user requested Launchpad-style launch without restricted keyboard-service approval and removal of vertical motion while typing. [Activation documentation](../ACTIVATION.md) separates app-icon/tile launch, system-assistant selection and custom global hotkeys. The reference was Launchpad Search revision `67e10897b9d49e6d5aac39816e104a49947293dd`; no reference source was copied.
+
+Two new assistant tests use the actual Android Default digital assistant app settings. Cancellation leaves the role unchanged. Selection followed by the system assistant key from Home and Settings, then stock Meta+A from warm Settings, opens the native palette while the keyboard accessibility service remains disabled. Tests restore the previous assistant role, assistant/interaction/recognition component settings and keyboard-service consent, and assert restoration. The components are system-bound using BIND_VOICE_INTERACTION; assist text/screenshot context is disabled, and microphone/overlay permissions are absent. This verifies the emulator route, not Lenovo's key mapping.
+
+An initial implementation tried RoleManager's generic request dialog. Stock Android 16 rejected ASSISTANT as non-requestable, so the app now opens the real default-assistant settings. The rejected run is retained in ignored evidence; it is not counted as a passing path.
+
+Typing no longer launches animated list scrolling. The search field has fixed height and matching placeholder/text line heights, and the palette window disables entry/exit animation. A paused-clock native regression requires the selected result to be visible after two layout frames and palette/search bounds to remain identical across six queries, including empty/no-results transitions. The software keyboard is settled before measurement. Restoring animated scrolling fails the two-frame visibility assertion. The first sizing assertion also found a one-pixel empty/text field difference, corrected by the fixed field. Android's global and system keyboard animations remain unchanged.
+
 ## Screenshot provenance
 
 All committed images are unedited, real Android PNGs. PR image URLs pin the implementation commit.
@@ -60,6 +70,7 @@ All committed images are unedited, real Android PNGs. PR image URLs pin the impl
 - `parity-settings/before-tablet.png`: the earlier, uncommitted settings layout captured during this branch, before the user's tablet refinement request. It is explicitly WIP history, not a released build or the final implementation.
 - `parity-folders/before-search.png`: baseline palette before folder commands/indexing, captured from PR #33's verified APK (same production source as the base).
 - `parity-settings/tablet/` and `phone/`: final settings configuration, filtered commands, recording/conflict, alias error and backup states. Saved UI/model assertions precede capture.
+- `parity-activation/tablet/` and `phone/`: real Android assistant picker, invocation from Home/Settings with keyboard service disabled and immediate-search smoke state. A screenshot alone does not establish timing; the paused-clock test supplies that assertion.
 - `parity-folders/`: actual folder chooser, configured scope, verified query/results, external viewer, expired access, removed scope and the replacement-controller palette smoke state. Viewer title/body are personally checked in the full-resolution PNG, in addition to the automated URI/title checks described above.
 
 ## Iteration findings and limits
@@ -81,6 +92,8 @@ Remaining #5 work includes cloud/offline providers, providers that ignore cancel
 A user reported Alt+Q not summoning the nightly on a Lenovo tablet (ZUXOS, believed Android 16), then reported Android denying accessibility access with a personal/financial-risk warning. The user subsequently reported finding Allow restricted settings and activation working. This is user-reported Lenovo success after approval, not an independently reproduced Lenovo key-routing defect or broad OEM certification. The stock emulator's final APK passes five real Linux-key cases for Alt+Q: recording/persistence, summon/toggle from Home and Settings, no global activation without service consent, and successful reconnect. These emulator results do not certify the Lenovo firmware.
 
 For sideloaded APKs, follow [Android's restricted-settings instructions](https://support.google.com/android/answer/12623953?hl=en): Apps → Droidcast → More → Allow restricted settings, then return to Accessibility to enable the keyboard service. Android owns consent; Droidcast does not auto-enable it. The app icon and Quick Settings tile remain available without keyboard-service consent.
+
+A final-binary hardware run passed ten cases before the next case failed its automatic TXT-body assertion. Its screenshot visibly shows `tinycast-soak-document.txt` and “Tinycast extended text file test.”, while the saved XML contains only the filename. Both preferences/service consent and unprivileged adbd/app restoration passed. The assertion and application were unchanged for the successful 16-case rerun, followed by five passing Alt+Q cases. No cause or application fix is established. This remains [#41](https://github.com/moikdev/droidcast/issues/41). The dedicated `hardware-viewer-xml-limitation.png` is failure evidence, not a passing automatic-body result.
 
 ## Reproduction
 

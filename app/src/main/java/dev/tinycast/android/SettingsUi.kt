@@ -218,13 +218,21 @@ private fun SettingsGeneral(activity: SettingsActivity) {
     SettingsScrollPane("General", "Make Droidcast fit the way you work.") {
         SettingsSectionLabel("Activation")
         SettingsCard {
+            SettingsPreferenceRow("Android assistant", if (activity.assistantSelected) "Droidcast is selected · use your system assistant gesture or key." else "Open with Android’s assistant gesture or key. No keyboard service needed.") {
+                TextButton(onClick = activity::chooseAssistant, modifier = Modifier.testTag("settings-choose-assistant")) { Text(if (activity.assistantSelected) "Manage" else "Choose Droidcast", fontSize = 12.sp) }
+            }
+            HorizontalDivider(color = PaletteTheme.separator)
+            Text("Choosing Droidcast replaces your current digital assistant. It does not request microphone access, screen contents or screenshots. Use the app icon or Quick Settings tile to keep your existing assistant.", color = PaletteTheme.tertiary, fontSize = 11.sp, lineHeight = 16.sp, modifier = Modifier.padding(16.dp))
+        }
+        Spacer(Modifier.height(16.dp))
+        SettingsCard {
             SettingsPreferenceRow("Global shortcut", "Show or hide the palette from another app.") {
                 Text(store.shortcutConfiguration.bindings[ShortcutRules.PALETTE]?.label() ?: "Not assigned", fontSize = 12.sp, color = PaletteTheme.ink,
                     modifier = Modifier.clip(RoundedCornerShape(6.dp)).background(PaletteTheme.control).padding(8.dp, 6.dp).testTag("settings-global-value"))
                 OutlinedButton(onClick = { activity.configure(ShortcutRules.PALETTE, "hotkey") }, contentPadding = PaddingValues(12.dp, 4.dp), modifier = Modifier.heightIn(min = 36.dp).testTag("settings-edit-global")) { Text("Change", fontSize = 12.sp) }
             }
             HorizontalDivider(color = PaletteTheme.separator, modifier = Modifier.padding(vertical = 8.dp))
-            SettingsPreferenceRow("Keyboard service", if (activity.serviceEnabled) "Enabled · shortcuts work outside Droidcast." else "Optional · required for shortcuts in other apps.") {
+            SettingsPreferenceRow("Keyboard service", if (activity.serviceEnabled) "Enabled · shortcuts work outside Droidcast." else "Optional · required for custom hotkeys such as Alt + Q in other apps.") {
                 TextButton(onClick = activity::enableService, contentPadding = PaddingValues(8.dp), modifier = Modifier.testTag("settings-service")) { Text(if (activity.serviceEnabled) "Manage service" else "Enable service", fontSize = 12.sp) }
             }
         }

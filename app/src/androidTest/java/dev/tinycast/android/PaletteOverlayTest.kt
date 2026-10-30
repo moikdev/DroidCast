@@ -61,4 +61,35 @@ class PaletteOverlayTest {
             device.executeShellCommand("cmd statusbar collapse")
         }
     }
+    @Test fun typingAndSelectionUpdateWithoutAnimatedScrollOrMovingSearchFrame() {
+        compose.waitUntil(10000) { !compose.activity.store.loading && !compose.activity.store.folderSearch.loading }
+        compose.activityRule.scenario.onActivity { it.store.filter("All") }
+        compose.activityRule.scenario.onActivity {
+            androidx.core.view.WindowCompat.getInsetsController(it.window, it.window.decorView).hide(androidx.core.view.WindowInsetsCompat.Type.ime())
+        }
+        compose.waitForIdle(); device.waitForIdle()
+        val palette = compose.onNodeWithTag("palette").fetchSemanticsNode().boundsInWindow
+        val search = compose.onNodeWithTag("search").fetchSemanticsNode().boundsInWindow
+        compose.mainClock.autoAdvance = false
+        try {
+            compose.activityRule.scenario.onActivity { it.store.selected = minOf(15, it.store.results().lastIndex) }
+            repeat(2) { compose.mainClock.advanceTimeByFrame() }; compose.waitForIdle()
+            val selected = compose.activity.store.results()[compose.activity.store.selected]
+            compose.onNodeWithTag("result-${selected.id}").assertIsDisplayed().assertIsSelected()
+            for (query in listOf("Wi", "Wi-Fi", "calc", "no-such-result-938172", "", "Settings")) {
+                compose.activityRule.scenario.onActivity { it.store.search(query) }
+                // Two layout frames, not an animation-duration advance.
+                repeat(2) { compose.mainClock.advanceTimeByFrame() }; compose.waitForIdle()
+                assertEquals(palette, compose.onNodeWithTag("palette").fetchSemanticsNode().boundsInWindow)
+                assertEquals(search, compose.onNodeWithTag("search").fetchSemanticsNode().boundsInWindow)
+                compose.activity.store.results().firstOrNull()?.let {
+                    compose.onNodeWithTag("result-${it.id}").assertIsDisplayed().assertIsSelected()
+                }
+            }
+            val dir = java.io.File(compose.activity.filesDir, "assistant-evidence").apply { mkdirs() }
+            device.waitForIdle()
+            assertTrue(device.takeScreenshot(java.io.File(dir, "snappy-search.png")))
+        } finally { compose.mainClock.autoAdvance = true }
+    }
+
 }
