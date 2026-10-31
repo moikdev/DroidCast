@@ -81,7 +81,9 @@ class FolderSearch internal constructor(
     private var scanJob: Job? = null
     private var searchJob: Job? = null
     private var entries by mutableStateOf<List<IndexedDocument>>(emptyList())
-    private var byId: Map<String, IndexedDocument> = emptyMap()
+    // Retained pins/aliases participate in derived UI results even when there
+    // is no active folder query. Keep their lookup observable with the index.
+    private val byId by derivedStateOf { entries.associateBy { it.id } }
     private var readable: Set<String> = emptySet()
     private var currentQuery = ""
     private var searchActive = false
@@ -194,7 +196,7 @@ class FolderSearch internal constructor(
             entry
         } }.filter { it.folder in permissions }.distinctBy { it.id }
     }
-    private fun publish(items: List<IndexedDocument>) { entries = items; byId = items.associateBy { it.id }; scheduleSearch() }
+    private fun publish(items: List<IndexedDocument>) { entries = items; scheduleSearch() }
     fun configurationCommands() = if (enabled) entries.map { it.command() } else emptyList()
     fun command(id: String) = if (enabled) byId[id]?.command() else null
     fun retainedCommands(ids: Set<String>) = if (enabled) ids.mapNotNull { byId[it]?.command() } else emptyList()

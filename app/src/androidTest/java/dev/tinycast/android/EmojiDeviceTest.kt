@@ -136,6 +136,66 @@ class EmojiDeviceTest {
         compose.onNodeWithTag("emoji-favorite").assertIsNotEnabled()
         evidence("no-results", "No matching emoji or symbols")
     }
+    @Test fun typingAndFourWayNavigationWorkImmediatelyWithoutTab() {
+        for (code in listOf(KeyEvent.KEYCODE_F, KeyEvent.KEYCODE_A, KeyEvent.KEYCODE_C, KeyEvent.KEYCODE_E)) key(code)
+        compose.onNodeWithTag("emoji-search").assertTextContains("face")
+        compose.onNodeWithTag("emoji-search").assertIsFocused()
+        assertEquals(0, store.selected)
+        key(KeyEvent.KEYCODE_DPAD_RIGHT); assertEquals(1, store.selected)
+        key(KeyEvent.KEYCODE_DPAD_DOWN)
+        val row = store.selected
+        assertTrue(row > 1)
+        key(KeyEvent.KEYCODE_DPAD_LEFT); assertEquals(row - 1, store.selected)
+        key(KeyEvent.KEYCODE_DPAD_UP); assertEquals(0, store.selected)
+        key(KeyEvent.KEYCODE_MOVE_END); assertEquals(store.results().lastIndex, store.selected)
+        key(KeyEvent.KEYCODE_MOVE_HOME); assertEquals(0, store.selected)
+        compose.onNodeWithTag("emoji-search").assertIsFocused()
+        key(KeyEvent.KEYCODE_DEL)
+        compose.onNodeWithTag("emoji-search").assertTextContains("fac")
+        assertEquals(0, store.selected)
+        key(KeyEvent.KEYCODE_DPAD_RIGHT)
+        val chosen = store.results()[store.selected]
+        key(KeyEvent.KEYCODE_ENTER)
+        assertEquals(chosen.glyph, clipboard())
+        compose.onNodeWithTag("emoji-search").assertIsFocused()
+        evidence("typing-and-navigation", "Copied ${chosen.name}")
+        key(KeyEvent.KEYCODE_L, KeyEvent.META_CTRL_ON)
+        key(KeyEvent.KEYCODE_DPAD_LEFT)
+        key(KeyEvent.KEYCODE_E)
+        compose.onNodeWithTag("emoji-search").assertTextContains("faec")
+        val beforeCaret = store.selected
+        key(KeyEvent.KEYCODE_DPAD_LEFT)
+        assertEquals("Editing remains active after typing", beforeCaret, store.selected)
+        compose.onNodeWithTag("emoji-search").assert(SemanticsMatcher.expectValue(SemanticsProperties.TextSelectionRange, TextRange(2)))
+        key(KeyEvent.KEYCODE_DPAD_DOWN)
+        search("face")
+        key(KeyEvent.KEYCODE_DPAD_RIGHT)
+        assertEquals("Down returns from query editing to result browsing", 1, store.selected)
+    }
+    @Test fun rapidRightThenEnterUsesCurrentSelectionBeforeRedraw() {
+        val expected = store.results()[1].glyph
+        compose.activityRule.scenario.onActivity {
+            val now = android.os.SystemClock.uptimeMillis()
+            // Both pairs in one main-thread turn: no recomposition between them.
+            for (code in listOf(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_ENTER)) {
+                for (action in listOf(KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP))
+                    it.window.decorView.dispatchKeyEvent(KeyEvent(now, now, action, code, 0))
+            }
+            assertEquals(expected, it.getSystemService(ClipboardManager::class.java).primaryClip?.getItemAt(0)?.text.toString())
+        }
+    }
+    @Test fun compositionStartedBeforeRedrawKeepsNavigationWithIme() {
+        search("face")
+        compose.activityRule.scenario.onActivity {
+            val connection = it.window.decorView.findFocus()!!.onCreateInputConnection(android.view.inputmethod.EditorInfo())
+            assertTrue(connection.setComposingRegion(0, 4))
+            val now = android.os.SystemClock.uptimeMillis()
+            for (action in listOf(KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP))
+                it.window.decorView.dispatchKeyEvent(KeyEvent(now, now, action, KeyEvent.KEYCODE_DPAD_RIGHT, 0))
+            assertEquals("Composition must be read at event time, before the next frame", 0, store.selected)
+            connection.finishComposingText()
+        }
+    }
     @Test fun clipboardPreservesJoinersFlagsVariationSelectorsAndKeycaps() {
         listOf("👨‍👩‍👧‍👦", "🇯🇵", "❤️", "1️⃣", "π").forEach { glyph ->
             search(glyph)
@@ -255,6 +315,7 @@ class EmojiDeviceTest {
         val index = store.selected
         val entry = store.results()[index]
         assertTrue(index > 0)
+        key(KeyEvent.KEYCODE_L, KeyEvent.META_CTRL_ON)
         key(KeyEvent.KEYCODE_DPAD_LEFT)
         compose.onNodeWithTag("emoji-search").assertIsFocused()
         compose.onNodeWithTag("emoji-search").assert(SemanticsMatcher.expectValue(SemanticsProperties.TextSelectionRange, TextRange(3)))

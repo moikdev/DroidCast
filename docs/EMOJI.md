@@ -9,11 +9,14 @@ account or network connection is needed to use the bundled catalog.
   people, animals, text symbols, favorites or recent copies.
 - Select a cell to copy it, or use the Copy button. The complete Unicode string
   is placed on the Android clipboard. Paste it yourself in the destination app.
-- Use ↑/↓ from search to move a grid row while retaining typing focus. Tab into
-  the grid to use all four arrows; Home/End go to the first/last result. Enter,
-  keypad Enter, D-pad Center or Ctrl+Enter copy the selected item. Ctrl+L focuses
-  search; Ctrl+D toggles a favorite. Escape clears the query, then returns to
-  commands. Back and outside-tap dismissal remain available.
+- Type and navigate immediately after opening: all four arrows move the selected
+  emoji while search keeps typing focus. Home/End select the first/last result;
+  Enter, keypad Enter, D-pad Center or Ctrl+Enter copy it. No Tab is needed.
+- Ctrl+L enters query editing, where Left/Right/Home/End move the caret normally.
+  Modified text-navigation keys also enter editing; ↓/↑ return to result browsing.
+  Active IME composition keeps its own candidate navigation. Ctrl+D toggles a
+  favorite. Escape leaves query editing first, then clears the query, then returns
+  to commands. Back and outside-tap dismissal remain available.
 - The footer names the selected symbol and confirms copying. The star toggles a
   favorite. Favorites lead the All view; Recent holds the last 32 distinct copies.
   Both are private on-device preferences and survive app restart. They are not
