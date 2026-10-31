@@ -15,6 +15,7 @@ import android.view.KeyboardShortcutGroup
 import android.view.KeyboardShortcutInfo
 import android.view.Menu
 import android.view.WindowManager
+import android.hardware.input.InputManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -23,10 +24,11 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.*
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), InputManager.InputDeviceListener {
     val store: PaletteStore by viewModels()
     var shortcutEnabled by mutableStateOf(false)
     private var sharedText by mutableStateOf<String?>(null)
+    private val modifierShortcuts = ModifierShortcutObserver()
     private val createBackup = registerForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { store.writeExport(it) }
     private val importBackup = registerForActivityResult(ActivityResultContracts.OpenDocument()) { store.readBackup(it) }
     private val openDocument = registerForActivityResult(ActivityResultContracts.OpenDocument()) { rememberDocument(it) }
@@ -47,6 +49,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (!ShortcutRuntime.paletteOpening()) { finish(); return }
+        getSystemService(InputManager::class.java).registerInputDeviceListener(this, null)
         enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
         if (resources.configuration.smallestScreenWidthDp >= 600) window.setSoftInputMode((window.attributes.softInputMode and WindowManager.LayoutParams.SOFT_INPUT_MASK_STATE.inv()) or WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         if (savedInstanceState == null) receive(intent)
@@ -75,7 +78,28 @@ class MainActivity : ComponentActivity() {
         store.folderSearch.revalidate()
         shortcutEnabled = KeyboardServiceConsent.read(this) == KeyboardConsent.APPROVED
     }
-    override fun onPause() { ShortcutRuntime.paused(this); super.onPause() }
+    override fun onPause() { modifierShortcuts.clear(); store.clearModifierRecording(); ShortcutRuntime.paused(this); super.onPause() }
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (!hasFocus) { modifierShortcuts.clear(); store.clearModifierRecording() }
+    }
+    @android.annotation.SuppressLint("RestrictedApi")
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.action in listOf(KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP)) {
+            val connection = ShortcutRuntime.keyboardConnection
+            // The connected service owns taps globally, including this window.
+            // Modifier pairs continue to Android unchanged; never consume only UP.
+            val tap = modifierShortcuts.handle(event.asShortcutInput(), store.shortcutConfiguration.byChord,
+                !connection.connected && window.decorView.hasWindowFocus() && !isFinishing &&
+                    !store.backupBusy && ShortcutRuntime.recordingOwner == null, connection.epoch, ShortcutRuntime.recordingEpoch)
+            tap?.let { (target, binding) -> ShortcutRuntime.dispatch(this, target, binding) }
+        }
+        return super.dispatchKeyEvent(event)
+    }
+    override fun onInputDeviceAdded(deviceId: Int) = Unit
+    override fun onInputDeviceChanged(deviceId: Int) { modifierShortcuts.clear(); store.clearModifierRecording() }
+    override fun onInputDeviceRemoved(deviceId: Int) { modifierShortcuts.clear(); store.clearModifierRecording() }
+    override fun onDestroy() { getSystemService(InputManager::class.java).unregisterInputDeviceListener(this); super.onDestroy() }
     override fun onStop() { if (!isChangingConfigurations) store.cancelShortcutRecording(); super.onStop() }
     fun acceptShortcut(token: String?, toggleExisting: Boolean = false) {
         val request = ShortcutRuntime.requests.consume(token)
@@ -87,6 +111,7 @@ class MainActivity : ComponentActivity() {
     }
     public override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        modifierShortcuts.clear(); store.clearModifierRecording()
         if (store.backupBusy) { store.message = "Backup in progress. Please try again when it finishes."; return }
         store.pendingShortcut = null
         store.reset(); receive(intent)
@@ -108,7 +133,8 @@ class MainActivity : ComponentActivity() {
             KeyboardShortcutInfo("Pin or unpin", KeyEvent.KEYCODE_D, KeyEvent.META_CTRL_ON)
         )))
         val titles = store.commands().associate { it.id to it.title } + (ShortcutRules.PALETTE to "Show or hide Droidcast")
-        val bindings = store.shortcutConfiguration.bindings.entries.take(50).map { (id, chord) -> KeyboardShortcutInfo(titles[id] ?: "Unavailable command · $id", chord.keyCode, chord.nativeModifiers()) }
+        val bindings = store.shortcutConfiguration.bindings.entries.filter { it.value.trigger == ShortcutTrigger.CHORD }.take(50)
+            .map { (id, chord) -> KeyboardShortcutInfo(titles[id] ?: "Unavailable command · $id", chord.keyCode, chord.nativeModifiers()) }
         if (bindings.isNotEmpty()) data?.add(KeyboardShortcutGroup(if (store.shortcutConfiguration.bindings.size > 50) "Configured shortcuts (first 50)" else "Configured shortcuts", bindings))
         super.onProvideKeyboardShortcuts(data, menu, deviceId)
     }

@@ -50,6 +50,8 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
     var shortcutError by mutableStateOf(loadedShortcuts.second)
     var recordingTarget by mutableStateOf<String?>(null); private set
     var recordingCandidate by mutableStateOf<KeyChord?>(null)
+    var recordingTap by mutableStateOf<KeyChord?>(null); private set
+    private val modifierRecorder = ModifierTapDetector()
     var recordingError by mutableStateOf<String?>(null)
     var pendingShortcut by mutableStateOf<ShortcutInvocation?>(null)
 
@@ -110,7 +112,7 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
         require(target == ShortcutRules.PALETTE || target in shortcutConfiguration.bindings || command(target) != null) { "Command is unavailable" }
         if (chord != null) {
             require(ShortcutRules.error(chord) == null) { ShortcutRules.error(chord)!! }
-            val owner = shortcutConfiguration.bindings.entries.firstOrNull { it.key != target && it.value == chord }?.key
+            val owner = shortcutConfiguration.bindings.entries.firstOrNull { it.key != target && ShortcutRules.overlaps(it.value, chord) }?.key
             require(owner == null) { "Already assigned to ${shortcutTitle(owner!!)}" }
         }
         saveShortcuts(ShortcutConfiguration(if (chord == null) shortcutConfiguration.bindings - target else shortcutConfiguration.bindings + (target to chord)))
@@ -118,22 +120,32 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
     fun resetShortcuts() { require(!backupBusy); saveShortcuts(ShortcutConfiguration()) }
     fun beginShortcutRecording(target: String) {
         require(target == ShortcutRules.PALETTE || target in shortcutConfiguration.bindings || command(target) != null) { "Command is unavailable" }
-        recordingTarget = target; recordingCandidate = shortcutConfiguration.bindings[target]; recordingError = null
+        modifierRecorder.clear()
+        recordingTarget = target; recordingCandidate = shortcutConfiguration.bindings[target]
+        recordingTap = recordingCandidate?.takeIf { it.trigger == ShortcutTrigger.DOUBLE_TAP }; recordingError = null
         ShortcutRuntime.recordingOwner = this; dialog = "shortcut-record"
     }
     fun cancelShortcutRecording(toManager: Boolean = true) {
+        modifierRecorder.clear()
         if (recordingTarget == null) return
-        recordingTarget = null; recordingCandidate = null; recordingError = null
+        recordingTarget = null; recordingCandidate = null; recordingTap = null; recordingError = null
         if (ShortcutRuntime.recordingOwner === this) ShortcutRuntime.recordingOwner = null
         if (toManager) dialog = "shortcut-settings"
     }
     fun captureShortcut(chord: KeyChord) {
         val target = recordingTarget ?: return
+        recordingTap = chord.takeIf { it.trigger == ShortcutTrigger.DOUBLE_TAP }
         val error = ShortcutRules.error(chord)
-        val owner = shortcutConfiguration.bindings.entries.firstOrNull { it.key != target && it.value == chord }?.key
+        val owner = shortcutConfiguration.bindings.entries.firstOrNull { it.key != target && ShortcutRules.overlaps(it.value, chord) }?.key
         recordingError = error ?: owner?.let { "Already assigned to ${shortcutTitle(it)}" }
         recordingCandidate = if (recordingError == null) chord else null
     }
+    fun observeRecordingKey(input: ShortcutEngine.Input) {
+        if (recordingTarget == null) { modifierRecorder.clear(); return }
+        modifierRecorder.handle(input)?.let { captureShortcut(it.copy(side = ModifierSide.ANY)) }
+    }
+    fun clearModifierRecording() = modifierRecorder.clear()
+    fun setRecordingModifierSide(side: ModifierSide) { recordingTap?.let { captureShortcut(it.copy(side = side)) } }
     fun saveRecordedShortcut() {
         val target = recordingTarget ?: return
         val chord = recordingCandidate ?: return

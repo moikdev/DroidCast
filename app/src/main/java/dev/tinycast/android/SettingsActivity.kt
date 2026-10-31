@@ -81,8 +81,8 @@ class SettingsActivity : ComponentActivity() {
         serviceConsent = KeyboardServiceConsent.read(this)
         if (!serviceEnabled) cancelShortcutProbe()
     }
-    override fun onPause() { cancelShortcutProbe(); navigationKeys.clear(); ShortcutRuntime.settingsPaused(this); super.onPause() }
-    override fun onWindowFocusChanged(hasFocus: Boolean) { super.onWindowFocusChanged(hasFocus); if (!hasFocus) cancelShortcutProbe() }
+    override fun onPause() { cancelShortcutProbe(); store.clearModifierRecording(); navigationKeys.clear(); ShortcutRuntime.settingsPaused(this); super.onPause() }
+    override fun onWindowFocusChanged(hasFocus: Boolean) { super.onWindowFocusChanged(hasFocus); if (!hasFocus) { cancelShortcutProbe(); store.clearModifierRecording() } }
     // Public Activity/Window.Callback hook; AndroidX core's hidden base class
     // carries a class-wide restriction that lint also applies to this override.
     @android.annotation.SuppressLint("RestrictedApi")
