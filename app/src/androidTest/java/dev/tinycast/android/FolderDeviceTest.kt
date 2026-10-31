@@ -325,6 +325,52 @@ class FolderDeviceTest {
             compose.waitUntil(10000) { readerIo.drain(); writerScope.coroutineContext[Job]!!.children.none() }
         }
     }
+    @Test fun blankAllDropsPinnedIndexedFileAfterAccessExpires() = retainedFileExpires("All")
+    @Test fun blankPinnedDropsIndexedFileAfterAccessExpires() = retainedFileExpires("Pinned")
+
+    private fun retainedFileExpires(category: String) {
+        authorize()
+        val document = controller.configurationCommands().single { it.title == "Orbit-notes.txt" }
+        compose.runOnUiThread {
+            if (document.id !in compose.activity.store.pins) compose.activity.store.togglePin(document.id)
+        }
+        var palette: MainActivity? = null
+        try {
+            context.startActivity(Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+            compose.waitUntil(10000) {
+                compose.runOnUiThread {
+                    palette = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED)
+                        .filterIsInstance<MainActivity>().singleOrNull()
+                }
+                palette != null && !palette!!.store.loading && !palette!!.store.folderSearch.loading
+            }
+            val store = palette!!.store
+            compose.runOnUiThread { store.filter(category); store.search("") }
+            compose.waitForIdle()
+            assertEquals("Blank search must not depend on active folder matches", emptyList<IndexedDocument>(), store.folderSearch.matches)
+            assertEquals(4, store.folderSearch.count)
+            compose.onNodeWithTag("result-${document.id}").assertIsDisplayed()
+            val dir = File(context.filesDir, "retained-index-evidence").apply { mkdirs() }
+            device.waitForIdle(); assertTrue(device.takeScreenshot(File(dir, "${category.lowercase()}-before-expiry.png")))
+            val folder = store.folderSearch.folders.single()
+            context.contentResolver.releasePersistableUriPermission(Uri.parse(folder.uri), Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            compose.runOnUiThread { store.folderSearch.revalidate() }
+            compose.waitUntil(10000) { store.folderSearch.count == 0 && store.folderSearch.errors.containsKey(folder.uri) }
+            // Trigger the unrelated recomposition which used to rerun results(),
+            // but must not be required to invalidate a derived cached catalog.
+            compose.runOnUiThread { store.selected = 1 }
+            compose.waitForIdle()
+            assertFalse(store.results().any { it.id == document.id })
+            assertTrue(store.folderSearch.matches.isEmpty())
+            device.waitForIdle()
+            device.dumpWindowHierarchy(File(dir, "${category.lowercase()}-after-expiry.xml"))
+            assertTrue(device.takeScreenshot(File(dir, "${category.lowercase()}-after-expiry.png")))
+            compose.onNodeWithTag("result-${document.id}").assertDoesNotExist()
+            assertTrue("The pin remains for future reauthorization", document.id in store.pins)
+        } finally {
+            compose.runOnUiThread { palette?.finish() }
+        }
+    }
     @Test fun unavailableAliasOnlyFileCanBeFoundClearedAndReusedAfterScopeRemoval() {
         authorize()
         val store = compose.activity.store
