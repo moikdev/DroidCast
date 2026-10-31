@@ -67,6 +67,7 @@ internal fun AdvancedSettings(activity: SettingsActivity) {
     val focusBackground = remember { activity.requestedEditor !in setOf("alias", "hotkey") }
     val keyboard = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+    fun changeSearch(value: String) { activity.cancelShortcutProbe(); store.cancelShortcutRecording(false); query = value }
     fun leaveSearch() { query = ""; focusManager.clearFocus(); keyboard?.hide() }
     LaunchedEffect(placed) { if (placed && focusBackground && !hasFocus) { initialFocus.requestFocus(); keyboard?.hide() } }
     BackHandler { activity.back() }
@@ -102,7 +103,7 @@ internal fun AdvancedSettings(activity: SettingsActivity) {
                         Column { Text("Droidcast", fontSize = 14.sp, fontWeight = FontWeight.SemiBold); Text("Settings", fontSize = 11.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 2.dp)) }
                     }
                     Spacer(Modifier.height(8.dp))
-                    SettingsSearchField(query, { store.cancelShortcutRecording(false); query = it }, searchFocus)
+                    SettingsSearchField(query, ::changeSearch, searchFocus)
                     Spacer(Modifier.height(20.dp))
                     Text("PREFERENCES", fontSize = 10.sp, color = PaletteTheme.tertiary, modifier = Modifier.padding(10.dp, 8.dp))
                     settingsPages.forEach { page -> SettingsNav(page, activity.page == page.id && query.isEmpty()) { leaveSearch(); activity.selectPage(page.id) } }
@@ -116,7 +117,7 @@ internal fun AdvancedSettings(activity: SettingsActivity) {
                             Text("Droidcast Settings", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, modifier = Modifier.weight(1f))
                             TextButton(onClick = activity::returnToPalette, modifier = Modifier.testTag("settings-return-palette")) { Text("Palette", fontSize = 12.sp) }
                         }
-                        Box(Modifier.padding(horizontal = 14.dp)) { SettingsSearchField(query, { store.cancelShortcutRecording(false); query = it }, searchFocus) }
+                        Box(Modifier.padding(horizontal = 14.dp)) { SettingsSearchField(query, ::changeSearch, searchFocus) }
                         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(8.dp, 6.dp)) {
                             settingsPages.forEach { page ->
                                 TextButton(onClick = { leaveSearch(); activity.selectPage(page.id) }, modifier = Modifier.background(if (page.id == activity.page && query.isEmpty()) PaletteTheme.selection else Color.Transparent, RoundedCornerShape(8.dp)).testTag("settings-nav-${page.id}")) { Text(page.title, fontSize = 12.sp) }
@@ -213,11 +214,16 @@ private fun SettingsGeneral(activity: SettingsActivity) {
     val store = activity.store
     val chord = store.shortcutConfiguration.bindings[ShortcutRules.PALETTE]
     val connection = ShortcutRuntime.keyboardConnection.connected
+    val connectionEpoch = ShortcutRuntime.keyboardConnection.epoch
     val readiness = ShortcutReadiness(chord, activity.serviceConsent, connection)
     val probe = activity.shortcutProbe
     var showSetup by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(chord, activity.serviceConsent, connection) {
-        if (probe.status == ShortcutProbeStatus.LISTENING && (!readiness.ready || probe.expected != chord)) activity.cancelShortcutProbe()
+    DisposableEffect(activity) {
+        activity.shortcutProbeVisibilityChanged(true)
+        onDispose { activity.shortcutProbeVisibilityChanged(false) }
+    }
+    LaunchedEffect(chord, activity.serviceConsent, connection, connectionEpoch) {
+        if (probe.status == ShortcutProbeStatus.LISTENING && (!readiness.ready || probe.expected != chord || !probe.usesConnection(connectionEpoch))) activity.cancelShortcutProbe()
     }
     SettingsScrollPane("General", "Make Droidcast fit the way you work.") {
         SettingsSectionLabel("Activation")

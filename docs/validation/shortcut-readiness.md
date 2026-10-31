@@ -14,15 +14,23 @@ Primary references: [Android restricted-settings instructions](https://support.g
 
 ## Validation
 
-Final local checks pass: **78 JVM tests, 34 tablet native cases (7 readiness +27 regressions), 34 phone native cases (7+27), eight hardware cases, build and lint with 0 errors/42 warnings**. One added warning is a nonblocking `UseKtx` suggestion at the App info URI. Exact APK/test-APK hashes, installed-byte equality, screenshot/native XML hashes and restoration records are in [shortcut-readiness.json](shortcut-readiness.json). Checks are scoped to that binary and device; this is not active CI.
+Final local checks pass: **80 JVM tests, 37 tablet native cases (10 readiness +27 regressions), 37 phone native cases (10+27), eleven hardware cases, build and lint with 0 errors/42 warnings**. One added warning is a nonblocking `UseKtx` suggestion at the App info URI. Exact APK/test-APK hashes, installed-byte equality, screenshot/native XML hashes and restoration records are in [shortcut-readiness.json](shortcut-readiness.json). Checks are scoped to that binary and device; this is not active CI.
 
-New coverage includes seven JVM cases for readiness, connection ownership and probe identities/deadlines/cancellation, plus seven native cases per layout for actual ComponentName parsing, inline setup and alternatives, exact Android destinations, real service enable/disable/short-name reconnect, navigation/background cancellation, timeout and an unassigned shortcut. The App info test requires Droidcast identity, App info, Force stop and Storage & cache; Accessibility requires Downloaded apps, the Droidcast service and TalkBack.
+New coverage includes nine JVM cases for readiness, connection ownership and probe identities/deadlines/cancellation, plus ten native cases per layout for actual ComponentName parsing, inline setup and alternatives, exact Android destinations, real service enable/disable/short-name reconnect, navigation/background cancellation, timeout and an unassigned shortcut. The App info test requires Droidcast identity, App info, Force stop and Storage & cache; Accessibility requires Downloaded apps, the Droidcast service and TalkBack.
 
-The hardware helper performs eight real Linux qwerty2 cases: record/persist Alt+Q, summon/dismiss from Settings and Home, no global activation without consent, reconnect persistence, inline receipt without leaving Settings, timeout and normal activation after timeout. adbd is rooted only for guarded emulator event injection; the application runs under its ordinary app UID. The helper restores preference bytes and service consent, releases keys and unroots adbd in cleanup.
+The hardware helper performs eleven real Linux qwerty2 cases: record/persist Alt+Q, summon/dismiss from Settings and Home, no global activation without consent, reconnect persistence, inline receipt without leaving Settings, timeout normal activation after timeout, activation after Settings search hides the check, normal Ctrl+F navigation when unarmed and actual Ctrl+F receipt when armed. adbd is rooted only for guarded emulator event injection; the application runs under its ordinary app UID. The helper restores preference bytes and service consent, releases keys and unroots adbd in cleanup.
 
 UiAutomator hierarchy dumps can temporarily disconnect/rebind the service. The hardware check avoids a dump while listening; its verification XML records the retained result, and the corresponding PNG is explicitly captured after rebind. These captures do not establish the connection state at the earlier exact event instant; the recorded filtered receipt, focus assertion and live reconnect checks provide the relevant evidence.
 
 Final native regression scope also covers the existing Settings workspace, inline shortcut recorder, keyboard navigation, aliases, backup cancellation, settings routes, ordinary shortcut dispatch/backup and floating/translucent immediate-search palette. This does not claim an all-feature full-suite run.
+
+## Post-audit corrections
+
+Three new native regressions all fail on reviewed source `3ae35c6` / APK `d84b62fd…b0429a`: search leaves a hidden probe listening, callbacks that disconnect/reconnect within one UI turn allow an old receipt, and an explicitly armed Ctrl+F remains exempted from service dispatch. These are controlled regressions; the callback-order case does not establish any physical/OEM timing.
+
+Search changes synchronously cancel the probe, and General disposal removes diagnostic visibility. The receiver checks that visibility. A monotonically changing service epoch binds each check to its actual connection, including event-time checks before recomposition; old-owner disconnects cannot alter the replacement epoch. While explicitly armed, only the configured global chord can take precedence over Settings navigation. After receipt, cancellation or expiry, navigation regains its normal priority and the service still owns the matched key release. Native coverage includes Ctrl/Meta+F and Ctrl/Meta+comma, with/without Shift where applicable; the hardware helper exercises actual Ctrl+F and search→Alt+Q delivery.
+
+Native capture now requires each pictured app control to appear in the dumped app hierarchy before taking its PNG. Six original native XML files had no app hierarchy; they did not independently establish the UI shown in the otherwise matching PNGs. They remain historical evidence for the old head and are not used for final native state claims. Hardware result XML and after-rebind PNGs retain their separate-time qualification.
 
 ## Provenance and exclusions
 
@@ -30,7 +38,9 @@ Final validation uses the independently owned `Droidcast_PR48_Tablet_API_36_27ca
 
 The before image is a fresh real Settings capture from released r4 APK/source `a101671`, whose tree equals the base merge. Final native and hardware captures use the development APK identified in the manifest. No mockups or edited images are used. Hardware after-rebind images retain that qualification.
 
-The first native tablet attempt passed 5/7: one assertion needed to scroll to the App info button, and the Accessibility heading was exposed as a content description rather than text. A second attempt passed 6/7 while retaining a PNG/XML showing the correct Accessibility destination. The final destination check requires specific page controls and service identity. Those failed fixture runs are retained and excluded from final passing outcomes. The older preserved WIP and its malformed quoted settings helper are not final validation evidence; the corrected helper validates single tokens and reads back every settings write.
+The first native tablet attempt passed 5/7: one assertion needed to scroll to the App info button, and the Accessibility heading was exposed as a content description rather than text. A second attempt passed 6/7 while retaining a PNG/XML showing the correct Accessibility destination. The final destination check requires specific page controls and service identity. Those failed fixture runs are retained and excluded from final passing outcomes. Two expanded hardware-helper attempts also remain excluded: one read preferences immediately after Save (the final helper waits for the expected persisted value), and one used fixed screen swipe coordinates that hit Gboard after Ctrl+F (the final helper scrolls within the measured app viewport and clears search focus before arming). Neither partial attempt is included in the eleven final passes.
+
+The older preserved WIP and its malformed quoted settings helper are not final validation evidence; the corrected helper validates single tokens and reads back every settings write.
 
 ## Reproduction
 
@@ -54,4 +64,4 @@ The hardware helper is a test facility; normal app use does not require root. Do
 
 CI is inactive; `local/android` represents local checks. This is not an independently verified Lenovo/ZUXOS, physical keyboard/OEM, other API/IME, TalkBack/large-font or endurance certification. The user's Lenovo Alt+Q success after approving restricted settings remains user-reported. The emulator does not reproduce that OEM restriction warning, so the help path is grounded in Google's instructions rather than a claim of automated OEM approval testing.
 
-Assistant corner/Home setup #47, double-tap modifiers #26, broad parity and existing #5/#35/#37/#41 gaps remain separate. This slice does not enable keyboard consent or claim permission-free custom hotkeys.
+Calculator refinement #51, assistant corner/Home setup #47, double-tap modifiers #26, broad parity and existing #5/#35/#37/#41 gaps remain separate. This slice does not enable keyboard consent or claim permission-free custom hotkeys.

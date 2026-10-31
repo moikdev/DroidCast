@@ -191,7 +191,8 @@ def check_button():
     # Dump before arming: UiAutomator may temporarily suppress accessibility services.
     found = None
     for _ in range(7):
-        for item in tree().iter("node"):
+        hierarchy = tree()
+        for item in hierarchy.iter("node"):
             if item.get("resource-id") == "settings-shortcut-test":
                 bounds = list(map(int, re.findall(r"\d+", item.get("bounds"))))
                 if len(bounds) == 4 and bounds[2] > bounds[0] and bounds[3] > bounds[1]:
@@ -199,7 +200,15 @@ def check_button():
                     break
         if found is not None:
             break
-        adb("shell", "input", "swipe", "1100", "1000", "1100", "420", "250")
+        # Scroll inside the current app viewport, which excludes a visible IME.
+        # Fixed screen coordinates can swipe-type into Gboard instead.
+        viewport = next(item for item in hierarchy.iter("node") if item.get("resource-id") == "settings-viewport")
+        left, top, right, bottom = map(int, re.findall(r"\d+", viewport.get("bounds")))
+        x = left + (right - left) * 3 // 4
+        start = bottom - 24
+        end = max(top + 80, start - 500)
+        assert start > end
+        adb("shell", "input", "swipe", str(x), str(start), str(x), str(end), "250")
     assert found is not None, "Inline shortcut check was not reachable"
     wait(bound, "Keyboard service must reconnect after the hierarchy dump")
     wait(lambda: "InputFilterEnabled: true" in adb("shell", "dumpsys", "input"), "Input filter did not reconnect")
@@ -294,6 +303,39 @@ try:
             wait(lambda: ".MainActivity" in focused(), "Expired check swallowed normal global activation")
             palette_snapshot("activation-after-timeout")
             passed("expired inline check does not intercept ordinary global activation")
+
+            # No hierarchy dump while a probe is armed: dumping could itself
+            # disconnect the service and hide the cancellation regression.
+            chord(30, (29,))  # Select any palette query before replacing it.
+            type_text("Droidcast preferences")
+            adb("shell", "input", "keyevent", "KEYCODE_ENTER")
+            wait(lambda: ".SettingsActivity" in focused(), "Settings workspace did not open")
+            button = check_button(); tap(button); time.sleep(.15)
+            chord(33, (29,))  # Ctrl+F enters Settings search while Alt+Q is global.
+            type_text("backup")
+            chord(16, (56,))
+            wait(lambda: ".MainActivity" in focused(), "Hidden Settings search probe swallowed Alt+Q")
+            palette_snapshot("activation-after-settings-search")
+            passed("Settings search cancels the hidden check and Alt+Q activates normally")
+
+            chord(30, (29,))
+            type_text("Droidcast preferences")
+            adb("shell", "input", "keyevent", "KEYCODE_ENTER")
+            wait(lambda: ".SettingsActivity" in focused(), "Settings workspace did not open")
+            click("Change")  # General's global-hotkey action arms its inline recorder.
+            node("Record a shortcut"); chord(33, (29,)); node("Ctrl + F"); click("Save shortcut")
+            wait(lambda: json.loads(prefs()["shortcuts"])["bindings"]["global:palette"] == {"keyCode": 34, "modifiers": 1}, "Ctrl+F was not persisted")
+            click("General")
+            chord(33, (29,))
+            hierarchy = tree()
+            assert any(item.get("resource-id") == "settings-search" and item.get("focused") == "true" for item in hierarchy.iter("node")), "Unarmed Ctrl+F lost Settings navigation"
+            passed("configured Ctrl+F retains normal Settings navigation when no check is armed")
+            click("General")  # Clear search focus and dismiss its IME before arming.
+            button = check_button(); tap(button); time.sleep(.15)
+            chord(33, (29,))
+            assert ".SettingsActivity" in focused(), "Armed Ctrl+F check must stay in Settings"
+            check_snapshot("received-navigation-ctrl-f", "Received Ctrl + F in Settings")
+            passed("explicitly armed Ctrl+F reaches the filtered check instead of Settings navigation")
     else:
         palette("Keyboard shortcuts")
         adb("shell", "input", "keyevent", "KEYCODE_ENTER")
@@ -435,7 +477,7 @@ finally:
     if rooted:
         try:
             if keyboard:
-                emit([(1, code, 0) for code in (1, 16, 17, 25, 29, 33, 42, 44, 46, 49, 56, 57, 125)] + [(0, 0, 0)])
+                emit([(1, code, 0) for code in (1, 16, 17, 25, 29, 30, 33, 42, 44, 46, 49, 56, 57, 125)] + [(0, 0, 0)])
             set_services(other_services)
             adb("shell", "am", "force-stop", APP)
             adb("shell", "run-as", APP, "rm", "-f", "shared_prefs/palette.xml.bak")

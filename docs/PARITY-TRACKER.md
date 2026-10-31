@@ -37,7 +37,7 @@ The live backlog is [GitHub issue #1](https://github.com/moikdev/droidcast/issue
 
 Keyboard-readiness onboarding [#39](https://github.com/moikdev/droidcast/issues/39): distinguish the saved global chord, Android approval and live service connection; provide restricted-settings help and exact App info/Accessibility links; offer an inline delivery check with explicit local scope and timeout. No application code enables approval or retrieves screen content. Lenovo/ZUXOS remains user-reported, with separate emulator evidence. Two independent audits and expected-head merge are still required for this slice.
 
-Queued user requests: explicit corner-swipe/Home-hold assistant setup and actual gesture verification [#47](https://github.com/moikdev/droidcast/issues/47), and double-tap Ctrl [#26](https://github.com/moikdev/droidcast/issues/26).
+Queued user requests: calculator trigger/multiplication refinement [#51](https://github.com/moikdev/droidcast/issues/51), explicit corner-swipe/Home-hold assistant setup and actual gesture verification [#47](https://github.com/moikdev/droidcast/issues/47), and double-tap Ctrl [#26](https://github.com/moikdev/droidcast/issues/26).
 
 ## Completed slices
 

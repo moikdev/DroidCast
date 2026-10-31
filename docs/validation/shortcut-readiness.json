@@ -2,11 +2,11 @@
   "base": "703ddb0849addc2df55e1c8e00ec925eea182a57",
   "package": "dev.tinycast.android",
   "version": "0.4.0-preview (5)",
-  "apk_sha256": "d84b62fd49df2af798a7054f716428c807293df0cd02caab4e611937b5b0429a",
-  "test_apk_sha256": "32cff1e4968bad2a07855319046997506a9278e96549de202b6d39641f84b0ac",
+  "apk_sha256": "dafaeeba243c7f87569ba4bc9d33ac9013baa394c8d5272bd4b786bb767b3b0a",
+  "test_apk_sha256": "ed48647200f58e59774e6c11446c48929d46682195763ae7f95c7c56fad7a730",
   "installed_apk_matches": true,
   "jvm": {
-    "tests": 78,
+    "tests": 80,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -34,9 +34,9 @@
   },
   "instrumentation": {
     "tablet": {
-      "readiness": 7,
+      "readiness": 10,
       "regressions": 27,
-      "total": 34,
+      "total": 37,
       "logs": [
         "artifacts/shortcut-readiness-tablet/tests.log",
         "artifacts/shortcut-readiness-regressions-tablet.log"
@@ -71,9 +71,9 @@
       }
     },
     "phone": {
-      "readiness": 7,
+      "readiness": 10,
       "regressions": 27,
-      "total": 34,
+      "total": 37,
       "logs": [
         "artifacts/shortcut-readiness-phone/tests.log",
         "artifacts/shortcut-readiness-regressions-phone.log"
@@ -144,6 +144,18 @@
       {
         "name": "expired inline check does not intercept ordinary global activation",
         "passed": true
+      },
+      {
+        "name": "Settings search cancels the hidden check and Alt+Q activates normally",
+        "passed": true
+      },
+      {
+        "name": "configured Ctrl+F retains normal Settings navigation when no check is armed",
+        "passed": true
+      },
+      {
+        "name": "explicitly armed Ctrl+F reaches the filtered check instead of Settings navigation",
+        "passed": true
       }
     ],
     "original_service_consent_restored": true,
@@ -156,7 +168,7 @@
     "app_unprivileged": true
   },
   "hardware_identity": {
-    "post_hardware_installed_apk_sha256": "d84b62fd49df2af798a7054f716428c807293df0cd02caab4e611937b5b0429a",
+    "post_hardware_installed_apk_sha256": "dafaeeba243c7f87569ba4bc9d33ac9013baa394c8d5272bd4b786bb767b3b0a",
     "no_intervening_app_install": true,
     "root_only_for_linux_test_injection": true
   },
@@ -170,8 +182,16 @@
       "raw": "artifacts/shortcut-readiness-before/before-tablet.png"
     },
     {
+      "path": "docs/screenshots/parity-shortcut-readiness/hardware-activation-after-settings-search.png",
+      "sha256": "fbdb43a3b19cc0f17aefb74904caa0365cc72a5a8fd2986ca412b263d9ee2083",
+      "width": 1920,
+      "height": 1200,
+      "phase": "hardware",
+      "raw": "artifacts/shortcut-readiness-hardware/activation-after-settings-search.png"
+    },
+    {
       "path": "docs/screenshots/parity-shortcut-readiness/hardware-activation-after-timeout.png",
-      "sha256": "2d45d4be3557008928c5a9dfa8eba81b48344a48af60f657d62d753c2ecfbfb4",
+      "sha256": "2874824c599bd53b4b0562057eb2ed47ac57d0d7da3658ab4fbf4d969a6995e6",
       "width": 1920,
       "height": 1200,
       "phase": "hardware",
@@ -179,7 +199,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/hardware-alt-q-from-home.png",
-      "sha256": "9a4477ac644c676bc178e12bb037e829eb3528b90a2e76138e8e64c10842c4f9",
+      "sha256": "2fbaab4f322a498f268fd071d728cc8e48fc876078ae987e06bb460b75bd7517",
       "width": 1920,
       "height": 1200,
       "phase": "hardware",
@@ -187,7 +207,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/hardware-check-timeout-after-rebind.png",
-      "sha256": "d9e9dbc837bcb75e7d9cf97671690a2c42f018d9307328eb3813dad4ca95d60c",
+      "sha256": "de7ad030134a4881fb5c5c99931f2b1ea28fc6b4d5cffbd201583f92ad8b66c5",
       "width": 1920,
       "height": 1200,
       "phase": "hardware after rebind",
@@ -195,15 +215,23 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/hardware-received-alt-q-after-rebind.png",
-      "sha256": "4a4170686587f91209b42e0a1ccc324fc75fd2932db604272ce680c28dd69f4b",
+      "sha256": "abdbe69f5983966260777c45fde24279df41c897f7781f0e87f5df5f9e77fdf6",
       "width": 1920,
       "height": 1200,
       "phase": "hardware after rebind",
       "raw": "artifacts/shortcut-readiness-hardware/received-alt-q-after-rebind.png"
     },
     {
+      "path": "docs/screenshots/parity-shortcut-readiness/hardware-received-navigation-ctrl-f-after-rebind.png",
+      "sha256": "4e7ea5ce2ffbedc0a12aa45eeeea1dd8438cf26c2b32fc7d7ed86d5d502ec184",
+      "width": 1920,
+      "height": 1200,
+      "phase": "hardware after rebind",
+      "raw": "artifacts/shortcut-readiness-hardware/received-navigation-ctrl-f-after-rebind.png"
+    },
+    {
       "path": "docs/screenshots/parity-shortcut-readiness/phone-accessibility.png",
-      "sha256": "a56b8fe3742e16d681894e32f60fc60d60d641f0b4fecffbb8633c92169775ee",
+      "sha256": "4ebf132fdcc0023c68f2d5340547ffd1810170ef0e42b2aab3472e654825f929",
       "width": 1080,
       "height": 2340,
       "phase": "native phone",
@@ -211,7 +239,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/phone-alternatives.png",
-      "sha256": "249f0ec3c0f8ea794575352746347cd6eaa27f4c49748cdb097f2071c612f57d",
+      "sha256": "ce9b88a45f7e2d3dc18ce87cbf01baa292dba87381a43f05b308b98e204eec44",
       "width": 1080,
       "height": 2340,
       "phase": "native phone",
@@ -219,7 +247,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/phone-app-info.png",
-      "sha256": "a8af5798adaf23bb5929cc5e751c2ca68bff691ced6fa6325a261482eeb914d6",
+      "sha256": "6e3f851e1502acf1aee9a0982f3da376470c1d6ef902b161c0277fc6728d7758",
       "width": 1080,
       "height": 2340,
       "phase": "native phone",
@@ -227,7 +255,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/phone-approval-off.png",
-      "sha256": "5a608d0f46931fb2a6ca95f7fa9d37c4feaca136342e8bb62cc44f3d7b1c2184",
+      "sha256": "7083959bc6cdb9feb3f7149158cae66dfb9735bee333758efda59fec01e3e39b",
       "width": 1080,
       "height": 2340,
       "phase": "native phone",
@@ -235,7 +263,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/phone-connected.png",
-      "sha256": "5e712596b55d594d8d81434e1bf98b7237b147745a6ea0f6f6b50138cefb20f9",
+      "sha256": "93e131d53171498d8a6a1154200e0f33efb5c9fea3dd6d55c7b1b31a7ce9c61e",
       "width": 1080,
       "height": 2340,
       "phase": "native phone",
@@ -243,7 +271,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/phone-disconnected.png",
-      "sha256": "9b1941376f983901b315edd918428cbcb3b8933012718613d32d26ad0ccb4026",
+      "sha256": "f65957708ca94b4be20f65eaa55996d849b383a0ebfb7c32ba5011c72c24d02b",
       "width": 1080,
       "height": 2340,
       "phase": "native phone",
@@ -251,15 +279,23 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/phone-listening.png",
-      "sha256": "a178ee96be38665a631459868dc88589a0cf408d18efc2be0494fca7f1a882df",
+      "sha256": "5dd279e8db48ac39f9b9e65b3c7ca69b98209a98c990044ebff5a99951ede0fd",
       "width": 1080,
       "height": 2340,
       "phase": "native phone",
       "raw": "artifacts/shortcut-readiness-phone/listening.png"
     },
     {
+      "path": "docs/screenshots/parity-shortcut-readiness/phone-navigation-chord-received.png",
+      "sha256": "26822670800a3938659a8fdcb3b20ce0d5be43c1820ee87b3d18705863a3dc85",
+      "width": 1080,
+      "height": 2340,
+      "phase": "native phone",
+      "raw": "artifacts/shortcut-readiness-phone/navigation-chord-received.png"
+    },
+    {
       "path": "docs/screenshots/parity-shortcut-readiness/phone-palette-fallback.png",
-      "sha256": "99cd574091639727e00df9e385372af22761cf2d3ac7cfb82860283691936f99",
+      "sha256": "09fdcc40403a90e92d2d29cf295ecd49fb20c2712a849ccd2461ee5e1c90107a",
       "width": 1080,
       "height": 2340,
       "phase": "native phone",
@@ -267,15 +303,23 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/phone-reconnected-short-name.png",
-      "sha256": "5e712596b55d594d8d81434e1bf98b7237b147745a6ea0f6f6b50138cefb20f9",
+      "sha256": "93e131d53171498d8a6a1154200e0f33efb5c9fea3dd6d55c7b1b31a7ce9c61e",
       "width": 1080,
       "height": 2340,
       "phase": "native phone",
       "raw": "artifacts/shortcut-readiness-phone/reconnected-short-name.png"
     },
     {
+      "path": "docs/screenshots/parity-shortcut-readiness/phone-search-probe-cancelled.png",
+      "sha256": "fe4ed08e44ae06aba83c02648344453f43dee92f04b5bcda66d3fdecbcd31ded",
+      "width": 1080,
+      "height": 2340,
+      "phase": "native phone",
+      "raw": "artifacts/shortcut-readiness-phone/search-probe-cancelled.png"
+    },
+    {
       "path": "docs/screenshots/parity-shortcut-readiness/phone-setup-steps.png",
-      "sha256": "58cd2b2a5acfb51360543d7d1f8ed1c09503cf9ad46e4dee0dad6d71e4351967",
+      "sha256": "7dada55f61bcf13456b15eb51b383835fd720ad5cc6b13e9ae4cf82f8d56fb49",
       "width": 1080,
       "height": 2340,
       "phase": "native phone",
@@ -283,7 +327,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/phone-timeout.png",
-      "sha256": "8ccf45686eeb08eb2c19497983f556625bc1fa647d012df5954dc8725286814a",
+      "sha256": "3879ee916618605e605b0e78b83df2e60c52b8d19db1bddb481742abcc097df8",
       "width": 1080,
       "height": 2340,
       "phase": "native phone",
@@ -291,7 +335,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/phone-unassigned.png",
-      "sha256": "83b800eae75c7b1ea267bb727ccc27a2558ac14fd10fb5f534524edda44b0d35",
+      "sha256": "f5bda7cb5584a1b893f149f0d14673b13c5ac0fb934a50c71e31f040d44067cc",
       "width": 1080,
       "height": 2340,
       "phase": "native phone",
@@ -299,7 +343,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/tablet-accessibility.png",
-      "sha256": "bbe897efc346e2d4a745d7ae3ab5fba2add3e04a7903c88248bcfe49b591d6d4",
+      "sha256": "9e5cc7764df2dcbcdbc2de4a25df000e438a14b941ccd68d682384734b642672",
       "width": 1920,
       "height": 1200,
       "phase": "native tablet",
@@ -307,7 +351,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/tablet-alternatives.png",
-      "sha256": "9a665355a9af4345600f24dddb41b4298214112a3525977f2f8d2f9b8c7c6874",
+      "sha256": "d3fe3ef1f581d07fe24172ec4b07b5c72992767eeb46c586a4ff724a85e706ba",
       "width": 1920,
       "height": 1200,
       "phase": "native tablet",
@@ -315,7 +359,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/tablet-app-info.png",
-      "sha256": "45c6b6c7f0d59846e59a6420b4f14cc8862ae1cab2d24d9e0e9b2a81833d65f3",
+      "sha256": "1baa96c7d9cf5eeae95b63f4568d1f6694dfe6f742830ab6c441d32ff617d9a4",
       "width": 1920,
       "height": 1200,
       "phase": "native tablet",
@@ -323,7 +367,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/tablet-approval-off.png",
-      "sha256": "e57f813c394b381e0b98ec717ad9ab8e6753fd270d72d087cb56a7c71956e553",
+      "sha256": "a3dca70171f016da221004c5f74843409104bf965310338b26dffa6e8d4cecde",
       "width": 1920,
       "height": 1200,
       "phase": "native tablet",
@@ -331,7 +375,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/tablet-connected.png",
-      "sha256": "475ec3410f40b4f1c04e3686af897a39039bdd484dd7583b9d6078efe80ad50b",
+      "sha256": "7a628cfef2cafe4dec1027f69f8f1920ce28a55e24bd7239facb7f84d784f986",
       "width": 1920,
       "height": 1200,
       "phase": "native tablet",
@@ -339,7 +383,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/tablet-disconnected.png",
-      "sha256": "4f538da9e254b684fabf9188f925a2de5f532985de30214ad087bf2746fc6cf2",
+      "sha256": "5245a60b653fa5f5c6757f5be511b19dea8bf20fb18549a07eb41fb5929735de",
       "width": 1920,
       "height": 1200,
       "phase": "native tablet",
@@ -347,15 +391,23 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/tablet-listening.png",
-      "sha256": "98c6debf279c61f1a8f9b9808ab82ae2bef7f176f1f426406f610a2884a19b28",
+      "sha256": "e5ace01caab2c1dd01787e0cbba1e9519a2e66045b30eb19ee420014ba311651",
       "width": 1920,
       "height": 1200,
       "phase": "native tablet",
       "raw": "artifacts/shortcut-readiness-tablet/listening.png"
     },
     {
+      "path": "docs/screenshots/parity-shortcut-readiness/tablet-navigation-chord-received.png",
+      "sha256": "0e5d602590da89d0df864a3375ea7b04771f10612e624529fe27379c60ef8ba6",
+      "width": 1920,
+      "height": 1200,
+      "phase": "native tablet",
+      "raw": "artifacts/shortcut-readiness-tablet/navigation-chord-received.png"
+    },
+    {
       "path": "docs/screenshots/parity-shortcut-readiness/tablet-palette-fallback.png",
-      "sha256": "e8458c87fb1de5b4dd498424e2ebe13746c98ef652cb64e8d71f8f3fc0f034a0",
+      "sha256": "556a5de556ed50592f0088f6e126c747eb17cffda52d17176aea86f656303cdf",
       "width": 1920,
       "height": 1200,
       "phase": "native tablet",
@@ -363,15 +415,23 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/tablet-reconnected-short-name.png",
-      "sha256": "12db4e4e98928a2bd325174e0fce73773fced2b5775b5e3658a6aff608759cef",
+      "sha256": "7a628cfef2cafe4dec1027f69f8f1920ce28a55e24bd7239facb7f84d784f986",
       "width": 1920,
       "height": 1200,
       "phase": "native tablet",
       "raw": "artifacts/shortcut-readiness-tablet/reconnected-short-name.png"
     },
     {
+      "path": "docs/screenshots/parity-shortcut-readiness/tablet-search-probe-cancelled.png",
+      "sha256": "87a35cf534639a3d8d298e5509afa88396e71c374f9f82843e32128a036b0732",
+      "width": 1920,
+      "height": 1200,
+      "phase": "native tablet",
+      "raw": "artifacts/shortcut-readiness-tablet/search-probe-cancelled.png"
+    },
+    {
       "path": "docs/screenshots/parity-shortcut-readiness/tablet-setup-steps.png",
-      "sha256": "c49e26ce8d231065a2707455309d552c0b31825dbed2720e053b1a0b9666e063",
+      "sha256": "f0be0db5291ac89575184fa7c331a495034c2034c03f7642d0f6f5b68933cc39",
       "width": 1920,
       "height": 1200,
       "phase": "native tablet",
@@ -379,7 +439,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/tablet-timeout.png",
-      "sha256": "0318ee639e81ed29767f09157fe6beb7944eeb0f7b72b71d43c2a26935a5e249",
+      "sha256": "aeb719f81f5ae5e89baae2cb2eaa85e99a6467491333daed833203b75ef93ed5",
       "width": 1920,
       "height": 1200,
       "phase": "native tablet",
@@ -387,7 +447,7 @@
     },
     {
       "path": "docs/screenshots/parity-shortcut-readiness/tablet-unassigned.png",
-      "sha256": "15250c25c0f2b4dce96c23c2bfc53bc260e5a43270971565d6ba42cbd35256a8",
+      "sha256": "4f5ea42f905f98c82d4cd8d156cf00c87aae87fca1038b421add2399eaa0e19a",
       "width": 1920,
       "height": 1200,
       "phase": "native tablet",
@@ -397,123 +457,171 @@
   "native_xml": [
     {
       "path": "artifacts/shortcut-readiness-tablet/accessibility.xml",
-      "sha256": "8e6e510fa77e7e882aa07a955d2fcbf6817e6cc5c47e50275b128a4009b07f30",
-      "layout": "tablet"
+      "sha256": "32de7f52915c45944511882fcbf7bf7385b29934461ca4f00d5c484f39ffecd3",
+      "layout": "tablet",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-tablet/alternatives.xml",
-      "sha256": "8fcf951c818236989373e59584f05f9d8cecde288e6362d69b2bedccbc9b46d8",
-      "layout": "tablet"
+      "sha256": "2e5176607914bb50d7c539fc6b990e7550fe142ce629689ceaa4121db8e68b72",
+      "layout": "tablet",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-tablet/app-info.xml",
-      "sha256": "22592b6f5ca47dbfe5bf3a97af826dd69e1bbf134893ded89be673c2794555b6",
-      "layout": "tablet"
+      "sha256": "25034779113b38077493c3232b684c7a8b63c6535f64c35b7a59eff5d8c30bb2",
+      "layout": "tablet",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-tablet/approval-off.xml",
-      "sha256": "f3acad235caac7933c229bb18006376b85b7f7c600e11af147bf132de41458f3",
-      "layout": "tablet"
+      "sha256": "f6fbd4aa23e87ed49ee13914474c64a3ac20092d3787d6e54c0baa71be4a66e5",
+      "layout": "tablet",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-tablet/connected.xml",
-      "sha256": "6b74e6b8bdc5636138cf8536b9234d2c297e94449ce407faf68d4ddc0fc7742e",
-      "layout": "tablet"
+      "sha256": "90cf54679db05ae282ccde26067885b11f474b2fdb22202f8079b353c4ea6e78",
+      "layout": "tablet",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-tablet/disconnected.xml",
-      "sha256": "8fcf951c818236989373e59584f05f9d8cecde288e6362d69b2bedccbc9b46d8",
-      "layout": "tablet"
+      "sha256": "ee9defb525af2acddba9578ddcbdf8dbef254d81b1faeddc909b96dadc7f967b",
+      "layout": "tablet",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-tablet/listening.xml",
-      "sha256": "6ed39922b6fe6c1378fb3071ea529006b03f75f0c136a6f31fdfd553fbc93157",
-      "layout": "tablet"
+      "sha256": "a74314eaa161aa9f53783d942e1265ca75e8c0b62f656e15e5c59d5a7252abda",
+      "layout": "tablet",
+      "has_expected_package": true
+    },
+    {
+      "path": "artifacts/shortcut-readiness-tablet/navigation-chord-received.xml",
+      "sha256": "58390f89279206d2db840cde238758b7470d1d3ff990b4bbf3486214067165f1",
+      "layout": "tablet",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-tablet/palette-fallback.xml",
-      "sha256": "31ab54234b17c8ce19bcfd3882e61682d3544188d70a63f23cc7254910273486",
-      "layout": "tablet"
+      "sha256": "709722cd0d519081f147ec45fc9a013a59972e5583b07b9f5dcabb4d9e7967cb",
+      "layout": "tablet",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-tablet/reconnected-short-name.xml",
-      "sha256": "9d64d4d38c0cf0bf3cc22ad16535e41c2fce76caf05efc05829c484f3b5d1706",
-      "layout": "tablet"
+      "sha256": "730df8b02c0cb2eb40efbf167fd43a38b6331f34a0aeeed19505a4dfa009ce26",
+      "layout": "tablet",
+      "has_expected_package": true
+    },
+    {
+      "path": "artifacts/shortcut-readiness-tablet/search-probe-cancelled.xml",
+      "sha256": "dff99810c893788847987662e44290d5e78a9dd728ddf991a6ca85d2c29d9c05",
+      "layout": "tablet",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-tablet/setup-steps.xml",
-      "sha256": "f3acad235caac7933c229bb18006376b85b7f7c600e11af147bf132de41458f3",
-      "layout": "tablet"
+      "sha256": "db73032d3263bdf76d74b8cbff861852ba62a5e5ec8cd22dcc67391f04abd72a",
+      "layout": "tablet",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-tablet/timeout.xml",
-      "sha256": "5866e9e760384d8fc11b1b9e7d3f8f266e488d94c0236691078e988bd2a1e2d5",
-      "layout": "tablet"
+      "sha256": "cb9b0a1be148d10d34f9c42ec801d3f4578d8cecf5b0bd2412b3b6f25030e5fa",
+      "layout": "tablet",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-tablet/unassigned.xml",
-      "sha256": "8fcf951c818236989373e59584f05f9d8cecde288e6362d69b2bedccbc9b46d8",
-      "layout": "tablet"
+      "sha256": "91457ec1a77fead7bd2f0b36c4d222a6c9ebedd95d7dc04d8347116b649b3ae0",
+      "layout": "tablet",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-phone/accessibility.xml",
-      "sha256": "444c737c88d6bda5ad44b1f4131d47e703187a1709b3e99f2306fb98de94b535",
-      "layout": "phone"
+      "sha256": "e1c0df19aa8e3ada48b3a5ede74672eebcd04cd036d2c77c15600ebfadaff73d",
+      "layout": "phone",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-phone/alternatives.xml",
-      "sha256": "5e68acb2a0ff1b4b981af97833bf65cceb0a8dc6d0749eec5362776d9a80101f",
-      "layout": "phone"
+      "sha256": "80cebe66f5d791eb06ad106b3602453add16c8077d35c40654e3ae496235443b",
+      "layout": "phone",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-phone/app-info.xml",
-      "sha256": "c5b2e2cd00b4f608f67f7292736d48a76f4b1e67bc0d18cf77fa54a473c7d4c3",
-      "layout": "phone"
+      "sha256": "5c05f481d15b648e5a51524ec5f30d2e09af12d71c6a41ef79775c54efafc7de",
+      "layout": "phone",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-phone/approval-off.xml",
-      "sha256": "f03ac9fb9ef987c2da7e743ba51d1acab456821b9ec2eaa702c772e82640021c",
-      "layout": "phone"
+      "sha256": "a4757732cfa6ca984bec2abb3edd16a02bf5b8e9ff7cab498a644549dedc408c",
+      "layout": "phone",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-phone/connected.xml",
-      "sha256": "866f86d92e5e35919a2c4a274c804696ab7e7ad2008a5d829bf2c25b5a134cca",
-      "layout": "phone"
+      "sha256": "fdf4cb42c71d0d2e29e448cd103ace4e343de59b8d9ad780298754e29900db7f",
+      "layout": "phone",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-phone/disconnected.xml",
-      "sha256": "64a501cf712e9db94013a3d1d1216f2526d6718bd4fcfb0a515bac2490214045",
-      "layout": "phone"
+      "sha256": "51c9ea15eef93d1ccc2f0c45f0690ddca6de3dcb599ff91a363ba47cf1014a8a",
+      "layout": "phone",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-phone/listening.xml",
-      "sha256": "34792886d1d0717a71952bda5f54d0766c24bb70f1df1a3b33cbf03f41a1bd94",
-      "layout": "phone"
+      "sha256": "09fb2b83385578ddde6c291557652522f3021fb5f8890fedc3a92c7772a44481",
+      "layout": "phone",
+      "has_expected_package": true
+    },
+    {
+      "path": "artifacts/shortcut-readiness-phone/navigation-chord-received.xml",
+      "sha256": "956d8096a3fcde8644e2a70df5f7cd84e17df1c99b06b16afb380ae3ab7b63ce",
+      "layout": "phone",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-phone/palette-fallback.xml",
-      "sha256": "7d99060c713a847fbb8ba1981f2d13ce3f047fe0f2f6c15aaa8081d2c3ae8456",
-      "layout": "phone"
+      "sha256": "caccad1b0eb7621ef821ac58b597e3fd13a9ce06444c149cf1bc7bdd17ab0b79",
+      "layout": "phone",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-phone/reconnected-short-name.xml",
-      "sha256": "866f86d92e5e35919a2c4a274c804696ab7e7ad2008a5d829bf2c25b5a134cca",
-      "layout": "phone"
+      "sha256": "384276a23a106b0664d635d0918e95374d7e1d1db6c10b8a20b5cc54668c5fd3",
+      "layout": "phone",
+      "has_expected_package": true
+    },
+    {
+      "path": "artifacts/shortcut-readiness-phone/search-probe-cancelled.xml",
+      "sha256": "40f24225e3abfdf39531f11b2e33893e48ca4e9a8e418999ce5639f48d827616",
+      "layout": "phone",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-phone/setup-steps.xml",
-      "sha256": "c15313a9bb7fd294c6e23e81c9930e8baf807a0fb3c29221b8e09ea5b9b7c5ab",
-      "layout": "phone"
+      "sha256": "aad3b2a4aaf4f45ed858e24642e5e03f496e4a2d304082ccef15da04ed2f50b6",
+      "layout": "phone",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-phone/timeout.xml",
-      "sha256": "3ee3b0e1bdd1beb46afcec95f14a7e5b8445004df235216c89475cbfce27a8ae",
-      "layout": "phone"
+      "sha256": "910f061fd6e035bc766b47ae4c2799d501418d801f3ac949e66538c54a3f7d54",
+      "layout": "phone",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-phone/unassigned.xml",
-      "sha256": "c3a4f9ea82e8a6034097d183861cc7010f919798ede5d6dfeed061ee6996922a",
-      "layout": "phone"
+      "sha256": "87b8e73a0b7be218810200f4f731c23149dab58134eb161268b5c97c48f428e6",
+      "layout": "phone",
+      "has_expected_package": true
     },
     {
       "path": "artifacts/shortcut-readiness-hardware/check-timeout-verification.xml",
@@ -523,6 +631,11 @@
     {
       "path": "artifacts/shortcut-readiness-hardware/received-alt-q-verification.xml",
       "sha256": "8f4a6ad22504885fa52d75df556ce0c7f4a2e10bd7c3dfb8470e593e9e17724d",
+      "scope": "hardware result before rebind PNG"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-hardware/received-navigation-ctrl-f-verification.xml",
+      "sha256": "f2fda83c76944926e7fff76ae0a8ec9258ff589dab6cd7cf8304defcfe9e5c6c",
       "scope": "hardware result before rebind PNG"
     }
   ],
@@ -538,6 +651,22 @@
       "tests": 7,
       "passed": 6,
       "note": "PNG/XML showed correct Accessibility page; heading is a content description. Final assertions require specific page controls."
+    },
+    {
+      "log": "artifacts/readiness-hardware-persistence-attempt/tests.log",
+      "passed_cases": 9,
+      "note": "Immediate disk read after Save; final harness waits for the expected persisted value."
+    },
+    {
+      "log": "artifacts/readiness-hardware-ime-scroll-attempt/tests.log",
+      "passed_cases": 10,
+      "note": "Fixed swipe coordinates entered Gboard text. Final harness scrolls within measured app viewport and clears search focus."
+    },
+    {
+      "log": "artifacts/readiness-phone-search-capture-attempt/tests.log",
+      "tests": 10,
+      "passed": 9,
+      "note": "Fixed phone search header has no scroll ancestor. Final helper asserts visibility without scrolling that header."
     }
   ],
   "ci": "Inactive; local/android records local evidence",
@@ -547,5 +676,31 @@
   "final_consent": {
     "enabled_accessibility_services": "null",
     "accessibility_enabled": "0"
-  }
+  },
+  "audit_negative": {
+    "source": "3ae35c65df9fe60d69f6e3dd55a8609d3cfddee5",
+    "app_sha256": "d84b62fd49df2af798a7054f716428c807293df0cd02caab4e611937b5b0429a",
+    "test_apk_sha256": "2a6fb7e84dba241d07aee8113f4bef4d0a916d1f15e24392773d3e2142122533",
+    "tests": 3,
+    "failures": 3,
+    "log": "artifacts/readiness-audit-negative-tablet/tests.log",
+    "connection_case": "controlled callbacks in one UI turn, not OEM timing",
+    "consent_restored": true
+  },
+  "focused_correction": {
+    "tests": 3,
+    "apk_sha256": "dafaeeba243c7f87569ba4bc9d33ac9013baa394c8d5272bd4b786bb767b3b0a",
+    "test_apk_sha256": "995f1e05d9861a0eb508be40839f26ece1cf82088000aa31c4e368486836e65b",
+    "log": "artifacts/readiness-audit-positive-tablet/tests.log",
+    "note": "Earlier focused test APK; final ten-case suites include these cases."
+  },
+  "regression_identity": {
+    "apk_sha256": "dafaeeba243c7f87569ba4bc9d33ac9013baa394c8d5272bd4b786bb767b3b0a",
+    "test_apk_sha256": "ed48647200f58e59774e6c11446c48929d46682195763ae7f95c7c56fad7a730",
+    "completed": {
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "packaged_assets_unchanged": true
 }

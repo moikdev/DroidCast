@@ -23,8 +23,13 @@ object KeyboardServiceConsent {
 class KeyboardServiceConnection {
     private var owner: Any? = null
     var connected by mutableStateOf(false); private set
-    internal fun connect(token: Any) { owner = token; connected = true }
-    internal fun disconnect(token: Any) { if (owner === token) { owner = null; connected = false } }
+    var epoch by mutableLongStateOf(0L); private set
+    internal fun connect(token: Any) {
+        if (owner !== token || !connected) { owner = token; epoch++; connected = true }
+    }
+    internal fun disconnect(token: Any) {
+        if (owner === token) { owner = null; epoch++; connected = false }
+    }
 }
 
 data class ShortcutReadiness(val chord: KeyChord?, val consent: KeyboardConsent, val connected: Boolean) {
@@ -46,19 +51,24 @@ class ShortcutProbe(private val now: () -> Long) {
     var expected by mutableStateOf<KeyChord?>(null); private set
     private var generation = 0
     private var deadline = 0L
-    fun begin(chord: KeyChord): Int {
+    private var connectionEpoch = -1L
+    fun begin(chord: KeyChord, epoch: Long): Int {
         require(ShortcutRules.error(chord) == null)
-        generation++; expected = chord; deadline = now() + 15_000; status = ShortcutProbeStatus.LISTENING
+        generation++; expected = chord; connectionEpoch = epoch; deadline = now() + 15_000; status = ShortcutProbeStatus.LISTENING
         return generation
     }
-    fun receive(target: String, chord: KeyChord, current: KeyChord?): Boolean {
+    fun usesConnection(epoch: Long) = connectionEpoch == epoch
+    fun isArmedFor(chord: KeyChord, current: KeyChord?, epoch: Long): Boolean {
         if (status != ShortcutProbeStatus.LISTENING) return false
-        if (expected != current) { cancel(); return false }
+        if (expected != current || !usesConnection(epoch)) { cancel(); return false }
         if (now() >= deadline) { status = ShortcutProbeStatus.EXPIRED; return false }
-        if (target != ShortcutRules.PALETTE || chord != expected) return false
+        return chord == expected
+    }
+    fun receive(target: String, chord: KeyChord, current: KeyChord?, epoch: Long): Boolean {
+        if (target != ShortcutRules.PALETTE || !isArmedFor(chord, current, epoch)) return false
         status = ShortcutProbeStatus.RECEIVED
         return true
     }
     fun expire(token: Int) { if (token == generation && status == ShortcutProbeStatus.LISTENING && now() >= deadline) status = ShortcutProbeStatus.EXPIRED }
-    fun cancel() { generation++; expected = null; status = ShortcutProbeStatus.IDLE }
+    fun cancel() { generation++; expected = null; connectionEpoch = -1L; status = ShortcutProbeStatus.IDLE }
 }

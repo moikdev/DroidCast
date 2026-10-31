@@ -71,12 +71,24 @@ class ShortcutReadinessDeviceTest {
             }
         } finally { Configurator.getInstance().uiAutomationFlags = originalFlags }
     }
-    private fun capture(name: String, tag: String) {
-        compose.onNodeWithTag(tag).performScrollTo().assertIsDisplayed()
+    private fun capture(name: String, tag: String, scroll: Boolean = true) {
+        val target = compose.onNodeWithTag(tag)
+        if (scroll) target.performScrollTo()
+        target.assertIsDisplayed()
         compose.waitForIdle(); device.waitForIdle()
-        if (android.os.Build.VERSION.SDK_INT >= 34) InstrumentationRegistry.getInstrumentation().uiAutomation.clearCache()
         val dir = File(context.filesDir, "readiness-evidence").apply { mkdirs() }
-        device.dumpWindowHierarchy(File(dir, "$name.xml"))
+        val xml = File(dir, "$name.xml")
+        var present = false
+        repeat(4) {
+            if (!present) {
+                if (android.os.Build.VERSION.SDK_INT >= 34) InstrumentationRegistry.getInstrumentation().uiAutomation.clearCache()
+                device.wait(Until.hasObject(By.pkg(context.packageName).res(tag)), 1500)
+                device.dumpWindowHierarchy(xml)
+                present = xml.readText().contains("resource-id=\"$tag\"") &&
+                    xml.readText().contains("package=\"${context.packageName}\"")
+            }
+        }
+        assertTrue("Native hierarchy must include the pictured app control $tag", present)
         assertTrue(device.takeScreenshot(File(dir, "$name.png")))
     }
     private fun connected(short: Boolean = false) {
@@ -164,6 +176,70 @@ class ShortcutReadinessDeviceTest {
         compose.waitUntil(20000) { compose.activity.shortcutProbe.status == ShortcutProbeStatus.EXPIRED }
         compose.onNodeWithTag("settings-shortcut-test-result").assertTextContains("Nothing received", substring = true)
         capture("timeout", "settings-shortcut-test-result")
+    }
+    @Test fun settingsSearchCancelsHiddenProbeAndLeavesNormalActivationAvailable() {
+        connected()
+        val activity = compose.activity
+        compose.onNodeWithTag("settings-shortcut-test").performScrollTo().performClick()
+        compose.waitUntil(5000) { activity.shortcutProbe.status == ShortcutProbeStatus.LISTENING }
+        device.pressKeyCode(KeyEvent.KEYCODE_F, KeyEvent.META_CTRL_ON)
+        compose.onNodeWithTag("settings-search").assertIsFocused().performTextInput("backup")
+        compose.waitForIdle()
+        capture("search-probe-cancelled", "settings-search", scroll = false)
+        assertEquals("Search must cancel the hidden check", ShortcutProbeStatus.IDLE, activity.shortcutProbe.status)
+        compose.runOnUiThread { ShortcutRuntime.dispatch(context, ShortcutRules.PALETTE, altQ) }
+        assertTrue(device.wait(Until.hasObject(By.pkg(context.packageName).text("Search for apps and commands…")), 7000))
+        assertEquals(ShortcutProbeStatus.IDLE, activity.shortcutProbe.status)
+    }
+    @Test fun disconnectReconnectBeforeRedrawCannotCompleteAnOldProbe() {
+        connected()
+        compose.onNodeWithTag("settings-shortcut-test").performScrollTo().performClick()
+        compose.waitUntil(5000) { compose.activity.shortcutProbe.status == ShortcutProbeStatus.LISTENING }
+        val connection = ShortcutRuntime.keyboardConnection
+        // Deterministic service-callback ordering, not a claim about OEM timing.
+        val ownerField = KeyboardServiceConnection::class.java.getDeclaredField("owner").apply { isAccessible = true }
+        compose.runOnUiThread {
+            val actualOwner = ownerField.get(connection)!!
+            val replacement = Any()
+            try {
+                connection.disconnect(actualOwner); connection.connect(replacement)
+                val accepted = compose.activity.receiveShortcutProbe(ShortcutRules.PALETTE, altQ)
+                assertFalse("A replacement connection must reject the old probe before recomposition", accepted)
+                assertEquals(ShortcutProbeStatus.IDLE, compose.activity.shortcutProbe.status)
+            } finally {
+                connection.disconnect(replacement); connection.connect(actualOwner)
+            }
+        }
+        compose.waitForIdle()
+    }
+    @Test fun explicitlyArmedNavigationChordsReachProbeAndRestoreNavigationAfterReceipt() {
+        connected()
+        val chords = listOf(
+            KeyChord(KeyEvent.KEYCODE_F, ShortcutRules.CTRL), KeyChord(KeyEvent.KEYCODE_F, ShortcutRules.META),
+            KeyChord(KeyEvent.KEYCODE_COMMA, ShortcutRules.CTRL), KeyChord(KeyEvent.KEYCODE_COMMA, ShortcutRules.CTRL or ShortcutRules.SHIFT),
+            KeyChord(KeyEvent.KEYCODE_COMMA, ShortcutRules.META), KeyChord(KeyEvent.KEYCODE_COMMA, ShortcutRules.META or ShortcutRules.SHIFT))
+        for (chord in chords) {
+            compose.runOnUiThread { compose.activity.store.setShortcut(ShortcutRules.PALETTE, chord) }
+            compose.waitForIdle()
+            compose.onNodeWithTag("settings-shortcut-test").performScrollTo().performClick()
+            compose.waitUntil(5000) { compose.activity.shortcutProbe.status == ShortcutProbeStatus.LISTENING }
+            val meta = (if (chord.modifiers and ShortcutRules.CTRL != 0) KeyEvent.META_CTRL_ON else KeyEvent.META_META_ON) or
+                (if (chord.modifiers and ShortcutRules.SHIFT != 0) KeyEvent.META_SHIFT_ON else 0)
+            val down = KeyEvent(0, 0, KeyEvent.ACTION_DOWN, chord.keyCode, 0, meta)
+            compose.runOnUiThread {
+                assertFalse("Armed ${chord.label()} must reach the service", ShortcutRuntime.passesSettingsNavigation(down))
+                val engine = ShortcutEngine()
+                val result = engine.handle(down.asShortcutInput(), compose.activity.store.shortcutConfiguration.byChord,
+                    paused = ShortcutRuntime.passesSettingsNavigation(down))
+                assertEquals(ShortcutRules.PALETTE, result.target)
+                ShortcutRuntime.dispatch(context, result.target!!, result.chord!!)
+                assertEquals(ShortcutProbeStatus.RECEIVED, compose.activity.shortcutProbe.status)
+                assertTrue("Normal navigation resumes after receipt", ShortcutRuntime.passesSettingsNavigation(down))
+                val up = KeyEvent(0, 0, KeyEvent.ACTION_UP, chord.keyCode, 0, 0)
+                assertTrue("Matching release stays owned even after the check completes", engine.handle(up.asShortcutInput(), emptyMap(), paused = true).consumed)
+            }
+        }
+        capture("navigation-chord-received", "settings-shortcut-test-result")
     }
     @Test fun unassignedShortcutAndPermissionFreePaletteRemainAvailable() {
         compose.activityRule.scenario.onActivity { it.store.setShortcut(ShortcutRules.PALETTE, null) }

@@ -91,7 +91,11 @@ object ShortcutRuntime {
     fun passesSettingsNavigation(event: KeyEvent): Boolean {
         val chord = event.asChord()
         val commandModifier = chord.modifiers in setOf(ShortcutRules.CTRL, ShortcutRules.META, ShortcutRules.CTRL or ShortcutRules.SHIFT, ShortcutRules.META or ShortcutRules.SHIFT)
-        if (!commandModifier) return false
+        if (!commandModifier || (event.keyCode != KeyEvent.KEYCODE_COMMA && (event.keyCode != KeyEvent.KEYCODE_F || event.isShiftPressed))) return false
+        // An explicitly armed check owns only its configured navigation chord.
+        // Normal Settings navigation regains priority immediately after receipt.
+        val workspace = settings.get()?.takeUnless { it.isFinishing || it.isDestroyed }
+        if (workspace?.isShortcutProbeArmed(chord) == true) return false
         val settingsVisible = settings.get()?.let { !it.isFinishing && !it.isDestroyed } == true
         val paletteVisible = foreground.get()?.let { !it.isFinishing && !it.isDestroyed } == true
         return (event.keyCode == KeyEvent.KEYCODE_COMMA && (settingsVisible || paletteVisible)) ||

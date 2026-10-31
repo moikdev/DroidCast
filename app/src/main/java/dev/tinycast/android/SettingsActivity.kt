@@ -29,6 +29,7 @@ class SettingsActivity : ComponentActivity() {
     val serviceEnabled get() = serviceConsent == KeyboardConsent.APPROVED
     val shortcutProbe = ShortcutProbe { android.os.SystemClock.elapsedRealtime() }
     private var probeTimeout: Job? = null
+    private var shortcutProbeVisible = false
     private var observingConsent = false
     private val consentObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
         override fun onChange(selfChange: Boolean) { refreshServiceConsent() }
@@ -154,15 +155,30 @@ class SettingsActivity : ComponentActivity() {
     fun beginShortcutProbe() {
         refreshServiceConsent()
         val chord = store.shortcutConfiguration.bindings[ShortcutRules.PALETTE]
-        if (!window.decorView.hasWindowFocus() || !ShortcutReadiness(chord, serviceConsent, ShortcutRuntime.keyboardConnection.connected).ready || store.recordingTarget != null || store.backupBusy) return
+        if (!shortcutProbeVisible || page != "general" || !window.decorView.hasWindowFocus() || !ShortcutReadiness(chord, serviceConsent, ShortcutRuntime.keyboardConnection.connected).ready || store.recordingTarget != null || store.backupBusy) return
         probeTimeout?.cancel()
-        val token = shortcutProbe.begin(chord!!)
+        val token = shortcutProbe.begin(chord!!, ShortcutRuntime.keyboardConnection.epoch)
         probeTimeout = lifecycleScope.launch { delay(15_000); shortcutProbe.expire(token) }
     }
+    internal fun shortcutProbeVisibilityChanged(visible: Boolean) {
+        shortcutProbeVisible = visible
+        if (!visible) cancelShortcutProbe()
+    }
+    internal fun isShortcutProbeArmed(chord: KeyChord): Boolean {
+        val connection = ShortcutRuntime.keyboardConnection
+        if (!shortcutProbeVisible || !window.decorView.hasWindowFocus() || page != "general" ||
+            !connection.connected || KeyboardServiceConsent.read(this) != KeyboardConsent.APPROVED) {
+            if (shortcutProbe.status == ShortcutProbeStatus.LISTENING) cancelShortcutProbe()
+            return false
+        }
+        val armed = shortcutProbe.isArmedFor(chord, store.shortcutConfiguration.bindings[ShortcutRules.PALETTE], connection.epoch)
+        if (shortcutProbe.status != ShortcutProbeStatus.LISTENING) { probeTimeout?.cancel(); probeTimeout = null }
+        return armed
+    }
     internal fun receiveShortcutProbe(target: String, chord: KeyChord): Boolean {
-        if (!window.decorView.hasWindowFocus() || page != "general" || !ShortcutRuntime.keyboardConnection.connected || KeyboardServiceConsent.read(this) != KeyboardConsent.APPROVED) return false
-        val accepted = shortcutProbe.receive(target, chord, store.shortcutConfiguration.bindings[ShortcutRules.PALETTE])
-        if (accepted) probeTimeout?.cancel()
+        if (target != ShortcutRules.PALETTE || !isShortcutProbeArmed(chord)) return false
+        val accepted = shortcutProbe.receive(target, chord, store.shortcutConfiguration.bindings[ShortcutRules.PALETTE], ShortcutRuntime.keyboardConnection.epoch)
+        if (accepted) { probeTimeout?.cancel(); probeTimeout = null }
         return accepted
     }
     fun cancelShortcutProbe() { probeTimeout?.cancel(); probeTimeout = null; shortcutProbe.cancel() }
