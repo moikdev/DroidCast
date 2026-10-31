@@ -30,6 +30,7 @@ class KeyboardServiceConnection {
     internal fun disconnect(token: Any) {
         if (owner === token) { owner = null; epoch++; connected = false }
     }
+    internal fun isOwner(token: Any) = owner === token && connected
 }
 
 data class ShortcutReadiness(val chord: KeyChord?, val consent: KeyboardConsent, val connected: Boolean) {

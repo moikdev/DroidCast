@@ -17,23 +17,32 @@ object ShortcutCodec {
     private fun keys(value: JSONObject, expected: Set<String>) = require(value.keys().asSequence().toSet() == expected) { "Invalid keyboard shortcut fields" }
     fun decode(value: JSONObject): ShortcutConfiguration {
         keys(value, setOf("version", "bindings"))
-        require(value.get("version") is Int && value.getInt("version") == 1) { "Unsupported keyboard shortcut version" }
+        require(value.get("version") is Int && value.getInt("version") in 1..2) { "Unsupported keyboard shortcut version" }
+        val version = value.getInt("version")
         val entries = value.getJSONObject("bindings")
         require(entries.length() <= ShortcutRules.MAX_BINDINGS) { "Too many keyboard shortcuts" }
         val configuration = ShortcutConfiguration(entries.keys().asSequence().associateWith { id ->
             val chord = entries.getJSONObject(id)
-            keys(chord, setOf("keyCode", "modifiers"))
+            keys(chord, if (version == 1) setOf("keyCode", "modifiers") else setOf("keyCode", "modifiers", "trigger", "side"))
             require(chord.get("keyCode") is Int && chord.get("modifiers") is Int) { "Invalid keyboard shortcut" }
-            KeyChord(chord.getInt("keyCode"), chord.getInt("modifiers"))
+            if (version == 1) KeyChord(chord.getInt("keyCode"), chord.getInt("modifiers")) else {
+                require(chord.get("trigger") is String && chord.get("side") is String) { "Invalid modifier shortcut" }
+                KeyChord(chord.getInt("keyCode"), chord.getInt("modifiers"), ShortcutTrigger.valueOf(chord.getString("trigger")), ModifierSide.valueOf(chord.getString("side")))
+            }
         })
         ShortcutRules.validate(configuration)
         return configuration
     }
     fun encode(configuration: ShortcutConfiguration): JSONObject {
         ShortcutRules.validate(configuration)
+        val version = if (configuration.bindings.values.any { it.trigger != ShortcutTrigger.CHORD }) 2 else 1
         val entries = JSONObject()
-        configuration.bindings.toSortedMap().forEach { (id, chord) -> entries.put(id, JSONObject().put("keyCode", chord.keyCode).put("modifiers", chord.modifiers)) }
-        return JSONObject().put("version", 1).put("bindings", entries)
+        configuration.bindings.toSortedMap().forEach { (id, chord) ->
+            val item = JSONObject().put("keyCode", chord.keyCode).put("modifiers", chord.modifiers)
+            if (version == 2) item.put("trigger", chord.trigger.name).put("side", chord.side.name)
+            entries.put(id, item)
+        }
+        return JSONObject().put("version", version).put("bindings", entries)
     }
     fun load(text: String?): Pair<ShortcutConfiguration, String?> {
         if (text == null) return ShortcutConfiguration() to null
@@ -47,12 +56,20 @@ fun KeyEvent.asChord(): KeyChord {
         (if (normalized and KeyEvent.META_ALT_ON != 0) ShortcutRules.ALT else 0) or (if (normalized and KeyEvent.META_SHIFT_ON != 0) ShortcutRules.SHIFT else 0) or
         (if (normalized and KeyEvent.META_META_ON != 0) ShortcutRules.META else 0))
 }
-fun KeyEvent.asShortcutInput() = ShortcutEngine.Input(action == KeyEvent.ACTION_DOWN, keyCode, asChord().modifiers, repeatCount, deviceId)
+fun KeyEvent.asShortcutInput() = ShortcutEngine.Input(action == KeyEvent.ACTION_DOWN, keyCode, asChord().modifiers, repeatCount, deviceId,
+    eventTime, downTime, android.os.SystemClock.uptimeMillis(), isCanceled)
 fun KeyChord.nativeModifiers() = (if (modifiers and ShortcutRules.CTRL != 0) KeyEvent.META_CTRL_ON else 0) or
     (if (modifiers and ShortcutRules.ALT != 0) KeyEvent.META_ALT_ON else 0) or (if (modifiers and ShortcutRules.SHIFT != 0) KeyEvent.META_SHIFT_ON else 0) or
     (if (modifiers and ShortcutRules.META != 0) KeyEvent.META_META_ON else 0)
 
 fun KeyChord.label(deviceId: Int? = null): String {
+    if (trigger == ShortcutTrigger.DOUBLE_TAP) {
+        val modifier = when (ShortcutRules.modifierFamily(keyCode)) {
+            ShortcutRules.CTRL -> "Ctrl"; ShortcutRules.ALT -> "Alt"; ShortcutRules.SHIFT -> "Shift"; ShortcutRules.META -> "Meta"
+            else -> "Unsupported modifier"
+        }
+        return "Double " + when (side) { ModifierSide.ANY -> ""; ModifierSide.LEFT -> "Left "; ModifierSide.RIGHT -> "Right " } + modifier
+    }
     val special = mapOf(KeyEvent.KEYCODE_SPACE to "Space", KeyEvent.KEYCODE_TAB to "Tab", KeyEvent.KEYCODE_ENTER to "Enter", KeyEvent.KEYCODE_NUMPAD_ENTER to "Keypad Enter",
         KeyEvent.KEYCODE_DEL to "Backspace", KeyEvent.KEYCODE_FORWARD_DEL to "Delete", KeyEvent.KEYCODE_MOVE_HOME to "Home", KeyEvent.KEYCODE_MOVE_END to "End",
         KeyEvent.KEYCODE_PAGE_UP to "Page Up", KeyEvent.KEYCODE_PAGE_DOWN to "Page Down", KeyEvent.KEYCODE_DPAD_UP to "↑", KeyEvent.KEYCODE_DPAD_DOWN to "↓",
@@ -68,7 +85,11 @@ object ShortcutRuntime {
     const val ACTION = "dev.droidcast.RUN_SHORTCUT"
     const val TOKEN = "dev.droidcast.shortcut_token"
     val requests = ShortcutInvocationQueue { android.os.SystemClock.elapsedRealtime() }
+    @Volatile var recordingEpoch = 0L; private set
     @Volatile var recordingOwner: Any? = null
+        set(value) {
+            if (field !== value) { recordingEpoch++; field = value }
+        }
     val keyboardConnection = KeyboardServiceConnection()
     private var foreground = WeakReference<MainActivity>(null)
     private var settings = WeakReference<SettingsActivity>(null)
@@ -115,10 +136,14 @@ object ShortcutRuntime {
 
 class PaletteShortcutService : AccessibilityService(), InputManager.InputDeviceListener {
     private val engine = ShortcutEngine()
+    private val modifierShortcuts = ModifierShortcutObserver()
     private val connectionOwner = Any()
     private val preferences by lazy { getSharedPreferences("palette", Context.MODE_PRIVATE) }
     private var configuration = ShortcutConfiguration()
-    private val changed = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key -> if (key == null || key == "shortcuts") configuration = ShortcutCodec.load(prefs.getString("shortcuts", null)).first }
+    private val changed = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key -> if (key == null || key == "shortcuts") {
+        modifierShortcuts.clear()
+        configuration = ShortcutCodec.load(prefs.getString("shortcuts", null)).first
+    } }
     override fun onCreate() {
         super.onCreate()
         configuration = ShortcutCodec.load(preferences.getString("shortcuts", null)).first
@@ -126,28 +151,37 @@ class PaletteShortcutService : AccessibilityService(), InputManager.InputDeviceL
         getSystemService(InputManager::class.java).registerInputDeviceListener(this, null)
     }
     override fun onServiceConnected() {
+        modifierShortcuts.clear()
         configuration = ShortcutCodec.load(preferences.getString("shortcuts", null)).first
         ShortcutRuntime.keyboardConnection.connect(connectionOwner)
     }
     override fun onUnbind(intent: Intent?): Boolean {
-        ShortcutRuntime.keyboardConnection.disconnect(connectionOwner); engine.clear()
+        ShortcutRuntime.keyboardConnection.disconnect(connectionOwner); engine.clear(); modifierShortcuts.clear()
         return super.onUnbind(intent)
     }
-    override fun onAccessibilityEvent(event: AccessibilityEvent?) = Unit
-    override fun onInterrupt() = Unit
+    override fun onAccessibilityEvent(event: AccessibilityEvent?) {
+        // Only type, window class and event time are used; never text or content.
+        if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) modifierShortcuts.windowChanged(event.className, event.eventTime)
+    }
+    override fun onInterrupt() { modifierShortcuts.clear() }
     override fun onKeyEvent(event: KeyEvent): Boolean {
         if (event.action !in listOf(KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP)) return false
-        val result = engine.handle(event.asShortcutInput(), configuration.byChord, ShortcutRuntime.recordingOwner != null || ShortcutRuntime.passesSettingsNavigation(event))
+        val input = event.asShortcutInput()
+        val connection = ShortcutRuntime.keyboardConnection
+        val tap = modifierShortcuts.handle(input, configuration.byChord,
+            connection.isOwner(connectionOwner) && ShortcutRuntime.recordingOwner == null, connection.epoch, ShortcutRuntime.recordingEpoch)
+        tap?.let { (target, binding) -> ShortcutRuntime.dispatch(this, target, binding) }
+        val result = engine.handle(input, configuration.byChord, ShortcutRuntime.recordingOwner != null || ShortcutRuntime.passesSettingsNavigation(event))
         if (result.target != null) ShortcutRuntime.dispatch(this, result.target, result.chord!!)
         return result.consumed
     }
     override fun onInputDeviceAdded(deviceId: Int) = Unit
-    override fun onInputDeviceChanged(deviceId: Int) = Unit
-    override fun onInputDeviceRemoved(deviceId: Int) { engine.clearDevice(deviceId) }
+    override fun onInputDeviceChanged(deviceId: Int) { modifierShortcuts.clear() }
+    override fun onInputDeviceRemoved(deviceId: Int) { engine.clearDevice(deviceId); modifierShortcuts.clear() }
     override fun onDestroy() {
         ShortcutRuntime.keyboardConnection.disconnect(connectionOwner)
         preferences.unregisterOnSharedPreferenceChangeListener(changed)
         getSystemService(InputManager::class.java).unregisterInputDeviceListener(this)
-        engine.clear(); super.onDestroy()
+        engine.clear(); modifierShortcuts.clear(); super.onDestroy()
     }
 }

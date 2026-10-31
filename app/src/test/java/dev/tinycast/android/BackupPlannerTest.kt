@@ -91,4 +91,20 @@ class BackupPlannerTest {
         val incoming = BackupData(notes = listOf(note, note.copy(id = "notes:copy")), shortcuts = ShortcutConfiguration(mapOf(note.id to KeyChord(KeyEvent.KEYCODE_T, ShortcutRules.CTRL or ShortcutRules.ALT), "notes:copy" to KeyChord(KeyEvent.KEYCODE_Y, ShortcutRules.CTRL or ShortcutRules.ALT))))
         assertThrows(IllegalArgumentException::class.java) { plan(BackupData(), incoming) }
     }
+    @Test fun preservedDocumentModifierSidesBlockOverlapsButAllowDistinctSides() {
+        val left = ShortcutRules.doubleTap(ShortcutRules.CTRL, ModifierSide.LEFT)
+        val right = left.copy(side = ModifierSide.RIGHT)
+        val either = left.copy(side = ModifierSide.ANY)
+        for (policy in RestorePolicy.entries) {
+            for (incoming in listOf(left, either)) {
+                val document = BackupDocument(BackupData(shortcuts = ShortcutConfiguration(mapOf("calculator" to incoming))), setOf(BackupCategory.SHORTCUTS))
+                assertThrows(IllegalArgumentException::class.java) {
+                    BackupPlanner.plan(BackupData(), document, document.categories, policy, emptyMap(), mapOf("files:local" to left))
+                }
+            }
+            val document = BackupDocument(BackupData(shortcuts = ShortcutConfiguration(mapOf("calculator" to right))), setOf(BackupCategory.SHORTCUTS))
+            assertEquals(right, BackupPlanner.plan(BackupData(), document, document.categories, policy, emptyMap(), mapOf("files:local" to left)).data.shortcuts.bindings["calculator"])
+        }
+    }
+
 }

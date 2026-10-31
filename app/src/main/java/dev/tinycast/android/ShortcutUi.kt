@@ -23,6 +23,7 @@ internal fun ShortcutDialogs(store: PaletteStore, enabled: Boolean, enable: () -
             Shell("Record a shortcut", store.shortcutTitle(target), { store.cancelShortcutRecording() }, Modifier.onPreviewKeyEvent { composeEvent ->
                 val event = composeEvent.nativeKeyEvent
                 val key = event.deviceId to event.keyCode
+                if (event.action in listOf(KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP)) store.observeRecordingKey(event.asShortcutInput())
                 when {
                     event.action == KeyEvent.ACTION_UP -> captured.remove(key)
                     event.action != KeyEvent.ACTION_DOWN -> false
@@ -37,9 +38,20 @@ internal fun ShortcutDialogs(store: PaletteStore, enabled: Boolean, enable: () -
                 }
             }, embedded = embedded) {
                 Surface(border = BorderStroke(1.dp, PaletteTheme.border), modifier = Modifier.fillMaxWidth().testTag("shortcut-candidate")) {
-                    Text(store.recordingCandidate?.label() ?: "Press a shortcut…", fontSize = if (embedded) 18.sp else 21.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(if (embedded) 14.dp else 20.dp))
+                    Text(store.recordingCandidate?.label() ?: store.recordingTap?.label() ?: "Press a shortcut…", fontSize = if (embedded) 18.sp else 21.sp, fontWeight = FontWeight.Medium, modifier = Modifier.padding(if (embedded) 14.dp else 20.dp))
                 }
-                Text(if (embedded) "Use Ctrl, Alt or Meta with a key, or F1–F12. Tab moves focus; Escape cancels." else "Use Ctrl, Alt or Meta with a key, or F1–F12. Known Android and palette conflicts are rejected. Tab / Shift+Tab move between controls; Escape cancels.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 14.dp))
+                Text("Use Ctrl, Alt or Meta with a key, F1–F12, or quickly tap the same Ctrl, Alt, Shift or Meta key twice. Release between taps; holding or using another key cancels a tap sequence. Tab / Shift+Tab move focus; Escape cancels.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 14.dp).testTag("shortcut-record-help"))
+                store.recordingTap?.let { tap ->
+                    Text("MODIFIER SIDE", color = PaletteTheme.secondary, fontSize = 10.sp, modifier = Modifier.padding(top = 12.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        ModifierSide.entries.forEach { side ->
+                            FilterChip(selected = tap.side == side, onClick = { store.setRecordingModifierSide(side) },
+                                colors = FilterChipDefaults.filterChipColors(selectedContainerColor = PaletteTheme.control, selectedLabelColor = PaletteTheme.ink),
+                                label = { Text(when (side) { ModifierSide.ANY -> "Either"; ModifierSide.LEFT -> "Left"; ModifierSide.RIGHT -> "Right" }, fontSize = 12.sp) },
+                                modifier = Modifier.testTag("shortcut-side-${side.name}"))
+                        }
+                    }
+                }
                 Text("Global shortcuts are paused until you save or cancel.", fontSize = 11.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 10.dp))
                 store.recordingError?.let { Text(it, color = MaterialTheme.colorScheme.error, fontSize = 12.sp, modifier = Modifier.padding(top = 14.dp).testTag("shortcut-record-error")) }
                 Row(Modifier.fillMaxWidth().padding(top = 20.dp), horizontalArrangement = Arrangement.End) {
