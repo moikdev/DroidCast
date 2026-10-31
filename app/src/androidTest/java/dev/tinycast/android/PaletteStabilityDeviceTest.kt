@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.By
 import org.junit.Assert.*
 import org.junit.After
 import org.junit.Before
@@ -33,18 +34,40 @@ class PaletteStabilityDeviceTest {
     @After fun hideKeyboard() { keyboard(false) }
     private fun bounds(tag: String): Rect = compose.onNodeWithTag(tag).fetchSemanticsNode().boundsInWindow
     private fun keyboard(show: Boolean) {
+        if (show && compose.activity.resources.configuration.screenWidthDp >= 700) compose.onNodeWithContentDescription("Show on-screen keyboard").performClick()
         compose.activityRule.scenario.onActivity {
             val controller = WindowCompat.getInsetsController(it.window, it.window.decorView)
             if (show) controller.show(WindowInsetsCompat.Type.ime()) else controller.hide(WindowInsetsCompat.Type.ime())
         }
+        if (show) expandGboardToolbar()
         compose.waitUntil(10000) {
-            ViewCompat.getRootWindowInsets(compose.activity.window.decorView)?.isVisible(WindowInsetsCompat.Type.ime()) == show
+            val insets = ViewCompat.getRootWindowInsets(compose.activity.window.decorView)
+            insets?.isVisible(WindowInsetsCompat.Type.ime()) == show && (!show || insets.getInsets(WindowInsetsCompat.Type.ime()).bottom > device.displayHeight / 4)
         }
         device.waitForIdle(); compose.waitForIdle()
     }
-    private fun capture(name: String) {
-        val dir = File(compose.activity.filesDir, "rigid-palette-evidence").apply { mkdirs() }
+    private fun expandGboardToolbar() {
         device.waitForIdle()
+        // Android 16/Gboard can acknowledge show() with its hardware-keyboard
+        // toolbar. Use its real user-facing control before testing docked bounds.
+        device.findObject(By.pkg("com.google.android.inputmethod.latin").desc("Show on-screen keyboard"))?.click()
+    }
+    private fun imeReplace(text: String, emoji: Boolean = false) {
+        compose.activityRule.scenario.onActivity {
+            val connection = it.window.decorView.findFocus()?.onCreateInputConnection(android.view.inputmethod.EditorInfo())
+            assertNotNull("Focused Android input connection", connection)
+            assertTrue(connection!!.beginBatchEdit())
+            assertTrue(connection.setSelection(0, if (emoji) it.store.emoji.query.length else it.store.query.length))
+            assertTrue(connection.commitText(text, 1))
+            connection.endBatchEdit()
+        }
+        compose.waitForIdle()
+        val insets = ViewCompat.getRootWindowInsets(compose.activity.window.decorView)!!
+        assertTrue("Docked IME must stay visible while typing", insets.isVisible(WindowInsetsCompat.Type.ime()) && insets.getInsets(WindowInsetsCompat.Type.ime()).bottom > device.displayHeight / 4)
+    }
+    private fun capture(name: String, settle: Boolean = true) {
+        val dir = File(compose.activity.filesDir, "rigid-palette-evidence").apply { mkdirs() }
+        if (settle) device.waitForIdle()
         assertTrue(device.takeScreenshot(File(dir, "$name.png")))
     }
     private fun assertOrigin(expected: Rect, tag: String) {
@@ -59,20 +82,36 @@ class PaletteStabilityDeviceTest {
     @Test fun searchOriginStaysFixedAcrossKeyboardAndTyping() {
         val origin = bounds("search")
         capture("search-keyboard-hidden")
+        if (compose.activity.resources.configuration.screenWidthDp >= 700) compose.onNodeWithContentDescription("Show on-screen keyboard").performClick()
         keyboard(true)
         capture("search-keyboard-shown")
         assertOrigin(origin, "search")
         for (text in listOf("s", "se", "set", "settings", "setting", "set", "xzz-no-command", "", "12*7", "")) {
-            compose.onNodeWithTag("search").performTextReplacement(text)
-            compose.waitForIdle()
+            imeReplace(text)
             assertOrigin(origin, "search")
             val first = compose.activity.store.results().firstOrNull()
             first?.let { compose.onNodeWithTag("result-${it.id}").assertIsSelected().assertIsDisplayed() }
         }
-        compose.onNodeWithTag("search").performTextReplacement("12*7")
+        imeReplace("12*7")
         compose.onNodeWithTag("result-result").assertTextContains("84")
         assertOrigin(origin, "search")
         capture("search-typing-settled")
+        compose.activityRule.scenario.onActivity {
+            // Exercise the real command executor without an IME editor action
+            // that is allowed to dismiss its own keyboard.
+            it.execute(it.store.results().first())
+        }
+        compose.waitForIdle()
+        device.findObject(By.res("com.android.systemui", "dismiss_button"))?.click()
+        expandGboardToolbar()
+        compose.waitUntil(5000) { ViewCompat.getRootWindowInsets(compose.activity.window.decorView)!!.getInsets(WindowInsetsCompat.Type.ime()).bottom > device.displayHeight / 4 }
+        assertTrue("Keyboard must remain visible while checking copy feedback", ViewCompat.getRootWindowInsets(compose.activity.window.decorView)!!.isVisible(WindowInsetsCompat.Type.ime()))
+        compose.onNodeWithText("Copied to clipboard").assertIsDisplayed()
+        val feedback = compose.onNodeWithText("Copied to clipboard").fetchSemanticsNode().boundsInWindow
+        val imeBottom = ViewCompat.getRootWindowInsets(compose.activity.window.decorView)!!.getInsets(WindowInsetsCompat.Type.ime()).bottom
+        assertTrue("Copy feedback requires a docked IME, not a zero-inset toolbar", imeBottom > device.displayHeight / 4)
+        assertTrue("Copy feedback must remain above the IME", feedback.bottom <= device.displayHeight - imeBottom)
+        capture("copy-feedback", settle = false)
         keyboard(false)
         assertOrigin(origin, "search")
     }
@@ -102,8 +141,8 @@ class PaletteStabilityDeviceTest {
         capture("emoji-keyboard-shown")
         assertOrigin(origin, "emoji-search")
         for (text in listOf("f", "fa", "face", "zzz-no-emoji", "", "thumb")) {
-            compose.onNodeWithTag("emoji-search").performTextReplacement(text)
-            compose.waitForIdle(); assertOrigin(origin, "emoji-search")
+            imeReplace(text, emoji = true)
+            assertOrigin(origin, "emoji-search")
         }
         capture("emoji-typing-settled")
         keyboard(false); assertOrigin(origin, "emoji-search")

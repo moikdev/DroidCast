@@ -1,4 +1,4 @@
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class)
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class, androidx.compose.foundation.ExperimentalFoundationApi::class, androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
 
 package dev.tinycast.android
 
@@ -26,10 +26,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.*
@@ -40,7 +43,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
-import kotlinx.coroutines.delay
 
 private val categories = listOf("All", "Pinned", "Apps", "Notes", "Quicklinks", "Clips", "Files", "Extensions")
 
@@ -62,6 +64,10 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
         val displayedSearch = if (searchValue.text == store.query) searchValue else TextFieldValue(store.query, TextRange(store.query.length))
         SideEffect { if (searchValue != displayedSearch) searchValue = displayedSearch }
         val keyboard = LocalSoftwareKeyboardController.current
+        val view = LocalView.current
+        val windowFocused = LocalWindowInfo.current.isWindowFocused
+        var searchFocused by remember { mutableStateOf(false) }
+        var keyboardRequested by remember { mutableStateOf(false) }
         val list = rememberLazyListState()
         val results by remember(store) { derivedStateOf { store.results() } }
         val resultSelected = results.getOrNull(store.selected.coerceIn(0, (results.size - 1).coerceAtLeast(0)))
@@ -95,7 +101,7 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
             else if (event.keyCode == KeyEvent.KEYCODE_ESCAPE) { escape(); true }
             else if (store.dialog != null) false
             else when {
-                ctrl && event.keyCode == KeyEvent.KEYCODE_L -> { focus.requestFocus(); keyboard?.show(); true }
+                ctrl && event.keyCode == KeyEvent.KEYCODE_L -> { keyboardRequested = true; focus.requestFocus(); keyboard?.show(); true }
                 ctrl && event.keyCode == KeyEvent.KEYCODE_K -> { if(selected != null) { store.actionCommand = selected; store.dialog = "actions" }; true }
                 ctrl && event.keyCode == KeyEvent.KEYCODE_N -> { store.editing = null; store.dialog = "note"; true }
                 ctrl && event.keyCode == KeyEvent.KEYCODE_D -> { selected?.takeUnless { it.id in listOf("result", "web") }?.let { store.togglePin(it.id) }; true }
@@ -121,7 +127,15 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
         }
         LaunchedEffect(store.message) { store.message?.let { snack.showSnackbar(it, duration=SnackbarDuration.Short); if (store.message == it) store.message=null } }
         PaletteViewport(Modifier.onPreviewKeyEvent { handleKey(it.nativeKeyEvent) }) { wide, top, paletteHeight ->
-            LaunchedEffect(store.focusEpoch) { focus.requestFocus(); if(wide) { delay(150); keyboard?.hide() } }
+            LaunchedEffect(store.focusEpoch) { focus.requestFocus() }
+            val imeVisible = WindowInsets.isImeVisible
+            LaunchedEffect(wide, imeVisible, keyboardRequested, windowFocused, searchFocused) {
+                if (wide && !keyboardRequested && windowFocused && searchFocused) {
+                    withFrameNanos { }
+                    keyboard?.hide()
+                    androidx.core.view.ViewCompat.getWindowInsetsController(view)?.hide(androidx.core.view.WindowInsetsCompat.Type.ime())
+                }
+            }
             Box(Modifier.fillMaxSize().clickable(indication=null, interactionSource=remember { MutableInteractionSource() }) { if(store.dialog==null) dismiss() }.testTag("palette-backdrop"))
             Column(Modifier.padding(top=top).padding(horizontal=12.dp).widthIn(max=PaletteTheme.width).fillMaxWidth().height(paletteHeight).align(Alignment.TopCenter)
                 .shadow(24.dp,RoundedCornerShape(PaletteTheme.radius))
@@ -131,11 +145,11 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
                 .clickable(indication=null, interactionSource=remember { MutableInteractionSource() }) {}.testTag("palette")) {
                 Row(Modifier.fillMaxWidth().height(PaletteTheme.header).padding(horizontal=16.dp),verticalAlignment=Alignment.CenterVertically) {
                     Glyph("search",PaletteTheme.secondary,22);Spacer(Modifier.width(12.dp))
-                    BasicTextField(value=displayedSearch,onValueChange={ searchValue = it; if (it.text != store.query) store.search(it.text) },modifier=Modifier.weight(1f).height(32.dp).focusRequester(focus).testTag("search"),
+                    BasicTextField(value=displayedSearch,onValueChange={ searchValue = it; if (it.text != store.query) store.search(it.text) },modifier=Modifier.weight(1f).height(32.dp).focusRequester(focus).onFocusChanged { searchFocused = it.isFocused }.testTag("search"),
                         textStyle=TextStyle(color=PaletteTheme.ink,fontSize=20.sp,lineHeight=26.sp),singleLine=true,cursorBrush=SolidColor(PaletteTheme.accent),
-                        keyboardOptions=KeyboardOptions(imeAction=ImeAction.Search,showKeyboardOnFocus=!wide),keyboardActions=KeyboardActions(onSearch={selected?.let(run)}),
+                        keyboardOptions=KeyboardOptions(imeAction=ImeAction.Search,showKeyboardOnFocus=!wide || keyboardRequested),keyboardActions=KeyboardActions(onSearch={selected?.let(run)}),
                         decorationBox={inner -> Box(Modifier.fillMaxSize(),contentAlignment=Alignment.CenterStart){if(store.query.isEmpty())Text("Search for apps and commands…",color=PaletteTheme.secondary,fontSize=20.sp,lineHeight=26.sp,maxLines=1,overflow=TextOverflow.Ellipsis);inner()}})
-                    if(wide) IconButton(onClick={focus.requestFocus();keyboard?.show()},modifier=Modifier.size(36.dp).semantics{contentDescription="Show on-screen keyboard"}){Glyph("keyboard",PaletteTheme.tertiary,16)}
+                    if(wide) IconButton(onClick={keyboardRequested=true;focus.requestFocus();keyboard?.show()},modifier=Modifier.size(36.dp).semantics{contentDescription="Show on-screen keyboard"}){Glyph("keyboard",PaletteTheme.tertiary,16)}
                 }
                 if (store.category == "Files") FileSearchToolbar(store, run)
                 LaunchedEffect(store.folderSearch.includeInLauncher) { store.syncFileSearch() }
@@ -181,7 +195,7 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
                     }
                 }
             }
-            SnackbarHost(snack,modifier=Modifier.align(Alignment.BottomCenter).padding(20.dp))
+            SnackbarHost(snack,modifier=Modifier.align(Alignment.BottomCenter).windowInsetsPadding(WindowInsets.imeAnimationTarget).padding(20.dp))
         }
         if(store.dialog!="actions") PaletteDialogs(store,selected,globalEnabled,enableGlobal,run,copy,::close)
       }

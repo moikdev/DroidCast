@@ -46,6 +46,7 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
     var gridFocused by remember { mutableStateOf(false) }
     var menu by remember { mutableStateOf(false) }
     var keyboardRequested by remember { mutableStateOf(false) }
+    var queryEditing by remember { mutableStateOf(false) }
     var copiedName by remember { mutableStateOf<String?>(null) }
     // Pair a claimed favorite chord with its physical key sequence, independent
     // of later modifier release or the selection changing after an unpin.
@@ -77,7 +78,7 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
         if (event.repeatCount == 0) selected?.let(::pin)
         return true
     }
-    fun back() { if (menu) menu = false else if (store.query.isNotEmpty()) store.search("") else close() }
+    fun back() { if (menu) menu = false else if (queryEditing) queryEditing = false else if (store.query.isNotEmpty()) store.search("") else close() }
     BackHandler(onBack = ::back)
     PaletteViewport { wide, top, height ->
         val columns = ((minOf(maxWidth - 24.dp, PaletteTheme.width).value - 24) / 64).toInt().coerceIn(3, 10)
@@ -102,6 +103,25 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
             val visible = item != null && item.offset.y >= layout.viewportStartOffset && item.offset.y + item.size.height <= layout.viewportEndOffset
             if (scrollHistory.update(store.query, store.filter, resultIds, index, visible)) grid.requestScrollToItem(index)
         }
+        fun navigate(event: KeyEvent): Boolean {
+            val plain = !event.isCtrlPressed && !event.isMetaPressed && !event.isAltPressed && !event.isShiftPressed
+            val navigation = event.keyCode in setOf(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT,
+                KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_MOVE_HOME, KeyEvent.KEYCODE_MOVE_END)
+            if (!plain || !navigation || !(searchFocused || gridFocused) || displayedSearch.composition != null) return false
+            if (queryEditing && searchFocused && event.keyCode !in setOf(KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN)) return false
+            if (event.action == KeyEvent.ACTION_DOWN) {
+                queryEditing = false
+                if (results.isNotEmpty()) store.selected = when (event.keyCode) {
+                    KeyEvent.KEYCODE_DPAD_LEFT -> (store.selected - 1).coerceAtLeast(0)
+                    KeyEvent.KEYCODE_DPAD_RIGHT -> (store.selected + 1).coerceAtMost(results.lastIndex)
+                    KeyEvent.KEYCODE_DPAD_UP -> (store.selected - columns).coerceAtLeast(0)
+                    KeyEvent.KEYCODE_DPAD_DOWN -> (store.selected + columns).coerceAtMost(results.lastIndex)
+                    KeyEvent.KEYCODE_MOVE_HOME -> 0
+                    else -> results.lastIndex
+                }
+            }
+            return event.action == KeyEvent.ACTION_DOWN || event.action == KeyEvent.ACTION_UP
+        }
         Box(Modifier.fillMaxSize().clickable(indication = null, interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }) { close() }.testTag("emoji-backdrop"))
         Column(Modifier.padding(top = top).padding(horizontal = 12.dp).widthIn(max = PaletteTheme.width).fillMaxWidth().height(height).align(Alignment.TopCenter)
             .shadow(24.dp, RoundedCornerShape(PaletteTheme.radius)).clip(RoundedCornerShape(PaletteTheme.radius))
@@ -112,8 +132,13 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
             // that activation path leaves active composition alone.
             .onPreInterceptKeyBeforeSoftKeyboard { key ->
                 val e = key.nativeKeyEvent
+                // Modified text-navigation keys explicitly enter caret editing,
+                // even when the IME handles the event before Compose receives it.
+                if (e.action == KeyEvent.ACTION_DOWN && searchFocused && (e.isShiftPressed || e.isCtrlPressed || e.isMetaPressed || e.isAltPressed) &&
+                    e.keyCode in setOf(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_MOVE_HOME, KeyEvent.KEYCODE_MOVE_END)) queryEditing = true
                 // Once claimed, repeats must not become IME text when Ctrl/Meta is released first.
                 if (handleFavoriteChord(e)) true
+                else if (navigate(e)) true
                 else if (searchFocused && displayedSearch.composition == null && e.keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER &&
                     !e.isAltPressed && !e.isShiftPressed && !(e.isCtrlPressed && e.isMetaPressed)) {
                     if (e.action == KeyEvent.ACTION_DOWN && e.repeatCount == 0) selected?.let(::copyEntry)
@@ -128,20 +153,10 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
                 else if (e.action != KeyEvent.ACTION_DOWN) false
                 else when {
                     e.keyCode == KeyEvent.KEYCODE_ESCAPE -> { back(); true }
-                    ctrl && e.keyCode == KeyEvent.KEYCODE_L -> { searchFocus.requestFocus(); true }
-                    plain && (searchFocused || gridFocused) && e.keyCode in setOf(KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_MOVE_HOME, KeyEvent.KEYCODE_MOVE_END) -> {
-                        if (results.isNotEmpty()) store.selected = when (e.keyCode) {
-                            KeyEvent.KEYCODE_DPAD_DOWN -> (store.selected + columns).coerceAtMost(results.lastIndex)
-                            KeyEvent.KEYCODE_DPAD_UP -> (store.selected - columns).coerceAtLeast(0)
-                            KeyEvent.KEYCODE_MOVE_HOME -> if (gridFocused) 0 else store.selected
-                            else -> if (gridFocused) results.lastIndex else store.selected
-                        }
-                        e.keyCode !in setOf(KeyEvent.KEYCODE_MOVE_HOME, KeyEvent.KEYCODE_MOVE_END) || gridFocused
-                    }
-                    plain && gridFocused && e.keyCode in setOf(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT) -> {
-                        store.selected = (store.selected + if (e.keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) 1 else -1).coerceIn(0, (results.size - 1).coerceAtLeast(0)); true
-                    }
-                    (plain || ctrl) && (searchFocused || gridFocused) && e.keyCode in setOf(KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER, KeyEvent.KEYCODE_DPAD_CENTER) -> { selected?.let(::copyEntry); true }
+                    ctrl && e.keyCode == KeyEvent.KEYCODE_L -> { queryEditing = true; searchFocus.requestFocus(); true }
+                    navigate(e) -> true
+                    searchFocused && (e.isShiftPressed || ctrl) && e.keyCode in setOf(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_MOVE_HOME, KeyEvent.KEYCODE_MOVE_END) -> { queryEditing = true; false }
+                    (plain || ctrl) && (searchFocused || gridFocused) && displayedSearch.composition == null && e.keyCode in setOf(KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER, KeyEvent.KEYCODE_DPAD_CENTER) -> { selected?.let(::copyEntry); true }
                     else -> false
                 }
             }.semantics { testTagsAsResourceId = true }.testTag("emoji-palette")) {
@@ -152,7 +167,7 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
                     TextButton(onClick = { menu = true }, modifier = Modifier.testTag("emoji-filter")) { Text(store.filter, maxLines = 1, fontSize = 12.sp); Text(" ▾") }
                     DropdownMenu(expanded = menu, onDismissRequest = { menu = false }, containerColor = PaletteTheme.surface) {
                         (listOf("All", "Favorites", "Recent") + store.entries.map { it.category }.distinct()).forEach { category ->
-                            DropdownMenuItem(text = { Text(category, fontSize = 13.sp) }, onClick = { store.chooseFilter(category); copiedName = null; menu = false }, modifier = Modifier.testTag("emoji-filter-$category"))
+                            DropdownMenuItem(text = { Text(category, fontSize = 13.sp) }, onClick = { store.chooseFilter(category); copiedName = null; queryEditing = false; menu = false }, modifier = Modifier.testTag("emoji-filter-$category"))
                         }
                     }
                 }
@@ -165,7 +180,7 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
                 }, singleLine = true,
                     modifier = Modifier.weight(1f).height(30.dp).focusRequester(searchFocus).onFocusChanged { searchFocused = it.isFocused }.testTag("emoji-search"),
                     textStyle = TextStyle(color = PaletteTheme.ink, fontSize = 17.sp, lineHeight = 24.sp), cursorBrush = SolidColor(PaletteTheme.accent),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search, showKeyboardOnFocus = !wide),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search, showKeyboardOnFocus = !wide || keyboardRequested),
                     keyboardActions = KeyboardActions(onSearch = { selected?.let(::copyEntry) }),
                     decorationBox = { inner -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
                         if (store.query.isEmpty()) Text("Search emoji and symbols…", color = PaletteTheme.secondary, fontSize = 17.sp, maxLines = 1); inner()
@@ -177,7 +192,7 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
             HorizontalDivider(color = PaletteTheme.separator)
             Row(Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 7.dp), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("${results.size} ${if (results.size == 1) "result" else "results"} · offline", color = PaletteTheme.secondary, fontSize = 11.sp, modifier = Modifier.testTag("emoji-count"))
-                if (wide) Text("↑ ↓ navigate · Ctrl D favorite", color = PaletteTheme.secondary, fontSize = 11.sp)
+                if (wide) Text(if (queryEditing) "Editing query · ↓ browse results" else "Type to search · arrows select · Ctrl L edit", color = PaletteTheme.secondary, fontSize = 11.sp)
             }
             if (results.isEmpty()) Box(Modifier.fillMaxWidth().weight(1f).testTag("emoji-empty"), contentAlignment = Alignment.Center) {
                 Text(when { store.loading -> "Loading catalog…"; store.error != null -> store.error!!; store.query.isNotBlank() -> "No matching emoji or symbols"; store.filter == "Favorites" -> "Favorite a symbol with the star or Ctrl D"; store.filter == "Recent" -> "Symbols you copy will appear here"; else -> "No symbols in this category" }, color = PaletteTheme.secondary, fontSize = 13.sp, modifier = Modifier.padding(20.dp))
@@ -203,7 +218,7 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
             Row(Modifier.fillMaxWidth().height(54.dp).padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(selected?.name ?: "Emoji & Symbols", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.testTag("emoji-selected-name"))
-                    Text(copiedName ?: "Copy, then paste into any app", fontSize = 10.sp, color = PaletteTheme.secondary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }.testTag("emoji-copy-status"))
+                    Text(copiedName ?: if (queryEditing) "Editing query · ↓ browse results" else "Arrows select · Enter copy · Ctrl L edit", fontSize = 10.sp, color = PaletteTheme.secondary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }.testTag("emoji-copy-status"))
                 }
                 IconButton(onClick = { selected?.let(::pin) }, enabled = selected != null, modifier = Modifier.testTag("emoji-favorite").semantics { contentDescription = if (selected?.id in store.favorites) "Remove favorite" else "Add favorite" }) {
                     Text(if (selected?.id in store.favorites) "★" else "☆", fontSize = 22.sp, color = PaletteTheme.accent)

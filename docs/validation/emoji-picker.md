@@ -1,5 +1,7 @@
 # Offline Emoji & Symbols validation
 
+This document records the PR #45 binary. The later [rigid palette and immediate emoji navigation update](rigid-palette.md) changes the default arrow/caret mapping; its evidence is recorded separately.
+
 Scope: #11's native grid, local English search, category filters, favorites,
 recent copies, keyboard navigation, exact Unicode clipboard delivery and restart
 persistence. The source references and remaining advanced parity are in
