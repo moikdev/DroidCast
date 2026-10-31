@@ -236,13 +236,14 @@ class PaletteStore(application: Application) : AndroidViewModel(application) {
             .filter { category != "Files" || folderSearch.type == FileSearchType.ALL || it.mimeType?.let(folderSearch.type::acceptsMime) == true }
         val result = CommandSearch.find(all, q, pins, usage).toMutableList()
         if (filter == null && category != "Pinned") {
-            Calculator.evaluate(q)?.let { result.add(0, Command("result", it.result, it.expression, Kind.CALC, "calculator", payload = it.result)) }
+            val calculation = Calculator.evaluateSearch(q)
+            calculation?.let { result.add(0, Command("result", it.result, it.expression, Kind.CALC, "calculator", payload = it.result)) }
             val word = q.substringBefore(' ')
             all.firstOrNull { it.kind == Kind.LINK && it.alias.isNotBlank() && it.alias.equals(word, true) && q.contains(' ') }?.let {
                 result.removeAll { c -> c.id == it.id }
                 result.add(0, it.copy(subtitle = "Search for ${q.substringAfter(' ')}", payload = it.payload.replace("{query}", android.net.Uri.encode(q.substringAfter(' ')))))
             }
-            if (q.isNotBlank() && Calculator.evaluate(q) == null && !q.startsWith('=')) result.add(Command("web", "Search the web", q, icon = "search", payload = "https://www.google.com/search?q=${android.net.Uri.encode(q)}"))
+            if (q.isNotBlank() && calculation == null && !q.startsWith('=')) result.add(Command("web", "Search the web", q, icon = "search", payload = "https://www.google.com/search?q=${android.net.Uri.encode(q)}"))
         }
         return if(q.isBlank()) result.sortedWith(compareBy<Command> { if(it.id in pins) 0 else 1 }.thenBy { if(it.id in pins) -1 else it.kind.ordinal }) else result
     }

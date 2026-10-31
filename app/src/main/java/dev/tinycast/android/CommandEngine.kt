@@ -67,8 +67,16 @@ object Calculator {
     )
     fun format(value: Double): String = DecimalFormat("0.##########", DecimalFormatSymbols(Locale.US)).format(if (abs(value) < 1e-12) 0.0 else value)
 
-    fun evaluate(input: String): Calculation? = runCatching {
-        val text = input.trim().removePrefix("=").trim().lowercase(Locale.ROOT)
+    fun evaluate(input: String): Calculation? = calculate(input, requireIntent = false)
+
+    // Root search remains a search for ordinary numbers. Explicit calculator
+    // mode, operations, functions, constants and conversions express intent.
+    fun evaluateSearch(input: String): Calculation? = calculate(input, requireIntent = true)
+
+    private fun calculate(input: String, requireIntent: Boolean): Calculation? = runCatching {
+        val source = input.trim()
+        val expression = source.removePrefix("=").trimStart()
+        val text = expression.lowercase(Locale.ROOT)
         require(text.isNotBlank() && text.length <= 256)
         val conversion = Regex("^(-?\\d+(?:\\.\\d+)?)\\s*([a-z°]+)\\s+(?:to|in)\\s+([a-z°]+)$").matchEntire(text)
         if (conversion != null) {
@@ -87,38 +95,63 @@ object Calculator {
             require(converted.isFinite())
             Calculation(input, "${format(converted)} $to", "Unit conversion · computed on device")
         } else {
-            require(text.any(Char::isDigit) || text in listOf("pi", "e"))
-            val value = Parser(text.replace('×', '*').replace('÷', '/').replace('−', '-')).parse()
+            val parser = Parser(text.replace('÷', '/').replace('−', '-'))
+            val value = parser.parse()
             require(value.isFinite())
-            Calculation(input, format(value), "Calculation · computed on device")
+            require(!requireIntent || source.startsWith('=') || parser.hasOperation || text in listOf("pi", "e"))
+            val prefix = source.dropLast(expression.length)
+            Calculation(prefix + parser.displayExpression(expression), format(value), "Calculation · computed on device")
         }
     }.getOrNull()
 
     private class Parser(private val text: String) {
         private var pos = 0
+        var hasOperation = false; private set
+        private val multiplicationPositions = mutableSetOf<Int>()
+        fun displayExpression(original: String): String = original.mapIndexed { index, c ->
+            if (index in multiplicationPositions) '×' else c
+        }.joinToString("").replace(Regex("\\s*×\\s*"), " × ")
         private fun spaces() { while (pos < text.length && text[pos].isWhitespace()) pos++ }
         private fun take(c: Char): Boolean { spaces(); return if (pos < text.length && text[pos] == c) { pos++; true } else false }
+        private fun operation(c: Char): Boolean = take(c).also { if (it) hasOperation = true }
+        private fun multiplication(): Boolean {
+            spaces()
+            if (pos >= text.length || text[pos] !in "*x×") return false
+            multiplicationPositions += pos++
+            hasOperation = true
+            return true
+        }
+        private fun constant(name: String): Boolean {
+            if (!text.startsWith(name, pos)) return false
+            val end = pos + name.length
+            // x can directly follow a known constant, as in pix2 or ex2.
+            // Other letters belong to an identifier; unknown identifiers and
+            // any invalid remainder still fail the complete parse.
+            if (end < text.length && text[end].isLetter() && text[end] != 'x') return false
+            pos = end
+            return true
+        }
         fun parse(): Double { val v = sum(); spaces(); require(pos == text.length); return v }
         private fun sum(): Double {
             var v = product()
-            while (true) v = when { take('+') -> v + product(); take('-') -> v - product(); else -> return v }
+            while (true) v = when { operation('+') -> v + product(); operation('-') -> v - product(); else -> return v }
         }
         private fun product(): Double {
             var v = unary()
-            while (true) v = when { take('*') -> v * unary(); take('/') -> { val d = unary(); require(d != 0.0); v / d }; else -> return v }
+            while (true) v = when { multiplication() -> v * unary(); operation('/') -> { val d = unary(); require(d != 0.0); v / d }; else -> return v }
         }
-        private fun unary(): Double = when { take('+') -> unary(); take('-') -> -unary(); else -> power() }
-        private fun power(): Double { var v = atom(); while (take('%')) v /= 100; if (take('^')) v = v.pow(unary()); return v }
+        private fun unary(): Double = when { operation('+') -> unary(); operation('-') -> -unary(); else -> power() }
+        private fun power(): Double { var v = atom(); while (operation('%')) v /= 100; if (operation('^')) v = v.pow(unary()); return v }
         private fun atom(): Double {
             if (take('(')) { val v = sum(); require(take(')')); return v }
             spaces()
+            if (constant("pi")) return PI
+            if (constant("e")) return E
             val start = pos
             if (pos < text.length && text[pos].isLetter()) {
                 while (pos < text.length && text[pos].isLetter()) pos++
                 val name = text.substring(start, pos)
-                if (name == "pi") return PI
-                if (name == "e") return E
-                require(take('(')); val v = sum(); require(take(')'))
+                require(take('(')); hasOperation = true; val v = sum(); require(take(')'))
                 return when (name) { "sqrt" -> sqrt(v); "abs" -> abs(v); "sin" -> sin(v); "cos" -> cos(v); "tan" -> tan(v); "ln" -> ln(v); "log" -> log10(v); "round" -> round(v); else -> error("Unknown function") }
             }
             while (pos < text.length && (text[pos].isDigit() || text[pos] == '.')) pos++

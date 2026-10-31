@@ -35,11 +35,13 @@ The live backlog is [GitHub issue #1](https://github.com/moikdev/droidcast/issue
 
 ## Active slice
 
-Keyboard-readiness onboarding [#39](https://github.com/moikdev/droidcast/issues/39): distinguish the saved global chord, Android approval and live service connection; provide restricted-settings help and exact App info/Accessibility links; offer an inline delivery check with explicit local scope and timeout. No application code enables approval or retrieves screen content. Lenovo/ZUXOS remains user-reported, with separate emulator evidence. Two independent audits and expected-head merge are still required for this slice.
+Calculator activation and multiplication [#51](https://github.com/moikdev/droidcast/issues/51): keep ordinary numbers searchable; calculate when arithmetic is intentional; accept ASCII x alongside * and ×, display ×, and keep numeric clipboard results. Explicit calculator mode, functions, constants and unit conversions remain available. Tablet/phone evidence and two independent audits are required before merge. This is a refinement of the existing calculator, not complete #13 parity.
 
-Queued user requests: calculator trigger/multiplication refinement [#51](https://github.com/moikdev/droidcast/issues/51), explicit corner-swipe/Home-hold assistant setup and actual gesture verification [#47](https://github.com/moikdev/droidcast/issues/47), and double-tap Ctrl [#26](https://github.com/moikdev/droidcast/issues/26).
+Queued user requests: explicit corner-swipe/Home-hold assistant setup and actual gesture verification [#47](https://github.com/moikdev/droidcast/issues/47), and double-tap Ctrl [#26](https://github.com/moikdev/droidcast/issues/26).
 
 ## Completed slices
+
+Keyboard-readiness onboarding merged in [PR #50](https://github.com/moikdev/droidcast/pull/50), closing #39 after both sol/high audits cleared `cece515`; merge `7bec152`. Final local evidence: 80 JVM, 37 tablet, 37 phone, 11 Linux hardware cases, lint 0 errors/42 warnings and 35 real screenshots. Search-hidden probes, reconnect epochs and explicitly armed navigation chords have negative controls and corrected regressions. Saved/approved/connected/received states remain distinct; six Ctrl/Meta chord variants are in-process coverage, with actual hardware Ctrl+F delivery. CI inactive; Lenovo/OEM certification remains unclaimed.
 
 The direct-settings slice merged in [PR #23](https://github.com/moikdev/droidcast/pull/23), closing #2 after both independent audits cleared head `39fc5f8` and local checks passed. Its live review/merge state and [issue #1](https://github.com/moikdev/droidcast/issues/1) are authoritative. Record subsequent slices here after their verified merges; the baseline preview is not full parity.
 
