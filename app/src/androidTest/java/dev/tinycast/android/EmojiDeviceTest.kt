@@ -172,6 +172,30 @@ class EmojiDeviceTest {
         key(KeyEvent.KEYCODE_DPAD_RIGHT)
         assertEquals("Down returns from query editing to result browsing", 1, store.selected)
     }
+    @Test fun rapidRightThenEnterUsesCurrentSelectionBeforeRedraw() {
+        val expected = store.results()[1].glyph
+        compose.activityRule.scenario.onActivity {
+            val now = android.os.SystemClock.uptimeMillis()
+            // Both pairs in one main-thread turn: no recomposition between them.
+            for (code in listOf(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_ENTER)) {
+                for (action in listOf(KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP))
+                    it.window.decorView.dispatchKeyEvent(KeyEvent(now, now, action, code, 0))
+            }
+            assertEquals(expected, it.getSystemService(ClipboardManager::class.java).primaryClip?.getItemAt(0)?.text.toString())
+        }
+    }
+    @Test fun compositionStartedBeforeRedrawKeepsNavigationWithIme() {
+        search("face")
+        compose.activityRule.scenario.onActivity {
+            val connection = it.window.decorView.findFocus()!!.onCreateInputConnection(android.view.inputmethod.EditorInfo())
+            assertTrue(connection.setComposingRegion(0, 4))
+            val now = android.os.SystemClock.uptimeMillis()
+            for (action in listOf(KeyEvent.ACTION_DOWN, KeyEvent.ACTION_UP))
+                it.window.decorView.dispatchKeyEvent(KeyEvent(now, now, action, KeyEvent.KEYCODE_DPAD_RIGHT, 0))
+            assertEquals("Composition must be read at event time, before the next frame", 0, store.selected)
+            connection.finishComposingText()
+        }
+    }
     @Test fun clipboardPreservesJoinersFlagsVariationSelectorsAndKeycaps() {
         listOf("👨‍👩‍👧‍👦", "🇯🇵", "❤️", "1️⃣", "π").forEach { glyph ->
             search(glyph)

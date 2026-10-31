@@ -7,8 +7,8 @@
     "tablet": "1920×1200 / 240dpi",
     "phone": "1080×2340 / 420dpi"
   },
-  "apk_sha256": "f70a381e44212078571802914740d60ae370e47ffeeca48bc51161eaad3206cf",
-  "test_apk_sha256": "960a420f8054840c313af94c35320c65c631fc7c78733d9b1b25e5148bf6907b",
+  "apk_sha256": "cd86f96f3074f2e37687cb56edbd489b23e9be019986dd51825eeb2893d21088",
+  "test_apk_sha256": "7df930a6b52d0564cc502ab1e61faed0961d69cd1c9831ce94c8dbaf034a77a9",
   "installed_apk_matches": true,
   "baseline": {
     "production_source": "b974ff0a5eff13d18314fb6667440c1682588e54",
@@ -33,8 +33,8 @@
   "instrumentation": {
     "tablet": {
       "stability_passed": 6,
-      "regressions_passed": 15,
-      "total": 21,
+      "regressions_passed": 17,
+      "total": 23,
       "logs": [
         "artifacts/rigid-palette-final-tablet/tests.log",
         "artifacts/rigid-palette-regressions-tablet.log"
@@ -42,8 +42,8 @@
     },
     "phone": {
       "stability_passed": 5,
-      "regressions_passed": 15,
-      "total": 20,
+      "regressions_passed": 17,
+      "total": 22,
       "logs": [
         "artifacts/rigid-palette-final-phone/tests.log",
         "artifacts/rigid-palette-regressions-phone.log"
@@ -99,6 +99,20 @@
         ]
       }
     }
+  },
+  "burst_negative": {
+    "source": "3366c2e7328bc08e813028afd8415aeb1496a116",
+    "tests": 2,
+    "failures": 2,
+    "log": "artifacts/rigid-palette-burst-negative.log",
+    "apks": {
+      "dev.tinycast.android": "f70a381e44212078571802914740d60ae370e47ffeeca48bc51161eaad3206cf",
+      "dev.tinycast.android.test": "7df930a6b52d0564cc502ab1e61faed0961d69cd1c9831ce94c8dbaf034a77a9"
+    }
+  },
+  "burst_focused_positive": {
+    "tests": 2,
+    "log": "artifacts/rigid-palette-burst-positive.log"
   },
   "initial_failure": {
     "log": "artifacts/rigid-palette-regressions-tablet-initial-failure.log",
@@ -174,127 +188,127 @@
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-phone-copy-feedback.png",
-      "sha256": "42e1770b4d9d010849702c297bf1c77d74643a411d11b35d29f6be24f5b1e1a6",
+      "sha256": "a260d57da9daf9c445415c1eca97f0c7d5962ce7085585b65dd71e8a9ecfc98e",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-phone-emoji-keyboard-hidden.png",
-      "sha256": "bcb79a041b54edea020e1728d7e8481afb1f9021d6be8f21f771937d9fa1d17e",
+      "sha256": "d82c2ca770dfce45f40682ebee08bc07bfd99d811314230da3260532324495ac",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-phone-emoji-keyboard-shown.png",
-      "sha256": "ff3842fcc1c916d286ca0dd4cf3c8cf5a89d2222b44428bc083be697342e7b2b",
+      "sha256": "d5a046e8d900c22176a5f256169c357a90401067bbbf96ce42e7d0a81e3e8ad5",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-phone-emoji-typing-settled.png",
-      "sha256": "dc5869fa97ac48338d8d79d84ab324e2847ba08ec5f0a9af65d88cdf8540c51d",
+      "sha256": "53e7b24daaca8529e159f27990a03bf6d0692381509c7093e497155e0418168f",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-phone-no-results.png",
-      "sha256": "2af0e32b2760ad4b5b27dabdb7fc7e41398d9710271192afaa995beec84587dc",
+      "sha256": "5bd3ca5358991ddd3013a1e7193038bf6ecc69f45313df8844832a4e89d945bf",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-phone-search-keyboard-hidden.png",
-      "sha256": "955a8b585658b8860a547696fc945ceee17bd49ada58e667f060dc73c826563c",
+      "sha256": "ef8c853501b9cf07a3b98278e21645ad2805ca15a23e961ac4507be668a7370d",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-phone-search-keyboard-shown.png",
-      "sha256": "92000b8c778fa06bd709d25780dae0abde473871486eaf796ea7892520f7acfe",
+      "sha256": "bdae70168a1151ed93c8a6ab8755e7583cf8ab5c358b2152be65e168279ea47f",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-phone-search-typing-settled.png",
-      "sha256": "201019fce5a63851e506e75c11ec83a7c0be5769b3c07edc471a3b8f8919ebd0",
+      "sha256": "111f510f4e2b1685ba815bc97ac9028b749dd6188bc7a5f50b0b7e4272ab65b3",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-phone-typing-and-navigation.png",
-      "sha256": "f815dc87597390eca1ca3b2b24d34ec7a5ada9df731578b36c0b612452253841",
+      "sha256": "b62eea3f226ebca2a23435051e2c11e9f1c6729358e34190e06f52ac37417d85",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-phone-visible-selection.png",
-      "sha256": "fa23c90afe7c14cfa1734beee4b5085d3e8e30a24a6435233d9be9d55eef4290",
+      "sha256": "58c2f8f5d28d260d8ff57a01f63d228d0547fdca3fa240233a9f366e12d263d3",
       "width": 1080,
       "height": 2340
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-tablet-copy-feedback.png",
-      "sha256": "5a440cb8b5f6b7fe70a3f41a37b0a7eb05757d0bdb8adc462ece1a5167e9b0d9",
+      "sha256": "8586b6359071fd80ea7d5b7fa9337043097252d68087e05b8dbe077fd2600473",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-tablet-emoji-keyboard-hidden.png",
-      "sha256": "23e84648a96d4d3f7b7d252f586c13730c3bc105f1ad6444ea3b7d568cbfe34b",
+      "sha256": "a83cff100f67c2ddd027b15eb8efcf20c8978ee7664207702156c0e4bc0ae7d5",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-tablet-emoji-keyboard-shown.png",
-      "sha256": "2b5027e821bd4d24940ab1dfa5747f8d6328bbbc3f2f594b3dcca8fc0f668dba",
+      "sha256": "e49359386469b262b4319bfdeea10d50b32ee23f1eadae3175e963c27cb8f773",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-tablet-emoji-on-entry.png",
-      "sha256": "23e84648a96d4d3f7b7d252f586c13730c3bc105f1ad6444ea3b7d568cbfe34b",
+      "sha256": "41c74719366c588c2aa2f7bcec1cf93567162b2024188783b4c656978381988b",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-tablet-emoji-typing-settled.png",
-      "sha256": "26f2e2d9e5db2727a8164b053a94ec8ba9660bb3f3777e43984df0aab02289ca",
+      "sha256": "bc8579508375406bb6e54c8bf4a2675bec918de1c0548a81b49eb73a27f1686e",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-tablet-no-results.png",
-      "sha256": "44401c37703d9c4a1430f44a4428386b2f725f8a5ffb44e038e2449567ec2a96",
+      "sha256": "f1bb37a3e3c517dfc590e62b9d43801130e48c9ef5f315e8aae994c14e74063a",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-tablet-search-keyboard-hidden.png",
-      "sha256": "d49d6298215ec8aef3156eec7039adc01c0fb407077f50aec136b7e4a24cb657",
+      "sha256": "48dd6e316a3ee49aa5cd6dee2f22b6a37a6c3661f2efe2a686a611d228c86b19",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-tablet-search-keyboard-shown.png",
-      "sha256": "a5747d1bbd01d14c1638aa1d193ee62265d541ba4333aa4b0a55ec9fa694f526",
+      "sha256": "da90de56dab56e8ba701ff39b5c3349c9af101a087ddb3e9fc7979d6cbb110b6",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-tablet-search-typing-settled.png",
-      "sha256": "410d8f18ca72b7ad65af148db08763b5d07df6469cdad52de4c63f9fa72044e5",
+      "sha256": "276bdc72fddd7ada2b0f43bb83a14e6633889f67031bc1459617be606d25eb8e",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-tablet-typing-and-navigation.png",
-      "sha256": "72a6e7049390142cb704eea00ea221543af2f5461e76403e36057563a4b9d378",
+      "sha256": "d406c0b1841c76384d15d5941cabaf02ea1a699c0703d94b39c7b7ed8b339174",
       "width": 1920,
       "height": 1200
     },
     {
       "path": "docs/screenshots/parity-rigid-palette/final-tablet-visible-selection.png",
-      "sha256": "bc9f867210deaa52d97a52b2d4d17033e33d1f070e0eecd92b96993b63999e5e",
+      "sha256": "419f25e8eef66810d42c10ed2f97d5f5b3bd4b7be5f17c944add320c462a3d54",
       "width": 1920,
       "height": 1200
     }

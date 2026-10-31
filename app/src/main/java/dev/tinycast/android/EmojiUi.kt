@@ -61,6 +61,10 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
     val grid = rememberLazyGridState()
     val results by remember(store) { derivedStateOf { store.results() } }
     val selected = results.getOrNull(store.selected.coerceIn(0, (results.size - 1).coerceAtLeast(0)))
+    // Key events can arrive back-to-back before recomposition. Resolve logical
+    // selection and composition at event time, not from the last rendered frame.
+    fun currentEntry(): EmojiEntry? = store.results().let { it.getOrNull(store.selected.coerceIn(0, it.lastIndex.coerceAtLeast(0))) }
+    fun isComposing() = searchValue.text == store.query && searchValue.composition != null
     fun copyEntry(entry: EmojiEntry) {
         copy(entry.glyph); store.copied(entry); copiedName = "Copied ${entry.name}"
         store.selected = store.results().indexOfFirst { it.id == entry.id }.coerceAtLeast(0)
@@ -75,7 +79,7 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
         val modifier = (event.isCtrlPressed xor event.isMetaPressed) && !event.isAltPressed && !event.isShiftPressed
         if (event.action != KeyEvent.ACTION_DOWN || event.keyCode != KeyEvent.KEYCODE_D || !modifier) return false
         favoritePresses[event.deviceId] = event.downTime
-        if (event.repeatCount == 0) selected?.let(::pin)
+        if (event.repeatCount == 0) currentEntry()?.let(::pin)
         return true
     }
     fun back() { if (menu) menu = false else if (queryEditing) queryEditing = false else if (store.query.isNotEmpty()) store.search("") else close() }
@@ -107,7 +111,7 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
             val plain = !event.isCtrlPressed && !event.isMetaPressed && !event.isAltPressed && !event.isShiftPressed
             val navigation = event.keyCode in setOf(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT,
                 KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_MOVE_HOME, KeyEvent.KEYCODE_MOVE_END)
-            if (!plain || !navigation || !(searchFocused || gridFocused) || displayedSearch.composition != null) return false
+            if (!plain || !navigation || !(searchFocused || gridFocused) || isComposing()) return false
             if (queryEditing && searchFocused && event.keyCode !in setOf(KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN)) return false
             if (event.action == KeyEvent.ACTION_DOWN) {
                 queryEditing = false
@@ -139,9 +143,9 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
                 // Once claimed, repeats must not become IME text when Ctrl/Meta is released first.
                 if (handleFavoriteChord(e)) true
                 else if (navigate(e)) true
-                else if (searchFocused && displayedSearch.composition == null && e.keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER &&
+                else if (searchFocused && !isComposing() && e.keyCode == KeyEvent.KEYCODE_NUMPAD_ENTER &&
                     !e.isAltPressed && !e.isShiftPressed && !(e.isCtrlPressed && e.isMetaPressed)) {
-                    if (e.action == KeyEvent.ACTION_DOWN && e.repeatCount == 0) selected?.let(::copyEntry)
+                    if (e.action == KeyEvent.ACTION_DOWN && e.repeatCount == 0) currentEntry()?.let(::copyEntry)
                     true
                 } else false
             }
@@ -156,7 +160,7 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
                     ctrl && e.keyCode == KeyEvent.KEYCODE_L -> { queryEditing = true; searchFocus.requestFocus(); true }
                     navigate(e) -> true
                     searchFocused && (e.isShiftPressed || ctrl) && e.keyCode in setOf(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_MOVE_HOME, KeyEvent.KEYCODE_MOVE_END) -> { queryEditing = true; false }
-                    (plain || ctrl) && (searchFocused || gridFocused) && displayedSearch.composition == null && e.keyCode in setOf(KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER, KeyEvent.KEYCODE_DPAD_CENTER) -> { selected?.let(::copyEntry); true }
+                    (plain || ctrl) && (searchFocused || gridFocused) && !isComposing() && e.keyCode in setOf(KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER, KeyEvent.KEYCODE_DPAD_CENTER) -> { currentEntry()?.let(::copyEntry); true }
                     else -> false
                 }
             }.semantics { testTagsAsResourceId = true }.testTag("emoji-palette")) {
@@ -181,7 +185,7 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
                     modifier = Modifier.weight(1f).height(30.dp).focusRequester(searchFocus).onFocusChanged { searchFocused = it.isFocused }.testTag("emoji-search"),
                     textStyle = TextStyle(color = PaletteTheme.ink, fontSize = 17.sp, lineHeight = 24.sp), cursorBrush = SolidColor(PaletteTheme.accent),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search, showKeyboardOnFocus = !wide || keyboardRequested),
-                    keyboardActions = KeyboardActions(onSearch = { selected?.let(::copyEntry) }),
+                    keyboardActions = KeyboardActions(onSearch = { if (!isComposing()) currentEntry()?.let(::copyEntry) }),
                     decorationBox = { inner -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
                         if (store.query.isEmpty()) Text("Search emoji and symbols…", color = PaletteTheme.secondary, fontSize = 17.sp, maxLines = 1); inner()
                     } })
@@ -220,10 +224,10 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
                     Text(selected?.name ?: "Emoji & Symbols", fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.testTag("emoji-selected-name"))
                     Text(copiedName ?: if (queryEditing) "Editing query · ↓ browse results" else "Arrows select · Enter copy · Ctrl L edit", fontSize = 10.sp, color = PaletteTheme.secondary, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.semantics { liveRegion = LiveRegionMode.Polite }.testTag("emoji-copy-status"))
                 }
-                IconButton(onClick = { selected?.let(::pin) }, enabled = selected != null, modifier = Modifier.testTag("emoji-favorite").semantics { contentDescription = if (selected?.id in store.favorites) "Remove favorite" else "Add favorite" }) {
+                IconButton(onClick = { currentEntry()?.let(::pin) }, enabled = selected != null, modifier = Modifier.testTag("emoji-favorite").semantics { contentDescription = if (selected?.id in store.favorites) "Remove favorite" else "Add favorite" }) {
                     Text(if (selected?.id in store.favorites) "★" else "☆", fontSize = 22.sp, color = PaletteTheme.accent)
                 }
-                TextButton(onClick = { selected?.let(::copyEntry) }, enabled = selected != null, modifier = Modifier.testTag("emoji-copy")) { Text("Copy ↵", fontSize = 12.sp) }
+                TextButton(onClick = { currentEntry()?.let(::copyEntry) }, enabled = selected != null, modifier = Modifier.testTag("emoji-copy")) { Text("Copy ↵", fontSize = 12.sp) }
             }
         }
     }
