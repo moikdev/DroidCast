@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 from pathlib import Path
 import subprocess,json,hashlib,re,shutil,os,argparse
+from android_test_cleanup import Cleanup
 p=argparse.ArgumentParser(description='Verify modifier-tap configuration and local dispatch on an explicitly owned emulator')
 p.add_argument('--serial',required=True);p.add_argument('--avd',required=True)
 p.add_argument('--layout',choices=('tablet','phone'),required=True);p.add_argument('--output',type=Path,required=True)
 p.add_argument('--classes',default='dev.tinycast.android.ModifierTapDeviceTest,dev.tinycast.android.ModifierTapPaletteDeviceTest')
-p.add_argument('--expected',type=int,default=8)
+p.add_argument('--expected',type=int,default=10)
 a=p.parse_args()
 sdk=os.environ.get('ANDROID_HOME') or os.environ.get('ANDROID_SDK_ROOT')
 if not sdk:sdk=next(line.removeprefix('sdk.dir=') for line in Path('local.properties').read_text().splitlines() if line.startswith('sdk.dir='))
@@ -61,26 +62,36 @@ try:
  record['fail_statuses']=len(re.findall(r'^INSTRUMENTATION_STATUS_CODE: -2$',log,re.M))
  assert record['completed'] and record['pass_statuses']==a.expected and record['fail_statuses']==0
 finally:
- call('shell','am','force-stop',pkg)
- current=text('shell','cmd','role','get-role-holders','android.app.role.ASSISTANT').splitlines()
- for holder in current:
-  if holder not in roles:call('shell','cmd','role','remove-role-holder','android.app.role.ASSISTANT',holder)
- for holder in roles:
-  if holder not in current:call('shell','cmd','role','add-role-holder','android.app.role.ASSISTANT',holder)
- call('shell','cmd','overlay','enable-exclusive','--category',overlays[0])
+ cleanup=Cleanup(record)
+ cleanup.attempt('stop-app',lambda:call('shell','am','force-stop',pkg))
+ def restore_roles():
+  current=text('shell','cmd','role','get-role-holders','android.app.role.ASSISTANT').splitlines()
+  for i,holder in enumerate(current):
+   if holder not in roles:cleanup.attempt('remove-role-'+str(i),lambda h=holder:call('shell','cmd','role','remove-role-holder','android.app.role.ASSISTANT',h))
+  for i,holder in enumerate(roles):
+   if holder not in current:cleanup.attempt('add-role-'+str(i),lambda h=holder:call('shell','cmd','role','add-role-holder','android.app.role.ASSISTANT',h))
+ cleanup.attempt('roles',restore_roles)
+ cleanup.attempt('navigation-overlay',lambda:call('shell','cmd','overlay','enable-exclusive','--category',overlays[0]))
  for k,v in settings.items():
-  if text('shell','settings','get','secure',k)==v:continue
-  call('shell','settings','delete','secure',k) if v=='null' else call('shell','settings','put','secure',k,v)
- call('shell','run-as',pkg,'tee','shared_prefs/palette.xml',data=prefs)
- if layout=='phone':call('shell','wm','size','reset');call('shell','wm','density','reset')
- record['settings_restored']=settings=={k:text('shell','settings','get','secure',k) for k in keys}
- record['roles_restored']=roles==text('shell','cmd','role','get-role-holders','android.app.role.ASSISTANT').splitlines()
- record['palette_preferences_restored']=prefs==call('exec-out','run-as',pkg,'cat','shared_prefs/palette.xml')
- record['size_restored']=text('shell','wm','size');record['density_restored']=text('shell','wm','density')
- record['adbd']=text('shell','id').split(' groups=')[0]
- record['app_uid']=text('shell','run-as',pkg,'id').split(' groups=')[0]
- record['api']=text('shell','getprop','ro.build.version.sdk');record['abi']=text('shell','getprop','ro.product.cpu.abi')
- record['navigation_overlay_restored']=overlays==re.findall(r'^\[x\] (com\.android\.internal\.systemui\.navbar\.\w+)$',text('shell','cmd','overlay','list'),re.M)
+  cleanup.attempt('secure-'+k,lambda k=k,v=v:call('shell','settings','delete','secure',k) if v=='null' else call('shell','settings','put','secure',k,v))
+ cleanup.attempt('preference-backup-removal',lambda:call('shell','run-as',pkg,'rm','-f','shared_prefs/palette.xml.bak'))
+ cleanup.attempt('preferences',lambda:call('shell','run-as',pkg,'tee','shared_prefs/palette.xml',data=prefs))
+ if layout=='phone':
+  cleanup.attempt('viewport-size',lambda:call('shell','wm','size','reset'))
+  cleanup.attempt('viewport-density',lambda:call('shell','wm','density','reset'))
+ def verify(name,actual,expected):
+  value=actual();record[name]=value==expected
+  cleanup.require(record[name],name)
+ record.update(settings_restored=False,roles_restored=False,palette_preferences_restored=False,navigation_overlay_restored=False)
+ cleanup.attempt('verify-settings',lambda:verify('settings_restored',lambda:{k:text('shell','settings','get','secure',k) for k in keys},settings))
+ cleanup.attempt('verify-roles',lambda:verify('roles_restored',lambda:text('shell','cmd','role','get-role-holders','android.app.role.ASSISTANT').splitlines(),roles))
+ cleanup.attempt('verify-preferences',lambda:verify('palette_preferences_restored',lambda:call('exec-out','run-as',pkg,'cat','shared_prefs/palette.xml'),prefs))
+ cleanup.attempt('verify-overlay',lambda:verify('navigation_overlay_restored',lambda:re.findall(r'^\[x\] (com\.android\.internal\.systemui\.navbar\.\w+)$',text('shell','cmd','overlay','list'),re.M),overlays))
+ def metadata(name,action):record[name]=action()
+ for name,action in [('size_restored',lambda:text('shell','wm','size')),('density_restored',lambda:text('shell','wm','density')),('adbd',lambda:text('shell','id').split(' groups=')[0]),('app_uid',lambda:text('shell','run-as',pkg,'id').split(' groups=')[0]),('api',lambda:text('shell','getprop','ro.build.version.sdk')),('abi',lambda:text('shell','getprop','ro.product.cpu.abi'))]:
+  cleanup.attempt('read-'+name,lambda n=name,f=action:metadata(n,f))
+ cleanup.attempt('verify-geometry',lambda:cleanup.require(record.get('size_restored')==record['original_size'] and record.get('density_restored')==record['original_density'],'geometry'))
+ cleanup.attempt('verify-adbd',lambda:cleanup.require(record.get('adbd','').startswith('uid=2000'),'adbd'))
+ record['tests_completed']=record['completed'];record['completed']=record['completed'] and not cleanup.errors
  (root/'record.json').write_text(json.dumps(record,indent=2)+'\n')
- assert record['settings_restored'] and record['roles_restored'] and record['palette_preferences_restored'] and record['navigation_overlay_restored']
- assert record['adbd'].startswith('uid=2000')
+ cleanup.finish()

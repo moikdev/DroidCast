@@ -8,8 +8,8 @@
     "tablet": "1920x1200/240dpi",
     "phone": "1080x2340/420dpi override"
   },
-  "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376",
-  "test_apk_sha256": "dddec0f1cdcad9d170755b83c1fd87b4144d0078cf676e934cfed555c68865bc",
+  "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c",
+  "test_apk_sha256": "d427f00df5240af513d4f5921f18b570e085c94aea3d24cc1a8d157d78f4e308",
   "before": {
     "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025",
     "source": "876761b7c90f8dca516b47c38519edb5f25e2d26",
@@ -26,30 +26,122 @@
       "layout": "tablet",
       "serial": "emulator-5590",
       "avd": "Droidcast_PR48_Tablet_API_36_27caf3",
-      "expected": 39,
+      "expected": 41,
       "completed": true,
-      "runner_sha256": "79547c74f003c1890ba0b0495ef15dda09d392add21d3c9b0fde5b571e29f2f2",
+      "runner_sha256": "8cb08d228371c90f995ae2246ef0a92daf6c81724c11a1ac67374ed0dd347dab",
       "original_size": "Physical size: 1920x1200",
       "original_density": "Physical density: 240",
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376",
-      "test_apk_sha256": "dddec0f1cdcad9d170755b83c1fd87b4144d0078cf676e934cfed555c68865bc",
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c",
+      "test_apk_sha256": "d427f00df5240af513d4f5921f18b570e085c94aea3d24cc1a8d157d78f4e308",
       "installed_matches": true,
-      "pass_statuses": 39,
+      "pass_statuses": 41,
       "fail_statuses": 0,
+      "cleanup": {
+        "stop-app": {
+          "passed": true
+        },
+        "roles": {
+          "passed": true
+        },
+        "navigation-overlay": {
+          "passed": true
+        },
+        "secure-assistant": {
+          "passed": true
+        },
+        "secure-voice_interaction_service": {
+          "passed": true
+        },
+        "secure-voice_recognition_service": {
+          "passed": true
+        },
+        "secure-navigation_mode": {
+          "passed": true
+        },
+        "secure-assist_touch_gesture_enabled": {
+          "passed": true
+        },
+        "secure-assist_long_press_home_enabled": {
+          "passed": true
+        },
+        "secure-search_all_entrypoints_enabled": {
+          "passed": true
+        },
+        "secure-enabled_accessibility_services": {
+          "passed": true
+        },
+        "secure-accessibility_enabled": {
+          "passed": true
+        },
+        "secure-show_ime_with_hard_keyboard": {
+          "passed": true
+        },
+        "preference-backup-removal": {
+          "passed": true
+        },
+        "preferences": {
+          "passed": true
+        },
+        "verify-settings": {
+          "passed": true
+        },
+        "verify-roles": {
+          "passed": true
+        },
+        "verify-preferences": {
+          "passed": true
+        },
+        "verify-overlay": {
+          "passed": true
+        },
+        "read-size_restored": {
+          "passed": true
+        },
+        "read-density_restored": {
+          "passed": true
+        },
+        "read-adbd": {
+          "passed": true
+        },
+        "read-app_uid": {
+          "passed": true
+        },
+        "read-api": {
+          "passed": true
+        },
+        "read-abi": {
+          "passed": true
+        },
+        "verify-geometry": {
+          "passed": true
+        },
+        "verify-adbd": {
+          "passed": true
+        }
+      },
       "settings_restored": true,
       "roles_restored": true,
       "palette_preferences_restored": true,
+      "navigation_overlay_restored": true,
       "size_restored": "Physical size: 1920x1200",
       "density_restored": "Physical density: 240",
       "adbd": "uid=2000(shell) gid=2000(shell)",
       "app_uid": "uid=10213(u0_a213) gid=10213(u0_a213)",
       "api": "36",
       "abi": "arm64-v8a",
-      "navigation_overlay_restored": true,
+      "tests_completed": true,
       "passed_cases": [
         {
           "class": "dev.tinycast.android.ModifierTapDeviceTest",
           "test": "codecMigratesOldChordsAndBackupRetainsDoubleTapSemantics"
+        },
+        {
+          "class": "dev.tinycast.android.ModifierTapDeviceTest",
+          "test": "settingsDeviceChangeAndRemovalDiscardPartialRecording"
+        },
+        {
+          "class": "dev.tinycast.android.ModifierTapDeviceTest",
+          "test": "sideChoicesAndSaveAreReachableWithKeyboardWithoutPreparingScroll"
         },
         {
           "class": "dev.tinycast.android.ModifierTapDeviceTest",
@@ -210,30 +302,128 @@
       "layout": "phone",
       "serial": "emulator-5590",
       "avd": "Droidcast_PR48_Tablet_API_36_27caf3",
-      "expected": 39,
+      "expected": 41,
       "completed": true,
-      "runner_sha256": "79547c74f003c1890ba0b0495ef15dda09d392add21d3c9b0fde5b571e29f2f2",
+      "runner_sha256": "8cb08d228371c90f995ae2246ef0a92daf6c81724c11a1ac67374ed0dd347dab",
       "original_size": "Physical size: 1920x1200",
       "original_density": "Physical density: 240",
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376",
-      "test_apk_sha256": "dddec0f1cdcad9d170755b83c1fd87b4144d0078cf676e934cfed555c68865bc",
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c",
+      "test_apk_sha256": "d427f00df5240af513d4f5921f18b570e085c94aea3d24cc1a8d157d78f4e308",
       "installed_matches": true,
-      "pass_statuses": 39,
+      "pass_statuses": 41,
       "fail_statuses": 0,
+      "cleanup": {
+        "stop-app": {
+          "passed": true
+        },
+        "roles": {
+          "passed": true
+        },
+        "navigation-overlay": {
+          "passed": true
+        },
+        "secure-assistant": {
+          "passed": true
+        },
+        "secure-voice_interaction_service": {
+          "passed": true
+        },
+        "secure-voice_recognition_service": {
+          "passed": true
+        },
+        "secure-navigation_mode": {
+          "passed": true
+        },
+        "secure-assist_touch_gesture_enabled": {
+          "passed": true
+        },
+        "secure-assist_long_press_home_enabled": {
+          "passed": true
+        },
+        "secure-search_all_entrypoints_enabled": {
+          "passed": true
+        },
+        "secure-enabled_accessibility_services": {
+          "passed": true
+        },
+        "secure-accessibility_enabled": {
+          "passed": true
+        },
+        "secure-show_ime_with_hard_keyboard": {
+          "passed": true
+        },
+        "preference-backup-removal": {
+          "passed": true
+        },
+        "preferences": {
+          "passed": true
+        },
+        "viewport-size": {
+          "passed": true
+        },
+        "viewport-density": {
+          "passed": true
+        },
+        "verify-settings": {
+          "passed": true
+        },
+        "verify-roles": {
+          "passed": true
+        },
+        "verify-preferences": {
+          "passed": true
+        },
+        "verify-overlay": {
+          "passed": true
+        },
+        "read-size_restored": {
+          "passed": true
+        },
+        "read-density_restored": {
+          "passed": true
+        },
+        "read-adbd": {
+          "passed": true
+        },
+        "read-app_uid": {
+          "passed": true
+        },
+        "read-api": {
+          "passed": true
+        },
+        "read-abi": {
+          "passed": true
+        },
+        "verify-geometry": {
+          "passed": true
+        },
+        "verify-adbd": {
+          "passed": true
+        }
+      },
       "settings_restored": true,
       "roles_restored": true,
       "palette_preferences_restored": true,
+      "navigation_overlay_restored": true,
       "size_restored": "Physical size: 1920x1200",
       "density_restored": "Physical density: 240",
       "adbd": "uid=2000(shell) gid=2000(shell)",
       "app_uid": "uid=10213(u0_a213) gid=10213(u0_a213)",
       "api": "36",
       "abi": "arm64-v8a",
-      "navigation_overlay_restored": true,
+      "tests_completed": true,
       "passed_cases": [
         {
           "class": "dev.tinycast.android.ModifierTapDeviceTest",
           "test": "codecMigratesOldChordsAndBackupRetainsDoubleTapSemantics"
+        },
+        {
+          "class": "dev.tinycast.android.ModifierTapDeviceTest",
+          "test": "settingsDeviceChangeAndRemovalDiscardPartialRecording"
+        },
+        {
+          "class": "dev.tinycast.android.ModifierTapDeviceTest",
+          "test": "sideChoicesAndSaveAreReachableWithKeyboardWithoutPreparingScroll"
         },
         {
           "class": "dev.tinycast.android.ModifierTapDeviceTest",
@@ -432,6 +622,14 @@
         {
           "name": "Keyboard service pauses double Ctrl during recording and resumes after Escape",
           "passed": true
+        },
+        {
+          "name": "Actual double Ctrl diagnostic receives the saved trigger and subsequent activation resumes",
+          "passed": true
+        },
+        {
+          "name": "Six independent service rebinds activate from Home with device-clock timing",
+          "passed": true
         }
       ],
       "capabilities": [
@@ -439,65 +637,571 @@
           "modifier": "Left Ctrl",
           "linux_code": 29,
           "activated": true,
-          "focus_after": "  mCurrentFocus=Window{b6d1258 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}"
+          "focus_after": "  mCurrentFocus=Window{fd2f4ec u0 dev.tinycast.android/dev.tinycast.android.MainActivity}"
         },
         {
           "modifier": "Right Ctrl",
           "linux_code": 97,
           "activated": true,
-          "focus_after": "  mCurrentFocus=Window{3d8ab29 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}"
+          "focus_after": "  mCurrentFocus=Window{b6dccb1 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}"
         },
         {
           "modifier": "Left Alt",
           "linux_code": 56,
           "activated": true,
-          "focus_after": "  mCurrentFocus=Window{2e3d8bc u0 dev.tinycast.android/dev.tinycast.android.MainActivity}"
+          "focus_after": "  mCurrentFocus=Window{404d3b4 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}"
         },
         {
           "modifier": "Right Alt",
           "linux_code": 100,
           "activated": true,
-          "focus_after": "  mCurrentFocus=Window{fc55e41 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}"
+          "focus_after": "  mCurrentFocus=Window{24eade8 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}"
         },
         {
           "modifier": "Left Shift",
           "linux_code": 42,
           "activated": true,
-          "focus_after": "  mCurrentFocus=Window{91e4069 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}"
+          "focus_after": "  mCurrentFocus=Window{ce2ab3c u0 dev.tinycast.android/dev.tinycast.android.MainActivity}"
         },
         {
           "modifier": "Right Shift",
           "linux_code": 54,
           "activated": true,
-          "focus_after": "  mCurrentFocus=Window{61e47b8 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}"
+          "focus_after": "  mCurrentFocus=Window{1a6418f u0 dev.tinycast.android/dev.tinycast.android.MainActivity}"
         },
         {
           "modifier": "Left Meta",
           "linux_code": 125,
           "activated": false,
-          "focus_after": "  mCurrentFocus=Window{7aed81b u0 com.android.settings/com.android.settings.homepage.SettingsHomepageActivity}"
+          "focus_after": "  mCurrentFocus=Window{e075713 u0 com.android.settings/com.android.settings.homepage.SettingsHomepageActivity}"
         },
         {
           "modifier": "Right Meta",
           "linux_code": 126,
           "activated": false,
-          "focus_after": "  mCurrentFocus=Window{4a679ac u0 com.android.settings/com.android.settings.homepage.SettingsHomepageActivity}"
+          "focus_after": "  mCurrentFocus=Window{9f48351 u0 com.android.settings/com.android.settings.homepage.SettingsHomepageActivity}"
         }
       ],
       "completed": true,
       "root_for_injection_only": true,
-      "runner_sha256": "d808f9ae7018e1a515db85df16a7f970454d6833eb775c8d240a10dd8296334b",
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376",
-      "test_apk_sha256": "dddec0f1cdcad9d170755b83c1fd87b4144d0078cf676e934cfed555c68865bc",
+      "runner_sha256": "76b24040fba2d9ae4a3983be44a2c6a280aa43f5e0f67f80b66728e0b7c17585",
+      "input_helper_source_sha256": "559df6f70d50a5733faefcc44a234dec59fce1697b7719c8c493a00b91029b04",
+      "input_helper_binary_sha256": "e492300034b952a783707b7fe70883fe1acb498d19698406208556a4a4716cd5",
+      "input_sequences": [
+        {
+          "path": "input-0000.json",
+          "sha256": "36c630ed148b4db70a296d3abea63d4b8f82313defb2eb8db1013568623198af",
+          "events": 4,
+          "intervals_us": [
+            40390.625,
+            81505.5,
+            40860.625
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0001.json",
+          "sha256": "5b298a3a4fc001b290867d63656b873a2b91300f7ee22431fd0f38554194ed18",
+          "events": 4,
+          "intervals_us": [
+            40405.875,
+            81077.5,
+            40205.875
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0002.json",
+          "sha256": "155d396645209bf12630b7ee6d4b5b85e2232195a2bb4c62765e9b6a3de6058e",
+          "events": 4,
+          "intervals_us": [
+            40226.334,
+            80345.166,
+            40571.916
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0003.json",
+          "sha256": "461495e2f71e6c0f2e33d579f5b73f0cb85a12a4e96152e6194a8b85137133d6",
+          "events": 4,
+          "intervals_us": [
+            40216.959,
+            80521.375,
+            40385.042
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0004.json",
+          "sha256": "9d1ab5836e911e68ee8e7bb6eac00494d97fc67e91b663a1b7c3c80aeb052f4e",
+          "events": 4,
+          "intervals_us": [
+            40218.625,
+            80405.334,
+            41141.292
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0005.json",
+          "sha256": "405dcfac8c5bedb1aab2f2e82d885c60862b1c79d78fefd3c13dce1c3b451406",
+          "events": 4,
+          "intervals_us": [
+            41933.875,
+            81465.5,
+            40212.583
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0006.json",
+          "sha256": "34d72110a466aa3ffe1284b68b13c5bb190e92311966144a4b0373d256cba1bd",
+          "events": 4,
+          "intervals_us": [
+            20128.0,
+            30677.0,
+            20133.584
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0007.json",
+          "sha256": "a13d1d0b3dda8044ce31515a1e06abc69045aef717fdacb99ac619dca9a83fc9",
+          "events": 4,
+          "intervals_us": [
+            20174.167,
+            30209.25,
+            20527.666
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0008.json",
+          "sha256": "4238510f4189f6447822663c03ea92d3c3a58a506aa557753c0df251445fefdc",
+          "events": 4,
+          "intervals_us": [
+            20671.083,
+            34865.75,
+            20103.292
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0009.json",
+          "sha256": "3778e7dbe2ebb5ef60d929737fe2ebfdc2a2900cba15ea5e6fd5346eab0d7d44",
+          "events": 4,
+          "intervals_us": [
+            21265.25,
+            30805.417,
+            20193.584
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0010.json",
+          "sha256": "9bd3ec0954dcc8e10e9ce05222650db9111c1a1881b76370b0387c107ca58350",
+          "events": 4,
+          "intervals_us": [
+            402068.25,
+            80315.416,
+            40594.584
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0011.json",
+          "sha256": "b548eee8c3c8aa1883b72511c9c0352c4aebd3d79c95e7e7c02d3cf7d5aeea9f",
+          "events": 4,
+          "intervals_us": [
+            40778.625,
+            81121.251,
+            41248.334
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0012.json",
+          "sha256": "25e68c250f487f2d7040927ae66f9485a05593c8597445b23525caffe65d6e83",
+          "events": 6,
+          "intervals_us": [
+            20205.792,
+            30624.958,
+            20769.667,
+            80250.208,
+            41296.792
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0013.json",
+          "sha256": "c1acc55d5cfd2c9574cc6eaed5c36e7a56d76940eb4fc71b9476636c768d89f6",
+          "events": 4,
+          "intervals_us": [
+            40313.083,
+            83599.584,
+            40779.292
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0014.json",
+          "sha256": "74bd49db208dbb7a2cde79722c27a35a68bb9eb2fce59e7214038cd95e077b00",
+          "events": 4,
+          "intervals_us": [
+            41563.666,
+            80162.583,
+            40508.75
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0015.json",
+          "sha256": "8e350b3f4f12a310baab45d5d478daa685f4db425faaf57b10625f019e031a04",
+          "events": 4,
+          "intervals_us": [
+            23116.833,
+            30116.667,
+            20165.416
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0016.json",
+          "sha256": "afacf6c0ac2fe760a79b3a594569ecf4385c927878013c185e379f296bf2feb1",
+          "events": 4,
+          "intervals_us": [
+            40261.458,
+            81865.291,
+            41331.666
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0017.json",
+          "sha256": "edc4c90c16a6c8363627a59841bf181e93587e38aedd40acc9a2a16ed7bd3db1",
+          "events": 2,
+          "intervals_us": [
+            30150.75
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0018.json",
+          "sha256": "ff5c0ec475bfa59d4f7842d86618a16d7b3a7556275ae4067bfa10131c3e3c49",
+          "events": 4,
+          "intervals_us": [
+            40534.833,
+            81736.208,
+            40260.334
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0019.json",
+          "sha256": "48ec01a131f0e77325454cad32274f744240ccb0be82b017884e7724bef9c6e8",
+          "events": 4,
+          "intervals_us": [
+            20114.167,
+            30109.917,
+            20245.25
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0020.json",
+          "sha256": "0d8360c2195aba29a46cf747df82aab89e3d5289487d558a9cf11f23d8dec924",
+          "events": 4,
+          "intervals_us": [
+            40147.708,
+            80167.292,
+            40874.0
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0021.json",
+          "sha256": "50605eddce354bf75cd6ae06dbbb870b9101b783c173e361c4dc83b67c1f6e46",
+          "events": 4,
+          "intervals_us": [
+            41518.958,
+            80443.875,
+            41005.916
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0022.json",
+          "sha256": "ae361a7a753a42d33031f65c1acda0226e6d9dbe11dba401f4b44d1fc8d53b5f",
+          "events": 4,
+          "intervals_us": [
+            41137.667,
+            80400.5,
+            40198.25
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0023.json",
+          "sha256": "9c44dc68e85b54c3ee34af8e09c6b914d81ff3ee30661c48e8d732c7e47dd9b0",
+          "events": 4,
+          "intervals_us": [
+            41189.5,
+            81437.166,
+            40260.541
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0024.json",
+          "sha256": "208c5c350c8ce934987881e600887add570a14f462f0bdc142049bb17c0cc36b",
+          "events": 4,
+          "intervals_us": [
+            40529.708,
+            80605.583,
+            41553.75
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0025.json",
+          "sha256": "6b4ff23ff756faf3b660a2414f60574d8e08ee12448ea196e286f19cf16922a4",
+          "events": 4,
+          "intervals_us": [
+            41966.75,
+            81870.208,
+            40876.292
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0026.json",
+          "sha256": "4ac4aae76efb8f9e071bd0c9adbd233a4e81572eb3dab60d8dba7bed2c9c3d2c",
+          "events": 4,
+          "intervals_us": [
+            40665.125,
+            80895.291,
+            42152.875
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0027.json",
+          "sha256": "ba3afb1be8fd8d178be7dba37853f993ada3718177a2cdcc45de12f0bb3dc495",
+          "events": 4,
+          "intervals_us": [
+            41874.5,
+            80456.959,
+            41098.583
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0028.json",
+          "sha256": "5a9fb63cb3b9b3fa899320c7f15e59ec0ca75833d98b3a49719781ddef06cb35",
+          "events": 4,
+          "intervals_us": [
+            40942.458,
+            81872.333,
+            40517.375
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0029.json",
+          "sha256": "eb6758f3938065b5e06d974e7a3034f042f87ef1c157aaf3ff8c7ae0c1781081",
+          "events": 4,
+          "intervals_us": [
+            41052.708,
+            80923.167,
+            40533.0
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0030.json",
+          "sha256": "b2a182cc68496a975d5fbd8a4183819575dd13c51cb646f8c62865ec00c50055",
+          "events": 4,
+          "intervals_us": [
+            40758.958,
+            81970.833,
+            41015.958
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0031.json",
+          "sha256": "07a91eeafe72eb3e7e225b3d6a604ddf49f6675ecc453c42fe51a75a0e510824",
+          "events": 4,
+          "intervals_us": [
+            40716.25,
+            81195.791,
+            40879.375
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0032.json",
+          "sha256": "bc435d0407dd82475087b594230a5ba94c3eb404da763e03da7dd973e3363ef7",
+          "events": 4,
+          "intervals_us": [
+            40229.375,
+            84756.459,
+            41265.958
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0033.json",
+          "sha256": "3850a43e53c2937a0a765b7b4df37cfab494ae87ddfd33acf44d88f6621479fb",
+          "events": 4,
+          "intervals_us": [
+            40158.167,
+            80394.083,
+            41382.458
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0034.json",
+          "sha256": "fded6872ceb3a74bbeb8847627492e63565a2225af98c97f5b58cc612fc685e8",
+          "events": 4,
+          "intervals_us": [
+            42134.917,
+            80847.416,
+            41345.458
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0035.json",
+          "sha256": "c5318e0f060fb504821c901dc3cc5c2e5b5c01d92908a0a5b72b0a5a7d57be06",
+          "events": 4,
+          "intervals_us": [
+            40794.625,
+            81033.0,
+            40484.542
+          ],
+          "valid_timing": true
+        },
+        {
+          "path": "input-0036.json",
+          "sha256": "fc8aa5661a5d168b872961e886e95f704b7fbc81d2e0f728947a795b2e5a60e1",
+          "events": 13,
+          "intervals_us": [
+            109.083,
+            116.75,
+            110.583,
+            141.292,
+            114.75,
+            113.625,
+            113.333,
+            113.417,
+            112.958,
+            114.25,
+            114.25,
+            112.583
+          ],
+          "valid_timing": true
+        }
+      ],
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c",
+      "test_apk_sha256": "d427f00df5240af513d4f5921f18b570e085c94aea3d24cc1a8d157d78f4e308",
       "installed_matches": true,
       "app_uid": "uid=10213(u0_a213) gid=10213(u0_a213)",
-      "first_launch_focus": "  mCurrentFocus=Window{ce53a4c u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+      "first_launch_focus": "  mCurrentFocus=Window{b855828 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+      "cold_home_repetitions": [
+        {
+          "trial": 0,
+          "focus": "  mCurrentFocus=Window{7d997c7 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+          "passed": true
+        },
+        {
+          "trial": 1,
+          "focus": "  mCurrentFocus=Window{63c4702 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+          "passed": true
+        },
+        {
+          "trial": 2,
+          "focus": "  mCurrentFocus=Window{2f6e455 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+          "passed": true
+        },
+        {
+          "trial": 3,
+          "focus": "  mCurrentFocus=Window{bd94322 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+          "passed": true
+        },
+        {
+          "trial": 4,
+          "focus": "  mCurrentFocus=Window{e4d7f35 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+          "passed": true
+        },
+        {
+          "trial": 5,
+          "focus": "  mCurrentFocus=Window{99b4c56 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+          "passed": true
+        }
+      ],
+      "cleanup": {
+        "release-keys": {
+          "passed": true
+        },
+        "disable-service": {
+          "passed": true
+        },
+        "disable-master": {
+          "passed": true
+        },
+        "clipboard": {
+          "passed": true
+        },
+        "stop-app": {
+          "passed": true
+        },
+        "preference-backup-removal": {
+          "passed": true
+        },
+        "preferences": {
+          "passed": true
+        },
+        "secure-enabled_accessibility_services": {
+          "passed": true
+        },
+        "secure-accessibility_enabled": {
+          "passed": true
+        },
+        "secure-show_ime_with_hard_keyboard": {
+          "passed": true
+        },
+        "verify-preferences": {
+          "passed": true
+        },
+        "verify-settings": {
+          "passed": true
+        },
+        "remove-input-helper": {
+          "passed": true
+        },
+        "unroot": {
+          "passed": true
+        },
+        "verify-adbd": {
+          "passed": true
+        },
+        "read-size": {
+          "passed": true
+        },
+        "read-density": {
+          "passed": true
+        }
+      },
       "clipboard_restored": true,
       "preferences_restored": true,
       "settings_restored": true,
       "adbd_restored": true,
       "size": "Physical size: 1920x1200",
-      "density": "Physical density: 240"
+      "density": "Physical density: 240",
+      "tests_completed": true
     }
   },
   "screenshots": [
@@ -523,373 +1227,403 @@
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/tablet-cleared-double-ctrl.png",
-      "origin": "artifacts/modifier-final-tablet-v2/cleared-double-ctrl.png",
+      "origin": "artifacts/modifier-corrected-final-tablet/cleared-double-ctrl.png",
       "layout": "tablet",
       "caption": "Clear removes the double Ctrl binding",
-      "sha256": "120a2cd5a01c32a5a026d24b67c33d777aec0046fb0972ba41409efada08771a",
+      "sha256": "9e51b591e339b7acf6407f5a849f5d0abb0880364d195926a9aeb9e978ea144d",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/tablet-either-side-conflict.png",
-      "origin": "artifacts/modifier-final-tablet-v2/either-side-conflict.png",
+      "origin": "artifacts/modifier-corrected-final-tablet/either-side-conflict.png",
       "layout": "tablet",
       "caption": "Either-side overlap names Create a note",
-      "sha256": "2654ee8958df95a69b28ff44064eb2a4c9412a4a0e49cb0783aa96e1912f10b8",
+      "sha256": "3dab0a54d5bafeff74a40fc6cbfdec0570df56379a86b35dc7cf7b6c3298a4c2",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/tablet-local-note-command.png",
-      "origin": "artifacts/modifier-final-tablet-v2/local-note-command.png",
+      "origin": "artifacts/modifier-corrected-final-tablet/local-note-command.png",
       "layout": "tablet",
       "caption": "Double Ctrl opens the normal note editor without the keyboard service",
-      "sha256": "94d970737b12b9fe042f3a5c006b8e30f8a710b3cc1e2aeb1afcf9a37b77d23c",
+      "sha256": "1940f2ca750f61aa1cef09d82aa818704913d94a144c7538774162308fd1a935",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/tablet-record-double-ctrl.png",
-      "origin": "artifacts/modifier-final-tablet-v2/record-double-ctrl.png",
+      "origin": "artifacts/modifier-corrected-final-tablet/record-double-ctrl.png",
       "layout": "tablet",
       "caption": "Inline double Ctrl recorder with Either/Left/Right controls",
-      "sha256": "11075fe7cc940d4291acc1d314795f90ec30ad4bc94eae2f00c338bedd3d1fa0",
+      "sha256": "25f230eb27ff740feb3f0ee403214d8078ae1fc888931ff6225d76aed5d1c99b",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/tablet-recording-pauses-tap.png",
-      "origin": "artifacts/modifier-final-tablet-v2/recording-pauses-tap.png",
+      "origin": "artifacts/modifier-corrected-final-tablet/recording-pauses-tap.png",
       "layout": "tablet",
       "caption": "Recorder captures Double Ctrl with an existing binding configured",
-      "sha256": "b34bf8106a2461322ad65216ae749beb6ef122ef4497996ca534030b5e30f98f",
+      "sha256": "0e3c77bffb7d541a10fb3eef80a0047e8c4b656dc6fa73eb007814d02de2fe0b",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/tablet-reset-default-chord.png",
-      "origin": "artifacts/modifier-final-tablet-v2/reset-default-chord.png",
+      "origin": "artifacts/modifier-corrected-final-tablet/reset-default-chord.png",
       "layout": "tablet",
       "caption": "Confirmed Reset restores Ctrl + Space",
-      "sha256": "a2950c0cee4d2c83936c4f3b14f8990bf2f35b9095b3c526b18ade0055f60054",
+      "sha256": "f573c7e2b5b3fbf115e5217f66c6959dba21441691cb7cf7a3cd8d924b10d488",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/tablet-restored-double-ctrl.png",
-      "origin": "artifacts/modifier-final-tablet-v2/restored-double-ctrl.png",
+      "origin": "artifacts/modifier-corrected-final-tablet/restored-double-ctrl.png",
       "layout": "tablet",
       "caption": "Version2 double Ctrl restored through backup import",
-      "sha256": "2c54067eb86368483e0438c5db38ca96730a1f983208fb1c4566151f42a99008",
+      "sha256": "e13ba144076a30ed7321cf6da5cf578df553991c4625de1d626a4b2b708e63c5",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/tablet-right-only-recording.png",
-      "origin": "artifacts/modifier-final-tablet-v2/right-only-recording.png",
+      "origin": "artifacts/modifier-corrected-final-tablet/right-only-recording.png",
       "layout": "tablet",
       "caption": "Right-only Ctrl selected in the inline recorder",
-      "sha256": "cefa8c26876dae21ab6c4444c6a1c950efa39f0ecc648dfb65b2103e34704215",
+      "sha256": "17c8ccea303d54f24584b359c1fe6900b8a8269f63118c7dfa22536c1b8d4713",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/tablet-right-side-resolved.png",
-      "origin": "artifacts/modifier-final-tablet-v2/right-side-resolved.png",
+      "origin": "artifacts/modifier-corrected-final-tablet/right-side-resolved.png",
       "layout": "tablet",
       "caption": "Unused Right side resolves the named conflict",
-      "sha256": "294da6317a38e5d9e887480c7bbd943a3226f2e54aa86d2f05d4a3808f7c0c61",
+      "sha256": "3663289a7071e7f2859702b5428461b51a1eb3354cb3905270f435cb4da1b717",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/tablet-saved-double-ctrl.png",
-      "origin": "artifacts/modifier-final-tablet-v2/saved-double-ctrl.png",
+      "origin": "artifacts/modifier-corrected-final-tablet/saved-double-ctrl.png",
       "layout": "tablet",
       "caption": "Double Ctrl saved in the command inspector",
-      "sha256": "c7aa07913cf3b9133bf4084492f784b9a2074c5e02f5fbcad6fe355069a2fd11",
+      "sha256": "0995415ea7c6d4046531dfb8126720aa694ed7f0d33d1efa2de670a7243f4c8e",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/phone-cleared-double-ctrl.png",
-      "origin": "artifacts/modifier-final-phone/cleared-double-ctrl.png",
+      "origin": "artifacts/modifier-corrected-final-phone/cleared-double-ctrl.png",
       "layout": "phone",
       "caption": "Clear removes the double Ctrl binding",
-      "sha256": "62d3263563ab43499a8e6e4302365a27a4acb443f55cd4cf6c6d89aa94fd638d",
+      "sha256": "98d2200f9e3f68bbeefccf6ec1a2791fb6ea5bb448da182c46bb443bd5bf1a10",
       "width": 1080,
       "height": 2340,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/phone-either-side-conflict.png",
-      "origin": "artifacts/modifier-final-phone/either-side-conflict.png",
+      "origin": "artifacts/modifier-corrected-final-phone/either-side-conflict.png",
       "layout": "phone",
       "caption": "Either-side overlap names Create a note",
-      "sha256": "ec367e09a09ca648d7edbe30bdc755e5be16799ab4ef33a079de0775e86ea04c",
+      "sha256": "a5b78d3a73de987af131913836473b81fc42aaac4b7b35b81e174bb3b1a7b577",
       "width": 1080,
       "height": 2340,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/phone-local-note-command.png",
-      "origin": "artifacts/modifier-final-phone/local-note-command.png",
+      "origin": "artifacts/modifier-corrected-final-phone/local-note-command.png",
       "layout": "phone",
       "caption": "Double Ctrl opens the normal note editor without the keyboard service",
-      "sha256": "c6b4ddb0386ae8d2258b076eadcedf8a4d4635da2a01ed7d6ffe5184b74bb363",
+      "sha256": "fc9b21b77960dd68fc0736220614288ea85d102be439f31ac0c7730f2c9a3cce",
       "width": 1080,
       "height": 2340,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/phone-record-double-ctrl.png",
-      "origin": "artifacts/modifier-final-phone/record-double-ctrl.png",
+      "origin": "artifacts/modifier-corrected-final-phone/record-double-ctrl.png",
       "layout": "phone",
       "caption": "Inline double Ctrl recorder with Either/Left/Right controls",
-      "sha256": "55b43d7ad4f341eba41c693a46f86651b9b8f117ad4d16466a8395d12a1c5004",
+      "sha256": "50a8ac4929d68132acea77f2465b8de738d6b4f87e5b478c5463ddb3d19d40a1",
       "width": 1080,
       "height": 2340,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/phone-recording-pauses-tap.png",
-      "origin": "artifacts/modifier-final-phone/recording-pauses-tap.png",
+      "origin": "artifacts/modifier-corrected-final-phone/recording-pauses-tap.png",
       "layout": "phone",
       "caption": "Recorder captures Double Ctrl with an existing binding configured",
-      "sha256": "8c37e539caae0b41b311d4d3dee859b13110d831963ff9f86f1b35de0a5c0854",
+      "sha256": "567e481c7b66b64313e146215c2f2b3552e61b530b84cd4f993994bc060e6a99",
       "width": 1080,
       "height": 2340,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/phone-reset-default-chord.png",
-      "origin": "artifacts/modifier-final-phone/reset-default-chord.png",
+      "origin": "artifacts/modifier-corrected-final-phone/reset-default-chord.png",
       "layout": "phone",
       "caption": "Confirmed Reset restores Ctrl + Space",
-      "sha256": "5990ad766f24b3d193d300ad81f94891d671d0f56d2541cb3948112471b4c87a",
+      "sha256": "118c7386827ef481a1bb0973e12ddd5d25bb37331575c69f01c14dfca6e1ca62",
       "width": 1080,
       "height": 2340,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/phone-restored-double-ctrl.png",
-      "origin": "artifacts/modifier-final-phone/restored-double-ctrl.png",
+      "origin": "artifacts/modifier-corrected-final-phone/restored-double-ctrl.png",
       "layout": "phone",
       "caption": "Version2 double Ctrl restored through backup import",
-      "sha256": "18c308d3f63b534e5d8c05763bee7eb631cbe367d90c60ccfcb3da04d249e9c1",
+      "sha256": "f24892dfc11a26000729eec3bff50e74e39cdec75e01e9ad24f263b59ed85dd9",
       "width": 1080,
       "height": 2340,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/phone-right-only-recording.png",
-      "origin": "artifacts/modifier-final-phone/right-only-recording.png",
+      "origin": "artifacts/modifier-corrected-final-phone/right-only-recording.png",
       "layout": "phone",
       "caption": "Right-only Ctrl selected in the inline recorder",
-      "sha256": "eb37b426fdaf72a64128d25c978c932de1a206e3ba63989bfe32bc172d452843",
+      "sha256": "43b402ac56da858737c33374a8e3feb1ac2196ef0d850e39b43a449290cb1484",
       "width": 1080,
       "height": 2340,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/phone-right-side-resolved.png",
-      "origin": "artifacts/modifier-final-phone/right-side-resolved.png",
+      "origin": "artifacts/modifier-corrected-final-phone/right-side-resolved.png",
       "layout": "phone",
       "caption": "Unused Right side resolves the named conflict",
-      "sha256": "d06f57a2eb8e2ed35152cac4f64588f0459f00692395647bdb4bf9e98b51088b",
+      "sha256": "847af274140edb89ed619aede108abf1618253c5fe7af638e813dfa6b4b75673",
       "width": 1080,
       "height": 2340,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/phone-saved-double-ctrl.png",
-      "origin": "artifacts/modifier-final-phone/saved-double-ctrl.png",
+      "origin": "artifacts/modifier-corrected-final-phone/saved-double-ctrl.png",
       "layout": "phone",
       "caption": "Double Ctrl saved in the command inspector",
-      "sha256": "82a57061b9cb2a01ab13d5cb1d8a1ad1bca32854806a3bbf97bc6fa51e5b47ea",
+      "sha256": "1585477ee3bd00e02fa280e1ff6fb87b626d5af29b332e56f8a0572b62e85902",
       "width": 1080,
       "height": 2340,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-capability-left-alt.png",
-      "origin": "artifacts/modifier-final-hardware-v3/capability-left-alt.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/capability-left-alt.png",
       "layout": "hardware",
       "caption": "Left Alt: palette invoked from Android Settings",
-      "sha256": "23e18d4f2c87bd1068562680d58a06427b70468a8ff8c6ea63edf430e16adc4f",
+      "sha256": "e568ff4b60a0da330cd1b929942bb5fe17a98b137d492dc053e89be5b25c90c5",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-capability-left-ctrl.png",
-      "origin": "artifacts/modifier-final-hardware-v3/capability-left-ctrl.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/capability-left-ctrl.png",
       "layout": "hardware",
       "caption": "Left Ctrl: palette invoked from Android Settings",
-      "sha256": "23e18d4f2c87bd1068562680d58a06427b70468a8ff8c6ea63edf430e16adc4f",
+      "sha256": "c2aa0d7399c7da5613199c759088557fa6fd6ce6c73f610888c9a425f1006ab6",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-capability-left-meta.png",
-      "origin": "artifacts/modifier-final-hardware-v3/capability-left-meta.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/capability-left-meta.png",
       "layout": "hardware",
       "caption": "Left Meta: did not invoke; Android Settings remains visible (limitation)",
-      "sha256": "125fb01e210b7a9feae7253e18e5cef411363a191dd1115067caab7c74b5cbc3",
+      "sha256": "9f7b29b0397b0454b8ae704f6d4d99f35ef2a09a218dbd8712957df1edd4a77b",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-capability-left-shift.png",
-      "origin": "artifacts/modifier-final-hardware-v3/capability-left-shift.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/capability-left-shift.png",
       "layout": "hardware",
       "caption": "Left Shift: palette invoked from Android Settings",
-      "sha256": "5484d438b15065f7e81cd019c5e530fa32ef78f5a81d23d0ad27fa9bea9a0525",
+      "sha256": "e568ff4b60a0da330cd1b929942bb5fe17a98b137d492dc053e89be5b25c90c5",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-capability-right-alt.png",
-      "origin": "artifacts/modifier-final-hardware-v3/capability-right-alt.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/capability-right-alt.png",
       "layout": "hardware",
       "caption": "Right Alt: palette invoked from Android Settings",
-      "sha256": "23e18d4f2c87bd1068562680d58a06427b70468a8ff8c6ea63edf430e16adc4f",
+      "sha256": "e568ff4b60a0da330cd1b929942bb5fe17a98b137d492dc053e89be5b25c90c5",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-capability-right-ctrl.png",
-      "origin": "artifacts/modifier-final-hardware-v3/capability-right-ctrl.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/capability-right-ctrl.png",
       "layout": "hardware",
       "caption": "Right Ctrl: palette invoked from Android Settings",
-      "sha256": "23e18d4f2c87bd1068562680d58a06427b70468a8ff8c6ea63edf430e16adc4f",
+      "sha256": "e568ff4b60a0da330cd1b929942bb5fe17a98b137d492dc053e89be5b25c90c5",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-capability-right-meta.png",
-      "origin": "artifacts/modifier-final-hardware-v3/capability-right-meta.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/capability-right-meta.png",
       "layout": "hardware",
       "caption": "Right Meta: did not invoke; Android Settings remains visible (limitation)",
-      "sha256": "640fb0f1f97c09c92b610a134e4d26080dfa9ed68819175964ef8d3b2f9a07c5",
+      "sha256": "9f7b29b0397b0454b8ae704f6d4d99f35ef2a09a218dbd8712957df1edd4a77b",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-capability-right-shift.png",
-      "origin": "artifacts/modifier-final-hardware-v3/capability-right-shift.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/capability-right-shift.png",
       "layout": "hardware",
       "caption": "Right Shift: palette invoked from Android Settings",
-      "sha256": "5484d438b15065f7e81cd019c5e530fa32ef78f5a81d23d0ad27fa9bea9a0525",
+      "sha256": "8ba9fea1f797a91204f6f8aec1c0cfc2545399357a471cb3014dd53aaac30305",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
+    },
+    {
+      "path": "docs/screenshots/parity-modifier-taps/hardware-double-tap-delivery-received.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/double-tap-delivery-received.png",
+      "layout": "hardware",
+      "caption": "Actual double Ctrl received by the inline Settings diagnostic; subsequent invocation also verified",
+      "sha256": "96d56ae1b12f3b26c9edb8e87936bd2fe36f1c25e14682ab2116e9dda35042c6",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-global-home-left.png",
-      "origin": "artifacts/modifier-final-hardware-v3/global-home-left.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/global-home-left.png",
       "layout": "hardware",
       "caption": "Immediate first frame after Linux left double Ctrl from Home; transitional layout, PNG/focus evidence only",
-      "sha256": "2af7f9641372e160a7ebd08376a067b2ed2189ce3dc8b20f48536a200a4595ee",
+      "sha256": "1cf2bf1487c663ca10bc4a693531ab00bf1b8818002bb74e0e474eb7b4aaf979",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-global-home-right.png",
-      "origin": "artifacts/modifier-final-hardware-v3/global-home-right.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/global-home-right.png",
       "layout": "hardware",
       "caption": "Either binding accepts right double Ctrl from Home",
-      "sha256": "cc1f350d996c12741f176ae20608503de5390cfe2299bc628b1481c1aca3fb65",
+      "sha256": "e9393a8832d8801a9fc0f7dc8844d1bed416fb9cd049562c0d381113c39cb3a7",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-global-settings.png",
-      "origin": "artifacts/modifier-final-hardware-v3/global-settings.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/global-settings.png",
       "layout": "hardware",
       "caption": "Linux double Ctrl opens the palette above Android Settings",
-      "sha256": "6dbc7a147e1265a0da50b13a86d128a5f7c2ec2b2e5d06c40042f9db2ca60c04",
+      "sha256": "a06e595f45ca13e2ad2a5e7d4d12eb9368e78a80d17e8db9a686116a9f89c0cd",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-ordinary-copy-paste.png",
-      "origin": "artifacts/modifier-final-hardware-v3/ordinary-copy-paste.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/ordinary-copy-paste.png",
       "layout": "hardware",
       "caption": "Actual Ctrl+A/C/V restores linuxcopy731492 with tap binding active",
-      "sha256": "92e0eaab33864fd61bb563163af575aeab08ad451096a31cfabf3df5cf3b8592",
+      "sha256": "a2d6dc5bafb1e156d571231c7d1beab0d5dd17eefd8b0a2307f6d1fd8de4d1c9",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-ordinary-replaced.png",
-      "origin": "artifacts/modifier-final-hardware-v3/ordinary-replaced.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/ordinary-replaced.png",
       "layout": "hardware",
       "caption": "Replacement query before Ctrl+A/V restores copied text",
-      "sha256": "9cda4f43c86ced750f12c73e2e6392bbdb66ba25aee2c127cea88bc4e3bc0ac6",
+      "sha256": "adc645e4094689073e737fb982d3e41b7b6e215354e941faa0da5398cb8cce8f",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-recording-pauses-global.png",
-      "origin": "artifacts/modifier-final-hardware-v3/recording-pauses-global.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/recording-pauses-global.png",
       "layout": "hardware",
       "caption": "Actual keyboard service leaves inline recording open, then resumes after Escape",
-      "sha256": "1d178749727a6dfed920890160bbd98d1fdff7c3581cac78913338747b97ce43",
+      "sha256": "804750d3f9ef2afab2565f9e1b0f2e43c9cb718c9bdcb3517ff8b7ce5d0e168d",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-right-ctrl-note-command.png",
-      "origin": "artifacts/modifier-final-hardware-v3/right-ctrl-note-command.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/right-ctrl-note-command.png",
       "layout": "hardware",
       "caption": "Right-only double Ctrl dispatches the normal Create a note command from Home",
-      "sha256": "134bcde73c39592d503d85c31f81152f3a65ca0c54e9ab10edd8d406da550497",
+      "sha256": "f25c67e5b5e392d0ebd469057835e69f35d0d58f9046c04e5f940d1e95657d30",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-right-only-activated.png",
-      "origin": "artifacts/modifier-final-hardware-v3/right-only-activated.png",
+      "origin": "artifacts/modifier-corrected-final-hardware/right-only-activated.png",
       "layout": "hardware",
       "caption": "Right-only binding activates with the right physical key",
-      "sha256": "7f7b7d230516429929e24fc9558d60be8fcab1e943f833b90383ef309ead534a",
+      "sha256": "a7db2f0bd9e3a58bc362fbc0d6c7f7584581126a741c44847809b9dea8243f7b",
       "width": 1920,
       "height": 1200,
-      "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+      "apk_sha256": "8ff881ce95ec90669105a3859ffeda2bdc675c265c9ea5faf2e26ed625324c0c"
     },
     {
       "path": "docs/screenshots/parity-modifier-taps/hardware-cold-failure.png",
       "origin": "artifacts/modifier-final-hardware-v2/failure.png",
       "layout": "hardware",
-      "caption": "Unexpected cold Home activation failure on the same APK pair; retained limitation, not a passing case",
+      "caption": "Historical untraced cold Home failure on reviewed dc28533 APK; not a final passing case",
       "sha256": "ef1d941fa05315a3d1993ac6e54dc84437e154a96463e6347ecf07a37cd57617",
       "width": 1920,
       "height": 1200,
       "apk_sha256": "9549bd312194cc774c637fdb684219651940278d5e08a5f112215d8ade3a1376"
+    },
+    {
+      "path": "docs/screenshots/parity-modifier-taps/diagnostic-cold-device-clock-500.png",
+      "origin": "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-02/state.png",
+      "layout": "diagnostic",
+      "caption": "Diagnostic negative: four valid Ctrl events arrived, but stale Home notification cancelled recognition; tracing build with experimental 500ms notification timeout",
+      "sha256": "b8ee45eaa2cde790ba053b1ef9e4363a0fc99fa23ce85c7b8cb6d6d7908f5536",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "04523f2110421cb7c417101d8d318686239e2bfebb641792707c41ab9b3b53b1"
+    },
+    {
+      "path": "docs/screenshots/parity-modifier-taps/diagnostic-cold-device-clock-fixed-500.png",
+      "origin": "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-02/state.png",
+      "layout": "diagnostic",
+      "caption": "Diagnostic fixed: stale Home notification interleaving preserves recognition and palette activation; tracing build with experimental 500ms notification timeout",
+      "sha256": "fae4b741ab48459427e19749443e57675003b68e34561c4e38c1effebace2c00",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "559d75f6ecd7ca04a19d10b49e175e44cac391c584d5f9f876d30810ee996b8d"
     }
   ],
   "xml": [
@@ -906,211 +1640,217 @@
       "node_count": 67
     },
     {
-      "path": "artifacts/modifier-final-tablet-v2/cleared-double-ctrl.xml",
-      "sha256": "bf9e2fd178754626c74ceb93aaf32ef9d2812b72844bcf837fd452afcb1a9512",
+      "path": "artifacts/modifier-corrected-final-tablet/cleared-double-ctrl.xml",
+      "sha256": "ece348ea88b0235db7d9585860e2ab3eddeabf589e1ee0f57163f7b21ff8e857",
       "screenshot": "docs/screenshots/parity-modifier-taps/tablet-cleared-double-ctrl.png",
       "node_count": 113
     },
     {
-      "path": "artifacts/modifier-final-tablet-v2/either-side-conflict.xml",
-      "sha256": "da7332700eeca8d8ecfa03cb09d606e2e27940f590b0b35b5f23efd5e6627d3b",
+      "path": "artifacts/modifier-corrected-final-tablet/either-side-conflict.xml",
+      "sha256": "9ceec2a73da100b78de07c6505e9de2aea88a94e1cdf6939d84fb3dc6085bb79",
       "screenshot": "docs/screenshots/parity-modifier-taps/tablet-either-side-conflict.png",
       "node_count": 134
     },
     {
-      "path": "artifacts/modifier-final-tablet-v2/local-note-command.xml",
-      "sha256": "12e8de76794f9213e7c01a9c9821fdbb21029301087f40e0237e4c2a529a1a01",
+      "path": "artifacts/modifier-corrected-final-tablet/local-note-command.xml",
+      "sha256": "a7d0b6eec4d29ce749334f6b00d8a361a6c7bb9540c5e277f3538f3c467e3be3",
       "screenshot": "docs/screenshots/parity-modifier-taps/tablet-local-note-command.png",
       "node_count": 237
     },
     {
-      "path": "artifacts/modifier-final-tablet-v2/record-double-ctrl.xml",
-      "sha256": "35a17016c3eeed2bbffc39aacbe527b5dd8cf46a452f0ec5696eb73a112a3ca4",
+      "path": "artifacts/modifier-corrected-final-tablet/record-double-ctrl.xml",
+      "sha256": "3d69bf228d52c76e979056f26d013146ff4d49672d42aeab6cc91157ffb8579c",
       "screenshot": "docs/screenshots/parity-modifier-taps/tablet-record-double-ctrl.png",
       "node_count": 132
     },
     {
-      "path": "artifacts/modifier-final-tablet-v2/recording-pauses-tap.xml",
-      "sha256": "54eca7748296b0a30be1d7ad2eb5b8d48b1d4d792fd763fb08e5bd373e7283bd",
+      "path": "artifacts/modifier-corrected-final-tablet/recording-pauses-tap.xml",
+      "sha256": "1d292a99828b30ae54680be851c2bb147ab69554772f9c95e976261c972e8638",
       "screenshot": "docs/screenshots/parity-modifier-taps/tablet-recording-pauses-tap.png",
       "node_count": 132
     },
     {
-      "path": "artifacts/modifier-final-tablet-v2/reset-default-chord.xml",
-      "sha256": "4c9fab1858907bf559094dabb5385daeb1e3c4f3747336ef44a0915a4d77eac7",
+      "path": "artifacts/modifier-corrected-final-tablet/reset-default-chord.xml",
+      "sha256": "126c31c9208c8f77c60cd9efb40b7649046e431ab85a3457dad0939ba5e155e4",
       "screenshot": "docs/screenshots/parity-modifier-taps/tablet-reset-default-chord.png",
       "node_count": 88
     },
     {
-      "path": "artifacts/modifier-final-tablet-v2/restored-double-ctrl.xml",
-      "sha256": "96d8210539498ec24442ae01fe69db149511b0ce859c1892f04f955570e890cf",
+      "path": "artifacts/modifier-corrected-final-tablet/restored-double-ctrl.xml",
+      "sha256": "59e3f41d7a7ae525ae7d40e99c3f5c7c4d82c588c9fa7d7cf62902e315f7857d",
       "screenshot": "docs/screenshots/parity-modifier-taps/tablet-restored-double-ctrl.png",
       "node_count": 89
     },
     {
-      "path": "artifacts/modifier-final-tablet-v2/right-only-recording.xml",
-      "sha256": "31f384d3c578d5d99689bc512e0c4238831e2b6f1e93bd9d0dae15b06ba290de",
+      "path": "artifacts/modifier-corrected-final-tablet/right-only-recording.xml",
+      "sha256": "9c721cb7a5eb266bd74c4c38c1c17f05f9e49bc2e16178db51b6b7204c38cbc6",
       "screenshot": "docs/screenshots/parity-modifier-taps/tablet-right-only-recording.png",
       "node_count": 132
     },
     {
-      "path": "artifacts/modifier-final-tablet-v2/right-side-resolved.xml",
-      "sha256": "2fa63537890aba254c39df97effda926f253e43960d53c83c68f50e212c95047",
+      "path": "artifacts/modifier-corrected-final-tablet/right-side-resolved.xml",
+      "sha256": "13d367e70dabd73a236aab6fa1a5c4fa15b4281198f13559884a9ffaeb37a58d",
       "screenshot": "docs/screenshots/parity-modifier-taps/tablet-right-side-resolved.png",
       "node_count": 133
     },
     {
-      "path": "artifacts/modifier-final-tablet-v2/saved-double-ctrl.xml",
-      "sha256": "ab864298eb8c7d15b823f76ca4f434175530c328eadfe759e4dbe97463f4909f",
+      "path": "artifacts/modifier-corrected-final-tablet/saved-double-ctrl.xml",
+      "sha256": "219f74be8ec976f8963fa9ad80087d48d1d5ede21c6981aaa11e3b6eef77ad1a",
       "screenshot": "docs/screenshots/parity-modifier-taps/tablet-saved-double-ctrl.png",
       "node_count": 116
     },
     {
-      "path": "artifacts/modifier-final-phone/cleared-double-ctrl.xml",
-      "sha256": "d73423e04a6f1b5e8b2131ff46a7746e29fb78bc38143bff3e9ecbb643af94cf",
+      "path": "artifacts/modifier-corrected-final-phone/cleared-double-ctrl.xml",
+      "sha256": "5a8e20c9b9cf1960f0bc96c995fe8ca0a5bedfae1c1b3364f778d5f61024f0bd",
       "screenshot": "docs/screenshots/parity-modifier-taps/phone-cleared-double-ctrl.png",
       "node_count": 83
     },
     {
-      "path": "artifacts/modifier-final-phone/either-side-conflict.xml",
-      "sha256": "3e084c78a43c3042cf4ab8fe2d5d81d504ddd9ab6a214c5727a0cb1b35bbd8fc",
+      "path": "artifacts/modifier-corrected-final-phone/either-side-conflict.xml",
+      "sha256": "06e03b99be74a1d993feb217459f48af75bed7dbb31ffac8b7aed54b6c2ae2df",
       "screenshot": "docs/screenshots/parity-modifier-taps/phone-either-side-conflict.png",
       "node_count": 96
     },
     {
-      "path": "artifacts/modifier-final-phone/local-note-command.xml",
-      "sha256": "9bb9647d55052146fd86adbc6c69b479545d1cbbca25b11f777a20965b60da05",
+      "path": "artifacts/modifier-corrected-final-phone/local-note-command.xml",
+      "sha256": "7441a821775cff4c7d88d6f9b70f3682f2cbc8ffc9356fc01510699e4b64ca28",
       "screenshot": "docs/screenshots/parity-modifier-taps/phone-local-note-command.png",
       "node_count": 230
     },
     {
-      "path": "artifacts/modifier-final-phone/record-double-ctrl.xml",
-      "sha256": "401a415f377f5cdde6ac75fa1785c32e1d4b15f9020370dd2831b576122c6458",
+      "path": "artifacts/modifier-corrected-final-phone/record-double-ctrl.xml",
+      "sha256": "64e37a608facf7b8641c6437f0bb12431bdb62d7e067bad80ca53eada164ae63",
       "screenshot": "docs/screenshots/parity-modifier-taps/phone-record-double-ctrl.png",
       "node_count": 96
     },
     {
-      "path": "artifacts/modifier-final-phone/recording-pauses-tap.xml",
-      "sha256": "427f01db3ea16b7fe26f305598a263737d819fe3901561c7b44d09b07804eaa4",
+      "path": "artifacts/modifier-corrected-final-phone/recording-pauses-tap.xml",
+      "sha256": "0755891eb89d7297e39ba8a87c424bd4497b9bec1e1d2cea7fe8a6b66069cd5f",
       "screenshot": "docs/screenshots/parity-modifier-taps/phone-recording-pauses-tap.png",
       "node_count": 100
     },
     {
-      "path": "artifacts/modifier-final-phone/reset-default-chord.xml",
-      "sha256": "cdcdcd0a4827b30df50e6af52ddc2c1f7eed27479053858928ee24eecad4381b",
+      "path": "artifacts/modifier-corrected-final-phone/reset-default-chord.xml",
+      "sha256": "6b059bdda908beb0633433fb23883211b3d0c018394b2f7b001cf45a2a742c29",
       "screenshot": "docs/screenshots/parity-modifier-taps/phone-reset-default-chord.png",
       "node_count": 83
     },
     {
-      "path": "artifacts/modifier-final-phone/restored-double-ctrl.xml",
-      "sha256": "4604a2119f32a10155774fec17065815ca61749d0324eeb23045d9c956786603",
+      "path": "artifacts/modifier-corrected-final-phone/restored-double-ctrl.xml",
+      "sha256": "734dc480effc7395c1be48cba0f0587ecf3ec6c1691e4a009a882f27beee5c7e",
       "screenshot": "docs/screenshots/parity-modifier-taps/phone-restored-double-ctrl.png",
       "node_count": 85
     },
     {
-      "path": "artifacts/modifier-final-phone/right-only-recording.xml",
-      "sha256": "ea0bf54c7a7703f6f2237a850c5a8040d81e7a413a7d327aff8342071ab55ef1",
+      "path": "artifacts/modifier-corrected-final-phone/right-only-recording.xml",
+      "sha256": "8727dc7a084d4c9b2f9ceda8ba9a5973cc433eb283001f17995a04749e832e3a",
       "screenshot": "docs/screenshots/parity-modifier-taps/phone-right-only-recording.png",
       "node_count": 96
     },
     {
-      "path": "artifacts/modifier-final-phone/right-side-resolved.xml",
-      "sha256": "d9fe068ffa9ad547a1fb4921add3f397672413a60ad5eac079aba57f860e2ff9",
+      "path": "artifacts/modifier-corrected-final-phone/right-side-resolved.xml",
+      "sha256": "9c3a7859c897feee52552942390ba361d09fad8a914f64f50e07c7514ec14ff8",
       "screenshot": "docs/screenshots/parity-modifier-taps/phone-right-side-resolved.png",
       "node_count": 98
     },
     {
-      "path": "artifacts/modifier-final-phone/saved-double-ctrl.xml",
-      "sha256": "09e848f881eeff05ce447d6da0467cb0d41ebe3585f1f4f69de0d0f56c9d87f1",
+      "path": "artifacts/modifier-corrected-final-phone/saved-double-ctrl.xml",
+      "sha256": "0fc382a09e3cb5b6ae7e2729444a44bad1743c2ee1572f06739588fde16339dd",
       "screenshot": "docs/screenshots/parity-modifier-taps/phone-saved-double-ctrl.png",
       "node_count": 86
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/capability-left-alt.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/capability-left-alt.xml",
       "sha256": "f25eddb6f90e96c638bb574ea7deaa1f37308fac5ac8650078a3c1faf01cfef4",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-capability-left-alt.png",
       "node_count": 54
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/capability-left-ctrl.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/capability-left-ctrl.xml",
       "sha256": "f25eddb6f90e96c638bb574ea7deaa1f37308fac5ac8650078a3c1faf01cfef4",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-capability-left-ctrl.png",
       "node_count": 54
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/capability-left-meta.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/capability-left-meta.xml",
       "sha256": "cf5e5899f81fe89bf3ece02952793701eac4903617b2536a05a2c55cc4d0f4d5",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-capability-left-meta.png",
       "node_count": 67
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/capability-left-shift.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/capability-left-shift.xml",
       "sha256": "f25eddb6f90e96c638bb574ea7deaa1f37308fac5ac8650078a3c1faf01cfef4",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-capability-left-shift.png",
       "node_count": 54
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/capability-right-alt.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/capability-right-alt.xml",
       "sha256": "f25eddb6f90e96c638bb574ea7deaa1f37308fac5ac8650078a3c1faf01cfef4",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-capability-right-alt.png",
       "node_count": 54
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/capability-right-ctrl.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/capability-right-ctrl.xml",
       "sha256": "f25eddb6f90e96c638bb574ea7deaa1f37308fac5ac8650078a3c1faf01cfef4",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-capability-right-ctrl.png",
       "node_count": 54
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/capability-right-meta.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/capability-right-meta.xml",
       "sha256": "cf5e5899f81fe89bf3ece02952793701eac4903617b2536a05a2c55cc4d0f4d5",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-capability-right-meta.png",
       "node_count": 67
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/capability-right-shift.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/capability-right-shift.xml",
       "sha256": "f25eddb6f90e96c638bb574ea7deaa1f37308fac5ac8650078a3c1faf01cfef4",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-capability-right-shift.png",
       "node_count": 54
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/global-home-right.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/double-tap-delivery-received.xml",
+      "sha256": "91e1bf23f96a2747c3de201d00db1b1cbfb4a4b5d82766ad293947ec2e5217d5",
+      "screenshot": "docs/screenshots/parity-modifier-taps/hardware-double-tap-delivery-received.png",
+      "node_count": 64
+    },
+    {
+      "path": "artifacts/modifier-corrected-final-hardware/global-home-right.xml",
       "sha256": "f25eddb6f90e96c638bb574ea7deaa1f37308fac5ac8650078a3c1faf01cfef4",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-global-home-right.png",
       "node_count": 54
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/global-settings.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/global-settings.xml",
       "sha256": "f25eddb6f90e96c638bb574ea7deaa1f37308fac5ac8650078a3c1faf01cfef4",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-global-settings.png",
       "node_count": 54
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/ordinary-copy-paste.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/ordinary-copy-paste.xml",
       "sha256": "9501a8e7b7800c59edda3ed8669451ad7e456c2079cb100ee54c1ea13998ad2e",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-ordinary-copy-paste.png",
       "node_count": 24
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/ordinary-replaced.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/ordinary-replaced.xml",
       "sha256": "233605fd924dba0c66e26c8c3f0e9fddf5f52d054a781c60d97b741c9777c8c4",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-ordinary-replaced.png",
       "node_count": 24
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/recording-pauses-global.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/recording-pauses-global.xml",
       "sha256": "718a0eda0ce92de81b44f0bf5ae8eb67151a78d7f5202009d0c7b85a4f19f64e",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-recording-pauses-global.png",
       "node_count": 106
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/right-ctrl-note-command.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/right-ctrl-note-command.xml",
       "sha256": "5ada2d58fe0d42795fdb27b3dc050f2b2cd2dc34ab3838b4042f7572e018055a",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-right-ctrl-note-command.png",
       "node_count": 23
     },
     {
-      "path": "artifacts/modifier-final-hardware-v3/right-only-activated.xml",
+      "path": "artifacts/modifier-corrected-final-hardware/right-only-activated.xml",
       "sha256": "f25eddb6f90e96c638bb574ea7deaa1f37308fac5ac8650078a3c1faf01cfef4",
       "screenshot": "docs/screenshots/parity-modifier-taps/hardware-right-only-activated.png",
       "node_count": 54
@@ -1118,21 +1858,24 @@
   ],
   "source_sha256": {
     "app/src/androidTest/java/dev/tinycast/android/ModifierHardwareClipboardTest.kt": "f777b4977f7009b9213a79161ea2aa025fd8e3fff6aab326ebd1b9332102eb25",
-    "app/src/androidTest/java/dev/tinycast/android/ModifierTapDeviceTest.kt": "e450682304d96af1760e217aeb75aa3766d7055ad3e938a7fceba15a0cf7d511",
-    "app/src/main/java/dev/tinycast/android/AndroidShortcuts.kt": "2c0a9ee504d97e11dd75156a928626c3fed8c985572ed106c1806832e19a7967",
+    "app/src/androidTest/java/dev/tinycast/android/ModifierTapDeviceTest.kt": "0aa5c3bb9504d8adb3096d9f0596da0fab91eac90de9cd4404a3ccb0f4657dba",
+    "app/src/main/java/dev/tinycast/android/AndroidShortcuts.kt": "10323960fcc8b7fa662d5a5fa080f37f776b8a8f27bb99eed1cc26babd18d330",
     "app/src/main/java/dev/tinycast/android/MainActivity.kt": "39fbe29a1bd03427d8fbb005afce1564cc17dd93164d8c7b19bea17658e72cce",
     "app/src/main/java/dev/tinycast/android/PaletteStore.kt": "d2dcb717db313f189b62abe34dbe2ba0687e6455ce065d69dbce67a30c739edd",
-    "app/src/main/java/dev/tinycast/android/SettingsActivity.kt": "c821378549659d9ddae00f76a8d35e30d879bd65d23f2355b9d42fe37d0957f2",
+    "app/src/main/java/dev/tinycast/android/SettingsActivity.kt": "adadf0eb03ba271acba44049be7fd460632019110a39eacba9af2a0354d20bd0",
     "app/src/main/java/dev/tinycast/android/ShortcutReadiness.kt": "83a422a837edc657f1f3faf94c155019eae73f1abcc8761379dcb2051ceed505",
     "app/src/main/java/dev/tinycast/android/ShortcutUi.kt": "394fadd7890bbb2dd5f851bd5a290ebf19ad4e05fae64c321e529eeccd35c632",
-    "app/src/main/java/dev/tinycast/android/Shortcuts.kt": "2a3dc799788213fb3b00765474b864091505e497335cea974ad28a34b9cfa108",
+    "app/src/main/java/dev/tinycast/android/Shortcuts.kt": "14e08d112e3cc5689a5717f68dce1334d3c2bf92f4a7cfbc2057fdc96418a9b2",
     "app/src/test/java/dev/tinycast/android/BackupPlannerTest.kt": "12a55d3644b5094b84cad2e88a5432738021fc8d7c59c232d4e5fc4c2c9a1454",
-    "app/src/test/java/dev/tinycast/android/ModifierTapTest.kt": "1b681c1c57de4b697bd82e9a1deed1056bf337f015191db271084fa079ba6340",
-    "scripts/test-modifier-taps-hardware.py": "d808f9ae7018e1a515db85df16a7f970454d6833eb775c8d240a10dd8296334b",
-    "scripts/test-modifier-taps.py": "79547c74f003c1890ba0b0495ef15dda09d392add21d3c9b0fde5b571e29f2f2"
+    "app/src/test/java/dev/tinycast/android/ModifierTapTest.kt": "bc0f6191ef2837018ca33a71010c1582cd39d0b3713c55acec4f91406a74d4fd",
+    "scripts/android_test_cleanup.py": "31a9c4e9a325af37366215754400e3097e29aecec5b80c1340c9c276e23276ec",
+    "scripts/modifier-test-input.c": "559df6f70d50a5733faefcc44a234dec59fce1697b7719c8c493a00b91029b04",
+    "scripts/test-modifier-taps-hardware.py": "76b24040fba2d9ae4a3983be44a2c6a280aa43f5e0f67f80b66728e0b7c17585",
+    "scripts/test-modifier-taps.py": "8cb08d228371c90f995ae2246ef0a92daf6c81724c11a1ac67374ed0dd347dab",
+    "scripts/tests/test_android_test_cleanup.py": "3ddb33bef0686c34c42fd15517d355eb41b8a7f71f2151761be48c832652c18f"
   },
   "jvm": {
-    "tests": 110,
+    "tests": 113,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -1142,26 +1885,256 @@
     "Warning": 42
   },
   "build_log": {
-    "path": "artifacts/modifier-final-build-v4.log",
-    "sha256": "509f1ad2014a2cca519861f7769355884fe615a7d7d3c387cea72a0319f75fd8"
+    "path": "artifacts/modifier-corrected-final-build.log",
+    "sha256": "6fe066e255a3cb03a3d52d56c3ed98ad38b47944341a19cdffa8aefaa3377778"
   },
   "saved_reports": {
-    "artifacts/modifier-final-reports/TEST-dev.tinycast.android.ShortcutReadinessTest.xml": "7b510ae8818ad49e3a910abb370ec31933760085f62e55dbdfc325a6b4f3e2cb",
-    "artifacts/modifier-final-reports/TEST-dev.tinycast.android.EmojiCatalogTest.xml": "8dd2757c816051ca6bd647552290b071ec26b73f7c611f023cfdf5a0b73311a8",
-    "artifacts/modifier-final-reports/TEST-dev.tinycast.android.SystemSettingsTest.xml": "abf789ec956b81be4484e287c902827341bd80f2108d63fccf4e2fdc3ecf5613",
-    "artifacts/modifier-final-reports/TEST-dev.tinycast.android.ModifierTapTest.xml": "3d167221e53d02ac732d341becf4b411b28bf85ecea144aae650d224a8654c5f",
-    "artifacts/modifier-final-reports/TEST-dev.tinycast.android.ShortcutTest.xml": "438b4ffa0b25c9b36991f01f92569826b9f629290f5fc39c3f8ba7938214e491",
-    "artifacts/modifier-final-reports/TEST-dev.tinycast.android.BackupPlannerTest.xml": "c9916ecc7607278e60c6c5a4c8a225a9cf267997cb4bff9bc4d38670b31f5c8c",
-    "artifacts/modifier-final-reports/TEST-dev.tinycast.android.FolderGrantTransactionTest.xml": "a960c203302af3d3c16f1faa95463e3824b1826336acf7a165e3c18b9574abe5",
-    "artifacts/modifier-final-reports/TEST-dev.tinycast.android.CommandEngineTest.xml": "07363a62349c2655be0f1cb5bcdf0682a506d25b5417f61657edf57dd890abf6",
-    "artifacts/modifier-final-reports/TEST-dev.tinycast.android.FolderIndexTest.xml": "003fd85cdb0bad5d8c5717cf725d5064227b9c4f3e2ce558c72386d9b97d927c",
-    "artifacts/modifier-final-reports/lint.xml": "80e7e011a6b934261731e2f50e0fb966b5c5f7a2d7aeb9280dc4a96a1cad5a56"
+    "artifacts/modifier-corrected-final-reports/TEST-dev.tinycast.android.ShortcutReadinessTest.xml": "782221d1de1e3725800a506ffb1acd0b8e5337daef09533034735f49a85f9271",
+    "artifacts/modifier-corrected-final-reports/TEST-dev.tinycast.android.EmojiCatalogTest.xml": "942adbc7b84937fd2406abcee0a74cbd850595e44659e490fad5cd5670c31df4",
+    "artifacts/modifier-corrected-final-reports/TEST-dev.tinycast.android.SystemSettingsTest.xml": "69416fbb5ced92fe807c75820aeea97218dd978ea91a42cc77dee4a57e55f873",
+    "artifacts/modifier-corrected-final-reports/TEST-dev.tinycast.android.ModifierTapTest.xml": "38047dd799921b638534c69ad48818c647fcc4455b79544105ee7cd1a99f69ec",
+    "artifacts/modifier-corrected-final-reports/TEST-dev.tinycast.android.ShortcutTest.xml": "ea0d27db41558ae76da6c18b63d5e0fb28780e3771bf6c1ca8e98c76813a2049",
+    "artifacts/modifier-corrected-final-reports/TEST-dev.tinycast.android.BackupPlannerTest.xml": "98127a8a11bc0c78fef4d184db339e5f6d3e919c1ae262241ed27f366a2a6f1c",
+    "artifacts/modifier-corrected-final-reports/TEST-dev.tinycast.android.FolderGrantTransactionTest.xml": "61a1f602b8dbcb4691e3b8da70861fda5c75e37d24ff21541545c66cd88a3863",
+    "artifacts/modifier-corrected-final-reports/TEST-dev.tinycast.android.CommandEngineTest.xml": "db25e9e19826bd8e0e93557f905e0a22485fe743cef3c9def3445b4b65529ed6",
+    "artifacts/modifier-corrected-final-reports/TEST-dev.tinycast.android.FolderIndexTest.xml": "1f7e48e120a8152769a79b870d4bb6f50371913a3352fe0cd909bde8d053dad6",
+    "artifacts/modifier-corrected-final-reports/lint.xml": "e0a85cd22e9dc25b42abecbd5725af6b228858f3a51d16b5cfa505dcf041d4a1"
   },
-  "hardware_runner_sha256": "d808f9ae7018e1a515db85df16a7f970454d6833eb775c8d240a10dd8296334b",
+  "hardware_runner_sha256": "76b24040fba2d9ae4a3983be44a2c6a280aa43f5e0f67f80b66728e0b7c17585",
   "window_negative_unit": {
-    "path": "artifacts/modifier-window-negative-unit.xml",
-    "sha256": "29abf9a43ddef68a0651bfdf66e979c69ed6ed7ee2310da0ae5c59ecc70c7f71",
-    "expected_failures": 1
+    "path": "artifacts/modifier-stale-window-negative.xml",
+    "sha256": "4db9238cfad7d337fe1a294797df91595b12c1253636977a08c0a6e96ad4fe40",
+    "expected_failures": 2
+  },
+  "cleanup_host_tests": {
+    "path": "artifacts/modifier-cleanup-unit.log",
+    "sha256": "1cc03e6f17938d9da1261264508b97777fa12c4bece040ab08a8f294b810dcbf",
+    "tests": 4
+  },
+  "cold_investigation": {
+    "experimental_notification_timeout_ms": 500,
+    "production_notification_timeout_ms": 100,
+    "diagnostic_logging": true,
+    "negative": {
+      "avd": "Droidcast_PR48_Tablet_API_36_27caf3",
+      "serial": "emulator-5590",
+      "cases": [
+        {
+          "trial": 0,
+          "app_pid": "16284",
+          "passed": true,
+          "focus": "  mCurrentFocus=Window{183d25 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+          "modifier_events_received": 4,
+          "recognized": true,
+          "dispatched": true,
+          "accepted": true
+        },
+        {
+          "trial": 1,
+          "app_pid": "16543",
+          "passed": true,
+          "focus": "  mCurrentFocus=Window{c9b532e u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+          "modifier_events_received": 4,
+          "recognized": true,
+          "dispatched": true,
+          "accepted": true
+        },
+        {
+          "trial": 2,
+          "app_pid": "16820",
+          "passed": false,
+          "focus": "  mCurrentFocus=Window{992875b u0 com.google.android.apps.nexuslauncher/com.google.android.apps.nexuslauncher.NexusLauncherActivity}",
+          "modifier_events_received": 4,
+          "recognized": false,
+          "dispatched": false,
+          "accepted": false
+        },
+        {
+          "trial": 3,
+          "app_pid": "17130",
+          "passed": true,
+          "focus": "  mCurrentFocus=Window{220e973 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+          "modifier_events_received": 4,
+          "recognized": true,
+          "dispatched": true,
+          "accepted": true
+        }
+      ],
+      "capabilities": [],
+      "completed": true,
+      "root_for_injection_only": true,
+      "settle_ms": 0,
+      "runner_sha256": "3ecad182bf0e2066462c0adf3d37874b14571046ddb327184a1b6112b3d8dfff",
+      "apk_sha256": "04523f2110421cb7c417101d8d318686239e2bfebb641792707c41ab9b3b53b1",
+      "test_apk_sha256": "dddec0f1cdcad9d170755b83c1fd87b4144d0078cf676e934cfed555c68865bc",
+      "installed_matches": true,
+      "app_uid": "uid=10213(u0_a213) gid=10213(u0_a213)",
+      "clipboard_restored": true,
+      "preferences_restored": true,
+      "settings_restored": true,
+      "adbd_restored": true,
+      "size": "Physical size: 1920x1200",
+      "density": "Physical density: 240"
+    },
+    "fixed": {
+      "avd": "Droidcast_PR48_Tablet_API_36_27caf3",
+      "serial": "emulator-5590",
+      "cases": [
+        {
+          "trial": 0,
+          "app_pid": "17789",
+          "passed": true,
+          "focus": "  mCurrentFocus=Window{d90d374 u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+          "modifier_events_received": 4,
+          "recognized": true,
+          "dispatched": true,
+          "accepted": true
+        },
+        {
+          "trial": 1,
+          "app_pid": "18053",
+          "passed": true,
+          "focus": "  mCurrentFocus=Window{f9de4ee u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+          "modifier_events_received": 4,
+          "recognized": true,
+          "dispatched": true,
+          "accepted": true
+        },
+        {
+          "trial": 2,
+          "app_pid": "18326",
+          "passed": true,
+          "focus": "  mCurrentFocus=Window{463084a u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+          "modifier_events_received": 4,
+          "recognized": true,
+          "dispatched": true,
+          "accepted": true
+        },
+        {
+          "trial": 3,
+          "app_pid": "18588",
+          "passed": true,
+          "focus": "  mCurrentFocus=Window{1e2d68d u0 dev.tinycast.android/dev.tinycast.android.MainActivity}",
+          "modifier_events_received": 4,
+          "recognized": true,
+          "dispatched": true,
+          "accepted": true
+        }
+      ],
+      "capabilities": [],
+      "completed": true,
+      "root_for_injection_only": true,
+      "settle_ms": 0,
+      "runner_sha256": "3ecad182bf0e2066462c0adf3d37874b14571046ddb327184a1b6112b3d8dfff",
+      "apk_sha256": "559d75f6ecd7ca04a19d10b49e175e44cac391c584d5f9f876d30810ee996b8d",
+      "test_apk_sha256": "dddec0f1cdcad9d170755b83c1fd87b4144d0078cf676e934cfed555c68865bc",
+      "installed_matches": true,
+      "app_uid": "uid=10213(u0_a213) gid=10213(u0_a213)",
+      "clipboard_restored": true,
+      "preferences_restored": true,
+      "settings_restored": true,
+      "adbd_restored": true,
+      "size": "Physical size: 1920x1200",
+      "density": "Physical density: 240"
+    },
+    "fixed_interleaving_trials": [
+      0,
+      2
+    ],
+    "scope": "Controlled delayed-notification experiment, not production binary certification or retrospective proof of the historical untraced miss. Old and fixed tracing builds use the same 500ms timeout and device-clock injector.",
+    "files": {
+      "artifacts/modifier-cold-investigation/diagnostic-AndroidShortcuts.kt": "4df1d018868b5795663f61065dc11be954e9c44b5d56feff00e25eae828baf97",
+      "artifacts/modifier-cold-investigation/reviewed-Shortcuts.kt": "2a3dc799788213fb3b00765474b864091505e497335cea974ad28a34b9cfa108",
+      "artifacts/modifier-cold-investigation/diagnostic.patch": "df263dea1cb7b5a9ffe2337460de35ee29876b169eea5c2241713b4450b91f3a",
+      "artifacts/modifier-cold-investigation/diagnostic-input.c": "635eaf4a3daa78c6d5abecb1dcec9a758a74b49eaf4a8d5dfbe03d37014dcfd0",
+      "artifacts/modifier-cold-investigation/diagnostic-Shortcuts.kt": "0c3fe28b5ffc6ed2a08774e11e94b104771d6ab2f91a2f678d78e3716ebe7d90",
+      "artifacts/modifier-cold-investigation/reviewed-AndroidShortcuts.kt": "2c0a9ee504d97e11dd75156a928626c3fed8c985572ed106c1806832e19a7967",
+      "artifacts/modifier-cold-investigation/diagnostic-keyboard_service.xml": "73445248a00255b935653d39123d77faf7f7d4e1fd68b851640079f3eff6646a",
+      "artifacts/modifier-cold-investigation/diagnostic-MainActivity.kt": "696b82fc474a031822f67a34fdf6b17adbf1855abc39a6dc2c5d2f87d0590ae8",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/runner.py": "3ecad182bf0e2066462c0adf3d37874b14571046ddb327184a1b6112b3d8dfff",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/input-capabilities.txt": "2f1cab5224345cb13f3d22e50e5521a6adca174f2e11c096e6e6caa264fc25c4",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/clipboard-save.log": "b116cf6d1d1b8515cba9b3dde558d2774bc30827a8a677077eb2890e07a33dc5",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/injection-0000.json": "e503aaee6daf48f57c4b718b91cfbaa51dae0b1af042a57a97dba3c6317ab248",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/results.json": "16a9dc1c18b9025a5cf906a3f912e21c5d4fb17d7d909a0d6862980c273b3947",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/injection-0001.json": "1a4dfd865aa5e1b9f6d913cfa5d743bf4643a98124a75e8c90dec06372d14588",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/clipboard-restore.log": "7c3665effa49c16d6182e1cf8e391e0c2834db4d1fa659cececfc8ba5b0453a4",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/app-debug-androidTest.apk": "dddec0f1cdcad9d170755b83c1fd87b4144d0078cf676e934cfed555c68865bc",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/injection-0002.json": "28515ba4a0f88c66ca156b153141c7f3a5996ac82f7e9415db1ad8a4b4226ae5",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/injection-0003.json": "cf20a63cc16e8ff9182ff223df39134edc4ddc08f6352b9a059f4c11ba6e7eb1",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/injection-0004.json": "41f837ccfaed8c516c64d976e6e61d0c6ac20f0db189133f8546121955557b18",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/app-debug.apk": "04523f2110421cb7c417101d8d318686239e2bfebb641792707c41ab9b3b53b1",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/runner.py": "3ecad182bf0e2066462c0adf3d37874b14571046ddb327184a1b6112b3d8dfff",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/input-capabilities.txt": "2f1cab5224345cb13f3d22e50e5521a6adca174f2e11c096e6e6caa264fc25c4",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/clipboard-save.log": "1af08606b139f8de29d1ee70377e67462a0b0c95ce457a8968fc1df40eaf853c",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/injection-0000.json": "373cbc08e5ff852d275c4259256b81c86c5987eabd62fd63273e62419a93ed26",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/results.json": "0d2313ed12f4435e69a3b24073b4f411ccdf9dce6a01005a270c51347343bbf0",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/injection-0001.json": "1eef25753e28f2e33b1e6fe4a2189aa4d8b6fbd442571a753e1d3a716f24d989",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/clipboard-restore.log": "40de78ff716065aa612ad0da8cb1f113e0518aae95cf22016306e3cfd1b21b4d",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/app-debug-androidTest.apk": "dddec0f1cdcad9d170755b83c1fd87b4144d0078cf676e934cfed555c68865bc",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/injection-0002.json": "af2bf3496b63d41ee6f1e0c136ce534dd7570e4b36d7557e322145a5e63440da",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/injection-0003.json": "a5be04d2b6a5d3b229cee40ee9ef5d6a761ded0dd5c7557d47c32433a0727bf3",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/injection-0004.json": "21444b6372bc4f4b2fa8e06fa74fd77233760e3cacace4f8c148ac005e9c3033",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/app-debug.apk": "559d75f6ecd7ca04a19d10b49e175e44cac391c584d5f9f876d30810ee996b8d",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-02/kernel-events.log": "540c3377cf0dc96d46b57b832f6de891c3356214840413713b4559c1d64dbe2f",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-02/filtered-events.log": "da7835093d60a42091be5eddf017bd471499e25447ce416651263c96befd912d",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-02/state.png": "fae4b741ab48459427e19749443e57675003b68e34561c4e38c1effebace2c00",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-02/app-events.log": "246d4a485c0c5cbeb954fa1b524ac8c653cbf1a33f70f138fbf300379f7b088b",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-03/kernel-events.log": "fbf85566e6633db4ffb297b9e7be55e3bc170784f9977be06c562542b68852d0",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-03/filtered-events.log": "fdd27117b9631f29e6b108501caecd1f23a47ea4bbd8bc06bd96c576faffd435",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-03/state.png": "1a709d753f06144da1a7eb6c8645445d57745943a67f81485fdbe0fadebecefa",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-03/app-events.log": "62280ebd70b8f3f05ddf7e0606f56152d49d339760f271abb26e8d452fe8f31b",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-01/kernel-events.log": "e2ac2157a3fb171adb631101d7cfc5e7f22d1d3511e34a6e180a6ffd594746aa",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-01/filtered-events.log": "5c08cd2a739de98e4d864732f9b83f9ae7ba7f3e5b6ce662df542f475cc3a64e",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-01/state.png": "33b21089ef414cc89b00282851ba0e2faa0e9c060804f6bf06eb7a6a0cfd40d1",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-01/app-events.log": "fafb994aaeebb7625b2bb64446269280fa6fa32e3aeda8caeba33d6d27c5456b",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-00/kernel-events.log": "42d6730dd3ec4c2bbf4a877d7a8919759b134bc2cb1009e6ff8cfe0fbf06afbe",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-00/filtered-events.log": "c20c1197e44dbf78ebf6c265be8934ed0a0d675feabe86d2d60e425b95b627e8",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-00/state.png": "b97e60f472d7dfdf9afcd0faff726088e9311ef984a406ca1d1a192e967aee9d",
+      "artifacts/modifier-cold-investigation/cold-device-clock-fixed-500/trial-00/app-events.log": "f68764841096b394039949eb2d4b15394c9ed05198cba293f394296b76e54af4",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-02/kernel-events.log": "46ec7cd2157fe10c8150e4dfe5b0077b93396fb5d7d0d600216f45dc986c92b5",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-02/filtered-events.log": "c371c2451c01009a9879d580c5071cf65f5549285b695362dadf709c6e966aaf",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-02/state.png": "b8ee45eaa2cde790ba053b1ef9e4363a0fc99fa23ce85c7b8cb6d6d7908f5536",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-02/app-events.log": "55f1e472e082e168e8b9ef5665eff3db45bc96966294164c5d7e125711639848",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-03/kernel-events.log": "25f41553d66c8ff882e2fa082151eb9beeffc7735139cda6ab059c5b0233377a",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-03/filtered-events.log": "4f94bb9bc7648296d27ac22acd9a627a7523796ffcd3ea112ee3c4278718cb01",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-03/state.png": "40c533c95f67aab87bef1f643ebbb1c032295bd576d3451290e1bab02302a164",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-03/app-events.log": "a6f019a5f36ccc1d04df2a538ec73c20b6c7f3dbd2de04f72636afc74974f5fb",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-01/kernel-events.log": "1a7e9308655826f816e5a84f6674d178a7b8d48636ac4290d85de48bfb056382",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-01/filtered-events.log": "05d01a583b6211cf9a7eee7a8846cc64cbb85bb7e1e209494d34ef35532d714b",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-01/state.png": "b9da86c5eec35439ec848ddf137e352bd5882177fa10bc669b3cdcaa7fbf0e4b",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-01/app-events.log": "a002e64b3e51c74ca8e54e35a9b0812f6e5fa139409383b1b9da866acd57ed2e",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-00/kernel-events.log": "7ed4eaad33f73d9884fd2478a9448c7a02b2262b4df9f94b56b7bcf4576228dd",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-00/filtered-events.log": "7e2be2b82157622712621f8a0c2526d62361fc68157beb2b6088671bdc9e60fa",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-00/state.png": "093acbaac1c6eca66fdd68dea99d96916006119974e4fa722c668c3a7e9a43a7",
+      "artifacts/modifier-cold-investigation/cold-device-clock-500/trial-00/app-events.log": "0230fe0b902f2cb33b739ffd92854d70ec2045ebd8a949ba4d191504101ac421"
+    },
+    "negative_timeline_ms": [
+      {
+        "event": "Ctrl DOWN",
+        "sent": 19391691,
+        "received": 19391695
+      },
+      {
+        "event": "Ctrl UP",
+        "sent": 19391731,
+        "received": 19391732
+      },
+      {
+        "event": "Ctrl DOWN",
+        "sent": 19391812,
+        "received": 19391813
+      },
+      {
+        "event": "Home window notification",
+        "sent": 19391288,
+        "received": 19391829
+      },
+      {
+        "event": "Ctrl UP",
+        "sent": 19391856,
+        "received": 19391857
+      }
+    ]
   },
   "unchanged_assets": {
     "assets/COPYING": "14609801e0e520dac851e75d993ca4c75c3842a3be468f6f7f04a16c03c824db",
@@ -1173,7 +2146,7 @@
     "assets/emoji-catalog.tsv": "e49f1cc09c6f487a6e7b55590ecc171dcff390f720a9ce3820fe2038810d5d66"
   },
   "limitations": [
-    "Unexpected cold Home failure on final APK pair; unchanged rerun passed without establishing cause or fix",
+    "Original untraced dc28533 Home failure has no retrospective cause proof; a controlled stale-notification cancellation race was separately reproduced and corrected",
     "Meta probes did not invoke on this emulator",
     "Home/Shift command attempt did not invoke; cause unestablished",
     "No physical/OEM/Lenovo/Fn/Globe/Hyper/single-tap certification",
@@ -1199,8 +2172,11 @@
     "modifier-final-hardware",
     "modifier-final-hardware-v2"
   ],
-  "unexpected_hardware_failure": {
-    "record": {
+  "historical_reviewed_validation": {
+    "head": "dc2853359ac0579108421c3d86293a4e24d7f691",
+    "manifest_path": "artifacts/modifier-reviewed-manifest.json",
+    "manifest_sha256": "3e0406afc3174a2122c188909c015612593a5d7f6e81aa6360be96c4e8e5b394",
+    "unexpected_hardware_run": {
       "avd": "Droidcast_PR48_Tablet_API_36_27caf3",
       "serial": "emulator-5590",
       "cases": [],
@@ -1218,10 +2194,6 @@
       "adbd_restored": true,
       "size": "Physical size: 1920x1200",
       "density": "Physical density: 240"
-    },
-    "record_path": "artifacts/modifier-final-hardware-v2/results.json",
-    "log_path": "artifacts/modifier-final-hardware-v2-run.log",
-    "log_sha256": "6ffca0682ceef9bf26648b908a5fbd5e7c6da96280508fc8ad4d3e160b4d08e7",
-    "cause": "unestablished; unchanged v3 rerun passes without demonstrating a fix"
+    }
   }
 }

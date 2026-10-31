@@ -30,13 +30,13 @@ internal fun modifierKey(code: Int, down: Boolean, start: Long, repeat: Int = 0)
         if (down) KeyEvent.ACTION_DOWN else KeyEvent.ACTION_UP, code, repeat, if (down) meta else 0,
         KeyCharacterMap.VIRTUAL_KEYBOARD, 0, 0, InputDevice.SOURCE_KEYBOARD)
 }
-internal fun doubleModifier(code: Int = KeyEvent.KEYCODE_CTRL_LEFT, holdMs: Long = 30) {
+internal fun doubleModifier(code: Int = KeyEvent.KEYCODE_CTRL_LEFT, holdMs: Long = 30, tapCount: Int = 2) {
     val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
-    repeat(2) {
+    repeat(tapCount) {
         val start = SystemClock.uptimeMillis()
         assertTrue(automation.injectInputEvent(modifierKey(code, true, start), true))
         try { SystemClock.sleep(holdMs) } finally { assertTrue(automation.injectInputEvent(modifierKey(code, false, start), true)) }
-        if (it == 0) SystemClock.sleep(60)
+        if (it < tapCount - 1) SystemClock.sleep(60)
     }
 }
 
@@ -146,6 +146,37 @@ class ModifierTapDeviceTest {
         compose.activityRule.scenario.onActivity { it.selectPage("general") }
         compose.onNodeWithTag("settings-edit-global").performScrollTo()
         capture("reset-default-chord", "Ctrl + Space")
+    }
+    @Test fun settingsDeviceChangeAndRemovalDiscardPartialRecording() {
+        recordGlobal()
+        val initial = compose.activity.store.recordingCandidate
+        for (removed in listOf(false, true)) {
+            doubleModifier(tapCount = 1)
+            compose.activityRule.scenario.onActivity {
+                if (removed) it.onInputDeviceRemoved(KeyCharacterMap.VIRTUAL_KEYBOARD)
+                else it.onInputDeviceChanged(KeyCharacterMap.VIRTUAL_KEYBOARD)
+            }
+            doubleModifier(tapCount = 1); compose.waitForIdle()
+            assertEquals(initial, compose.activity.store.recordingCandidate)
+            compose.activityRule.scenario.onActivity { it.store.clearModifierRecording() }
+        }
+        doubleModifier(); compose.waitForIdle()
+        assertEquals(ShortcutRules.doubleTap(ShortcutRules.CTRL), compose.activity.store.recordingCandidate)
+    }
+    @Test fun sideChoicesAndSaveAreReachableWithKeyboardWithoutPreparingScroll() {
+        recordGlobal(); doubleModifier(); compose.waitForIdle()
+        var tabs = 0
+        while (runCatching { compose.onNodeWithTag("shortcut-side-RIGHT").assertIsFocused() }.isFailure && tabs++ < 30) device.pressKeyCode(KeyEvent.KEYCODE_TAB)
+        compose.onNodeWithTag("shortcut-side-RIGHT").assertIsFocused().assertIsDisplayed()
+        device.pressKeyCode(KeyEvent.KEYCODE_ENTER)
+        compose.onNodeWithTag("shortcut-side-RIGHT").assertIsSelected()
+        val expected = ShortcutRules.doubleTap(ShortcutRules.CTRL, ModifierSide.RIGHT)
+        assertEquals(expected, compose.activity.store.recordingCandidate)
+        tabs = 0
+        while (runCatching { compose.onNodeWithTag("shortcut-save").assertIsFocused() }.isFailure && tabs++ < 10) device.pressKeyCode(KeyEvent.KEYCODE_TAB)
+        compose.onNodeWithTag("shortcut-save").assertIsFocused().assertIsDisplayed()
+        device.pressKeyCode(KeyEvent.KEYCODE_ENTER)
+        assertEquals(expected, PaletteStore(context.applicationContext as Application).shortcutConfiguration.bindings[ShortcutRules.PALETTE])
     }
     @Test fun codecMigratesOldChordsAndBackupRetainsDoubleTapSemantics() {
         val normal = ShortcutConfiguration()

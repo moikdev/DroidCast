@@ -20,7 +20,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class SettingsActivity : ComponentActivity() {
+class SettingsActivity : ComponentActivity(), android.hardware.input.InputManager.InputDeviceListener {
     val store: PaletteStore by viewModels()
     var page by mutableStateOf("general"); private set
     var requestedCommand by mutableStateOf<String?>(null); private set
@@ -45,6 +45,7 @@ class SettingsActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        getSystemService(android.hardware.input.InputManager::class.java).registerInputDeviceListener(this, null)
         ShortcutRuntime.settingsCreated(this)
         if (resources.configuration.smallestScreenWidthDp >= 600) window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN or android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
@@ -102,7 +103,13 @@ class SettingsActivity : ComponentActivity() {
         }
         return false
     }
-    override fun onDestroy() { ShortcutRuntime.settingsDestroyed(this); super.onDestroy() }
+    override fun onInputDeviceAdded(deviceId: Int) = Unit
+    override fun onInputDeviceChanged(deviceId: Int) { store.clearModifierRecording() }
+    override fun onInputDeviceRemoved(deviceId: Int) { store.clearModifierRecording() }
+    override fun onDestroy() {
+        getSystemService(android.hardware.input.InputManager::class.java).unregisterInputDeviceListener(this)
+        ShortcutRuntime.settingsDestroyed(this); super.onDestroy()
+    }
     override fun onStop() {
         if (observingConsent) { contentResolver.unregisterContentObserver(consentObserver); observingConsent = false }
         if (!isChangingConfigurations) store.cancelShortcutRecording(toManager = false)

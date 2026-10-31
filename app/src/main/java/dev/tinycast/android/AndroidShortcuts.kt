@@ -160,8 +160,8 @@ class PaletteShortcutService : AccessibilityService(), InputManager.InputDeviceL
         return super.onUnbind(intent)
     }
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        // Only type/window class are used for cancellation, never text or content.
-        if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) modifierShortcuts.windowChanged(event.className)
+        // Only type, window class and event time are used; never text or content.
+        if (event?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) modifierShortcuts.windowChanged(event.className, event.eventTime)
     }
     override fun onInterrupt() { modifierShortcuts.clear() }
     override fun onKeyEvent(event: KeyEvent): Boolean {

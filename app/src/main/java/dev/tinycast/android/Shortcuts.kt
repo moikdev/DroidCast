@@ -114,11 +114,12 @@ class ModifierTapDetector {
         const val MAX_GAP_MS = 350L
         const val MAX_DELIVERY_AGE_MS = 1000L
     }
-    private data class Tap(val device: Int, val key: Int, val releasedAt: Long)
-    private data class Press(val device: Int, val key: Int, val downTime: Long, val second: Boolean)
+    private data class Tap(val device: Int, val key: Int, val releasedAt: Long, val startedAt: Long)
+    private data class Press(val device: Int, val key: Int, val downTime: Long, val second: Boolean, val startedAt: Long)
     private var first: Tap? = null
     private var press: Press? = null
     private var lastTime: Long? = null
+    val sequenceStartedAt: Long? get() = press?.startedAt ?: first?.startedAt
     fun handle(input: ShortcutEngine.Input): KeyChord? {
         val time = input.eventTime
         if (input.canceled || time < 0 || input.downTime < 0 || input.receivedAt < 0 || time < input.downTime ||
@@ -136,14 +137,14 @@ class ModifierTapDetector {
             val second = previous != null && previous.device == input.device && previous.key == input.keyCode &&
                 time - previous.releasedAt in 0..MAX_GAP_MS
             first = null
-            press = Press(input.device, input.keyCode, input.downTime, second)
+            press = Press(input.device, input.keyCode, input.downTime, second, if (second) previous!!.startedAt else input.downTime)
             return null
         }
         val held = press
         press = null
         if (held == null || held.device != input.device || held.key != input.keyCode || held.downTime != input.downTime ||
             time - held.downTime !in 0..MAX_HOLD_MS) { first = null; return null }
-        if (!held.second) { first = Tap(input.device, input.keyCode, time); return null }
+        if (!held.second) { first = Tap(input.device, input.keyCode, time, held.startedAt); return null }
         first = null
         return ShortcutRules.doubleTap(family, ShortcutRules.modifierSide(input.keyCode))
     }
@@ -168,10 +169,13 @@ class ModifierShortcutObserver {
         return detector.handle(input)?.let(bindings::targetForTap)
     }
     fun clear() { detector.clear(); previousBindings = null; previousEpoch = null; previousRecordingEpoch = null }
-    fun windowChanged(windowClass: CharSequence?) {
-        // Showing/hiding the IME does not switch the app receiving keyboard input.
-        // No window text, package, hierarchy or history is inspected or retained.
-        if (windowClass?.toString() != "android.inputmethodservice.SoftInputWindow") clear()
+    fun windowChanged(windowClass: CharSequence?, eventTime: Long? = null) {
+        // IME visibility does not switch the app receiving keyboard input.
+        if (windowClass?.toString() == "android.inputmethodservice.SoftInputWindow") return
+        // Accessibility notifications may arrive after newer key events. A window
+        // change sent before this sequence cannot cancel keys typed in the new window.
+        val started = detector.sequenceStartedAt
+        if (eventTime == null || eventTime <= 0 || started == null || eventTime >= started) clear()
     }
 }
 

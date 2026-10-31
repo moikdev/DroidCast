@@ -211,4 +211,39 @@ class ModifierTapTest {
         assertEquals("calculator" to binding, observer.handle(event(false, 340, 300), config, recordingEpoch = 2))
     }
 
+    @Test fun delayedOldWindowNotificationCannotCancelNewerKeysFromCapturedTrace() {
+        val observer = ModifierShortcutObserver()
+        val binding = ShortcutRules.doubleTap(ShortcutRules.CTRL)
+        val config = mapOf(binding to ShortcutRules.PALETTE)
+        observer.handle(event(true, 19391691, received = 19391695), config)
+        observer.handle(event(false, 19391731, 19391691, received = 19391732), config)
+        observer.handle(event(true, 19391812, received = 19391813), config)
+        // Captured Home notification was sent before the first key, but delivered here.
+        observer.windowChanged("com.google.android.apps.nexuslauncher.NexusLauncherActivity", 19391288)
+        assertEquals(ShortcutRules.PALETTE to binding,
+            observer.handle(event(false, 19391856, 19391812, received = 19391857), config))
+    }
+    @Test fun windowChangesDuringEitherTapStillCancelIncludingUnknownAndEqualTime() {
+        val binding = ShortcutRules.doubleTap(ShortcutRules.CTRL)
+        val config = mapOf(binding to "calculator")
+        for (time in listOf<Long?>(null, -1L, 0L, 100L, 120L, 150L, 230L)) {
+            val observer = ModifierShortcutObserver()
+            observer.handle(event(true, 100), config)
+            observer.handle(event(false, 140, 100), config)
+            observer.handle(event(true, 220), config)
+            observer.windowChanged(null, time)
+            assertNull("Window event $time", observer.handle(event(false, 260, 220), config))
+        }
+    }
+    @Test fun delayedWindowNotificationBeforeFirstKeyAlsoPreservesAnInProgressFirstPress() {
+        val observer = ModifierShortcutObserver()
+        val binding = ShortcutRules.doubleTap(ShortcutRules.CTRL)
+        val config = mapOf(binding to "calculator")
+        observer.handle(event(true, 100), config)
+        observer.windowChanged("android.app.Dialog", 99)
+        observer.handle(event(false, 140, 100), config)
+        observer.handle(event(true, 220), config)
+        assertEquals("calculator" to binding, observer.handle(event(false, 260, 220), config))
+    }
+
 }
