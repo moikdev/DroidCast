@@ -63,7 +63,7 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
         SideEffect { if (searchValue != displayedSearch) searchValue = displayedSearch }
         val keyboard = LocalSoftwareKeyboardController.current
         val list = rememberLazyListState()
-        val results = store.results()
+        val results by remember(store) { derivedStateOf { store.results() } }
         val resultSelected = results.getOrNull(store.selected.coerceIn(0, (results.size - 1).coerceAtLeast(0)))
         val selected = if (store.dialog in setOf("actions", "alias", "delete")) store.actionCommand ?: resultSelected else resultSelected
         val snack = remember { SnackbarHostState() }
@@ -107,15 +107,20 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
             }
         }
         BackHandler(onBack = ::escape)
-        // Headers live inside their command's lazy item, so keyboard and scroll indices stay identical.
-        LaunchedEffect(store.selected, results.map { it.id }) {
-            if(results.isNotEmpty()) { store.selected=store.selected.coerceIn(results.indices); list.scrollToItem(store.selected) }
+        // Reset before the next measure so stable item keys cannot preserve an old
+        // anchor for a frame. Moving selection inside the viewport never scrolls.
+        val scrollHistory = remember { PaletteScrollHistory() }
+        val resultIds = remember(results) { results.map { it.id } }
+        SideEffect {
+            val index = store.selected.coerceIn(0, results.lastIndex.coerceAtLeast(0))
+            if (store.selected != index) store.selected = index
+            val layout = list.layoutInfo
+            val item = layout.visibleItemsInfo.firstOrNull { it.index == index }
+            val visible = item != null && item.offset >= layout.viewportStartOffset && item.offset + item.size <= layout.viewportEndOffset
+            if (scrollHistory.update(store.query, store.category, resultIds, index, visible)) list.requestScrollToItem(index)
         }
         LaunchedEffect(store.message) { store.message?.let { snack.showSnackbar(it, duration=SnackbarDuration.Short); if (store.message == it) store.message=null } }
-        BoxWithConstraints(Modifier.fillMaxSize().onPreviewKeyEvent { handleKey(it.nativeKeyEvent) }.safeDrawingPadding()) {
-            val wide = maxWidth >= 700.dp
-            val top = if(wide && maxHeight > 600.dp) maxHeight * .18f else 12.dp
-            val paletteHeight = minOf(PaletteTheme.height, maxHeight - top - 12.dp).coerceAtLeast(210.dp)
+        PaletteViewport(Modifier.onPreviewKeyEvent { handleKey(it.nativeKeyEvent) }) { wide, top, paletteHeight ->
             LaunchedEffect(store.focusEpoch) { focus.requestFocus(); if(wide) { delay(150); keyboard?.hide() } }
             Box(Modifier.fillMaxSize().clickable(indication=null, interactionSource=remember { MutableInteractionSource() }) { if(store.dialog==null) dismiss() }.testTag("palette-backdrop"))
             Column(Modifier.padding(top=top).padding(horizontal=12.dp).widthIn(max=PaletteTheme.width).fillMaxWidth().height(paletteHeight).align(Alignment.TopCenter)
@@ -126,7 +131,7 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
                 .clickable(indication=null, interactionSource=remember { MutableInteractionSource() }) {}.testTag("palette")) {
                 Row(Modifier.fillMaxWidth().height(PaletteTheme.header).padding(horizontal=16.dp),verticalAlignment=Alignment.CenterVertically) {
                     Glyph("search",PaletteTheme.secondary,22);Spacer(Modifier.width(12.dp))
-                    BasicTextField(value=displayedSearch,onValueChange={ searchValue = it; store.search(it.text) },modifier=Modifier.weight(1f).height(32.dp).focusRequester(focus).testTag("search"),
+                    BasicTextField(value=displayedSearch,onValueChange={ searchValue = it; if (it.text != store.query) store.search(it.text) },modifier=Modifier.weight(1f).height(32.dp).focusRequester(focus).testTag("search"),
                         textStyle=TextStyle(color=PaletteTheme.ink,fontSize=20.sp,lineHeight=26.sp),singleLine=true,cursorBrush=SolidColor(PaletteTheme.accent),
                         keyboardOptions=KeyboardOptions(imeAction=ImeAction.Search,showKeyboardOnFocus=!wide),keyboardActions=KeyboardActions(onSearch={selected?.let(run)}),
                         decorationBox={inner -> Box(Modifier.fillMaxSize(),contentAlignment=Alignment.CenterStart){if(store.query.isEmpty())Text("Search for apps and commands…",color=PaletteTheme.secondary,fontSize=20.sp,lineHeight=26.sp,maxLines=1,overflow=TextOverflow.Ellipsis);inner()}})

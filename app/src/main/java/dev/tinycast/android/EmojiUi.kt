@@ -58,7 +58,7 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
         return true
     }
     val grid = rememberLazyGridState()
-    val results = store.results()
+    val results by remember(store) { derivedStateOf { store.results() } }
     val selected = results.getOrNull(store.selected.coerceIn(0, (results.size - 1).coerceAtLeast(0)))
     fun copyEntry(entry: EmojiEntry) {
         copy(entry.glyph); store.copied(entry); copiedName = "Copied ${entry.name}"
@@ -79,21 +79,28 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
     }
     fun back() { if (menu) menu = false else if (store.query.isNotEmpty()) store.search("") else close() }
     BackHandler(onBack = ::back)
-    BoxWithConstraints(Modifier.fillMaxSize().safeDrawingPadding()) {
-        val wide = maxWidth >= 700.dp
-        val top = if (wide && maxHeight > 600.dp) maxHeight * .18f else 12.dp
-        val height = minOf(PaletteTheme.height, maxHeight - top - 12.dp).coerceAtLeast(210.dp)
+    PaletteViewport { wide, top, height ->
         val columns = ((minOf(maxWidth - 24.dp, PaletteTheme.width).value - 24) / 64).toInt().coerceIn(3, 10)
         LaunchedEffect(Unit) { searchFocus.requestFocus() }
         val imeVisible = WindowInsets.isImeVisible
-        LaunchedEffect(wide, imeVisible, keyboardRequested) {
-            if (wide && !keyboardRequested) {
+        LaunchedEffect(wide, imeVisible, keyboardRequested, windowFocused, searchFocused) {
+            if (wide && !keyboardRequested && windowFocused && searchFocused) {
+                // Let the replacement text-input session attach before hiding an
+                // IME inherited from the command search. No typing delay.
+                withFrameNanos { }
                 keyboard?.hide()
                 androidx.core.view.ViewCompat.getWindowInsetsController(view)?.hide(androidx.core.view.WindowInsetsCompat.Type.ime())
             }
         }
-        LaunchedEffect(store.selected, results.map { it.id }) {
-            if (results.isNotEmpty()) { store.selected = store.selected.coerceIn(results.indices); grid.scrollToItem(store.selected) }
+        val scrollHistory = remember { PaletteScrollHistory() }
+        val resultIds = remember(results) { results.map { it.id } }
+        SideEffect {
+            val index = store.selected.coerceIn(0, results.lastIndex.coerceAtLeast(0))
+            if (store.selected != index) store.selected = index
+            val layout = grid.layoutInfo
+            val item = layout.visibleItemsInfo.firstOrNull { it.index == index }
+            val visible = item != null && item.offset.y >= layout.viewportStartOffset && item.offset.y + item.size.height <= layout.viewportEndOffset
+            if (scrollHistory.update(store.query, store.filter, resultIds, index, visible)) grid.requestScrollToItem(index)
         }
         Box(Modifier.fillMaxSize().clickable(indication = null, interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }) { close() }.testTag("emoji-backdrop"))
         Column(Modifier.padding(top = top).padding(horizontal = 12.dp).widthIn(max = PaletteTheme.width).fillMaxWidth().height(height).align(Alignment.TopCenter)
