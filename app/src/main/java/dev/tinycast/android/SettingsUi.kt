@@ -232,6 +232,20 @@ private fun SettingsGeneral(activity: SettingsActivity) {
                 TextButton(onClick = activity::chooseAssistant, modifier = Modifier.testTag("settings-choose-assistant")) { Text(if (activity.assistantSelected) "Manage" else "Choose Droidcast", fontSize = 12.sp) }
             }
             HorizontalDivider(color = PaletteTheme.separator)
+            Column(Modifier.fillMaxWidth().padding(16.dp).testTag("settings-assistant-touch")) {
+                Text("Swipe from a bottom corner", fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                Text("With gesture navigation, swipe diagonally inward from either bottom corner. Enable ‘Swipe to invoke assistant’ in Android navigation settings if offered.",
+                    color = PaletteTheme.secondary, fontSize = 11.sp, lineHeight = 16.sp, modifier = Modifier.padding(top = 4.dp).testTag("settings-assistant-swipe"))
+                Spacer(Modifier.height(12.dp))
+                Text("Press and hold Home", fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                Text("With button navigation, hold the on-screen Home button. Enable ‘Hold Home for assistant’ if offered.",
+                    color = PaletteTheme.secondary, fontSize = 11.sp, lineHeight = 16.sp, modifier = Modifier.padding(top = 4.dp).testTag("settings-assistant-home"))
+                Text("Choose Droidcast as your digital assistant first. Android controls these gestures; some devices assign Home to Circle to Search or another system action. Adjust that mapping in Android settings. Names and availability vary by device.",
+                    color = PaletteTheme.tertiary, fontSize = 11.sp, lineHeight = 16.sp, modifier = Modifier.padding(top = 12.dp).testTag("settings-assistant-limitations"))
+                TextButton(onClick = activity::openNavigationSettings, modifier = Modifier.testTag("settings-assistant-navigation")) { Text("Navigation settings", fontSize = 12.sp) }
+                Text("Manual path: Android Settings → System → Gestures or Navigation mode.", color = PaletteTheme.tertiary, fontSize = 11.sp, lineHeight = 16.sp)
+            }
+            HorizontalDivider(color = PaletteTheme.separator)
             Text("Choosing Droidcast replaces your current digital assistant. It does not request microphone access, screen contents or screenshots. Use the app icon or Quick Settings tile to keep your existing assistant.", color = PaletteTheme.tertiary, fontSize = 11.sp, lineHeight = 16.sp, modifier = Modifier.padding(16.dp))
         }
         Spacer(Modifier.height(16.dp))

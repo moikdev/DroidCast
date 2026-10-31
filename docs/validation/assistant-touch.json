@@ -1,0 +1,1091 @@
+{
+  "base": "48e33d0ca1462dd0639bdec0d8058e3bfb8ea7cd",
+  "device": {
+    "serial": "emulator-5590",
+    "avd": "Droidcast_PR48_Tablet_API_36_27caf3",
+    "api": 36,
+    "abi": "arm64-v8a",
+    "tablet": "1920x1200/240dpi",
+    "phone": "1080x2340/420dpi override"
+  },
+  "records": {
+    "before-tablet": {
+      "apk_sha256": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
+      "source": "7f8dea50d5a367dd1c4d64c7cd073826b9b72d4e",
+      "base": "48e33d0ca1462dd0639bdec0d8058e3bfb8ea7cd",
+      "palette_preferences_restored": true,
+      "size": "Physical size: 1920x1200",
+      "density": "Physical density: 240"
+    },
+    "before-phone": {
+      "apk_sha256": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
+      "source": "7f8dea50d5a367dd1c4d64c7cd073826b9b72d4e",
+      "base": "48e33d0ca1462dd0639bdec0d8058e3bfb8ea7cd",
+      "palette_preferences_restored": true,
+      "size": "Physical size: 1920x1200",
+      "density": "Physical density: 240"
+    },
+    "tablet": {
+      "classes": "dev.tinycast.android.AssistantTouchDeviceTest,dev.tinycast.android.AssistantDeviceTest,dev.tinycast.android.SettingsDeviceTest,dev.tinycast.android.ShortcutReadinessDeviceTest",
+      "layout": "tablet",
+      "serial": "emulator-5590",
+      "avd": "Droidcast_PR48_Tablet_API_36_27caf3",
+      "expected": 26,
+      "completed": true,
+      "runner_sha256": "58609ca0a20bb06ac9a993a5c65a9f060dea78370e8e2fc924b668b7e14d81da",
+      "original_size": "Physical size: 1920x1200",
+      "original_density": "Physical density: 240",
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025",
+      "test_apk_sha256": "4c9775be18ed72c5e5be37b68eafd3de14c67db042b9f0c653d023ccaf3190c4",
+      "installed_matches": true,
+      "pass_statuses": 26,
+      "fail_statuses": 0,
+      "settings_restored": true,
+      "roles_restored": true,
+      "palette_preferences_restored": true,
+      "size_restored": "Physical size: 1920x1200",
+      "density_restored": "Physical density: 240",
+      "adbd": "uid=2000(shell) gid=2000(shell)",
+      "app_uid": "uid=10213(u0_a213) gid=10213(u0_a213)",
+      "api": "36",
+      "abi": "arm64-v8a",
+      "navigation_overlay_restored": true,
+      "passed_cases": [
+        {
+          "class": "dev.tinycast.android.AssistantTouchDeviceTest",
+          "test": "unsupportedNavigationPageFallsBackToRootSettingsWithoutChangingRoles"
+        },
+        {
+          "class": "dev.tinycast.android.AssistantTouchDeviceTest",
+          "test": "actualOnScreenHomeHoldOpensFromHomeAndSettingsWithKeyboardServiceOff"
+        },
+        {
+          "class": "dev.tinycast.android.AssistantTouchDeviceTest",
+          "test": "touchInstructionsRemainInlineAndDoNotEnableKeyboardAccess"
+        },
+        {
+          "class": "dev.tinycast.android.AssistantTouchDeviceTest",
+          "test": "navigationLinkOpensTheActualAndroidNavigationPage"
+        },
+        {
+          "class": "dev.tinycast.android.AssistantTouchDeviceTest",
+          "test": "rejectedSettingsLaunchShowsReadableManualRecovery"
+        },
+        {
+          "class": "dev.tinycast.android.AssistantTouchDeviceTest",
+          "test": "cornerSwipesOpenFromHomeAndSettingsWithKeyboardServiceOff"
+        },
+        {
+          "class": "dev.tinycast.android.AssistantDeviceTest",
+          "test": "systemAssistantOpensThePaletteWithoutKeyboardServiceFromHomeAndSettings"
+        },
+        {
+          "class": "dev.tinycast.android.AssistantDeviceTest",
+          "test": "assistantSelectionCancellationDoesNotChangeRoleOrEnableKeyboardService"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "sidebarAndSettingsSearchNavigateWithoutDialogs"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "backgroundCancelsInlineRecordingAndKeepsPriorChord"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "resetAndRecreationPreserveCollectionAndServiceConsent"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "commandCategoryAndAssignedFiltersReflectStoredBindings"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "escapeClosesSettingsWithContainerFocus"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "conflictAndAliasErrorsAreInlineAndDoNotReplaceExistingValues"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "inlineRecorderPreservesBackwardFocusAndActivationKeys"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "backupPreviewEscapeAndSystemPickerCancellationStayInWorkspace"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "setupExplainsApprovalConnectionRestrictedSettingsAndAlternativesInline"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "disconnectReconnectBeforeRedrawCannotCompleteAnOldProbe"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "explicitlyArmedNavigationChordsReachProbeAndRestoreNavigationAfterReceipt"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "componentParsingAcceptsFullAndShortNamesButNeverSimilarOwners"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "inlineCheckCancelsOnNavigationAndDoesNotEnableConsent"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "settingsSearchCancelsHiddenProbeAndLeavesNormalActivationAvailable"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "inlineCheckExpiresWithoutClaimingGlobalSuccess"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "approvalAndLiveConnectionUpdateAfterDisableAndShortNameReconnect"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "unassignedShortcutAndPermissionFreePaletteRemainAvailable"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "appInfoAndAccessibilityLinksOpenSpecificAndroidDestinations"
+        }
+      ],
+      "tests_log": {
+        "path": "artifacts/assistant47-final-tablet-v2/tests.log",
+        "sha256": "c25dfb9ea81031da677864ef733de9d9fe63820e80b76e60ea08f30559e56d1d"
+      }
+    },
+    "phone": {
+      "classes": "dev.tinycast.android.AssistantTouchDeviceTest,dev.tinycast.android.AssistantDeviceTest,dev.tinycast.android.SettingsDeviceTest,dev.tinycast.android.ShortcutReadinessDeviceTest",
+      "layout": "phone",
+      "serial": "emulator-5590",
+      "avd": "Droidcast_PR48_Tablet_API_36_27caf3",
+      "expected": 26,
+      "completed": true,
+      "runner_sha256": "58609ca0a20bb06ac9a993a5c65a9f060dea78370e8e2fc924b668b7e14d81da",
+      "original_size": "Physical size: 1920x1200",
+      "original_density": "Physical density: 240",
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025",
+      "test_apk_sha256": "4c9775be18ed72c5e5be37b68eafd3de14c67db042b9f0c653d023ccaf3190c4",
+      "installed_matches": true,
+      "pass_statuses": 26,
+      "fail_statuses": 0,
+      "settings_restored": true,
+      "roles_restored": true,
+      "palette_preferences_restored": true,
+      "size_restored": "Physical size: 1920x1200",
+      "density_restored": "Physical density: 240",
+      "adbd": "uid=2000(shell) gid=2000(shell)",
+      "app_uid": "uid=10213(u0_a213) gid=10213(u0_a213)",
+      "api": "36",
+      "abi": "arm64-v8a",
+      "navigation_overlay_restored": true,
+      "passed_cases": [
+        {
+          "class": "dev.tinycast.android.AssistantTouchDeviceTest",
+          "test": "unsupportedNavigationPageFallsBackToRootSettingsWithoutChangingRoles"
+        },
+        {
+          "class": "dev.tinycast.android.AssistantTouchDeviceTest",
+          "test": "actualOnScreenHomeHoldOpensFromHomeAndSettingsWithKeyboardServiceOff"
+        },
+        {
+          "class": "dev.tinycast.android.AssistantTouchDeviceTest",
+          "test": "touchInstructionsRemainInlineAndDoNotEnableKeyboardAccess"
+        },
+        {
+          "class": "dev.tinycast.android.AssistantTouchDeviceTest",
+          "test": "navigationLinkOpensTheActualAndroidNavigationPage"
+        },
+        {
+          "class": "dev.tinycast.android.AssistantTouchDeviceTest",
+          "test": "rejectedSettingsLaunchShowsReadableManualRecovery"
+        },
+        {
+          "class": "dev.tinycast.android.AssistantTouchDeviceTest",
+          "test": "cornerSwipesOpenFromHomeAndSettingsWithKeyboardServiceOff"
+        },
+        {
+          "class": "dev.tinycast.android.AssistantDeviceTest",
+          "test": "systemAssistantOpensThePaletteWithoutKeyboardServiceFromHomeAndSettings"
+        },
+        {
+          "class": "dev.tinycast.android.AssistantDeviceTest",
+          "test": "assistantSelectionCancellationDoesNotChangeRoleOrEnableKeyboardService"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "sidebarAndSettingsSearchNavigateWithoutDialogs"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "backgroundCancelsInlineRecordingAndKeepsPriorChord"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "resetAndRecreationPreserveCollectionAndServiceConsent"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "commandCategoryAndAssignedFiltersReflectStoredBindings"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "escapeClosesSettingsWithContainerFocus"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "conflictAndAliasErrorsAreInlineAndDoNotReplaceExistingValues"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "inlineRecorderPreservesBackwardFocusAndActivationKeys"
+        },
+        {
+          "class": "dev.tinycast.android.SettingsDeviceTest",
+          "test": "backupPreviewEscapeAndSystemPickerCancellationStayInWorkspace"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "setupExplainsApprovalConnectionRestrictedSettingsAndAlternativesInline"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "disconnectReconnectBeforeRedrawCannotCompleteAnOldProbe"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "explicitlyArmedNavigationChordsReachProbeAndRestoreNavigationAfterReceipt"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "componentParsingAcceptsFullAndShortNamesButNeverSimilarOwners"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "inlineCheckCancelsOnNavigationAndDoesNotEnableConsent"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "settingsSearchCancelsHiddenProbeAndLeavesNormalActivationAvailable"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "inlineCheckExpiresWithoutClaimingGlobalSuccess"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "approvalAndLiveConnectionUpdateAfterDisableAndShortNameReconnect"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "unassignedShortcutAndPermissionFreePaletteRemainAvailable"
+        },
+        {
+          "class": "dev.tinycast.android.ShortcutReadinessDeviceTest",
+          "test": "appInfoAndAccessibilityLinksOpenSpecificAndroidDestinations"
+        }
+      ],
+      "tests_log": {
+        "path": "artifacts/assistant47-final-phone-v2/tests.log",
+        "sha256": "22ac1aa3e0cb595d8e5c979720cb8f2c68b4e13749d162ee0f50351626781908"
+      }
+    }
+  },
+  "screenshots": [
+    {
+      "path": "docs/screenshots/parity-assistant-touch/before-tablet.png",
+      "origin": "artifacts/assistant47-before/tablet.png",
+      "layout": "tablet",
+      "caption": "Before: Android assistant card without explicit touch setup",
+      "sha256": "9fab3bd8cfcfe13b806bed8028f4518c9143a17de8d790d3d7ad3b3690d4640d",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/before-phone.png",
+      "origin": "artifacts/assistant47-before/phone.png",
+      "layout": "phone",
+      "caption": "Before: Android assistant card without explicit touch setup",
+      "sha256": "b673d6e4b9d2e17677243f6e5ff3862a227ccdfb76a9cad3a5acd4acac0acc1b",
+      "width": 1080,
+      "height": 2340,
+      "apk_sha256": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/tablet-before-home-hold-home.png",
+      "origin": "artifacts/assistant47-final-tablet-v2/before-home-hold-home.png",
+      "layout": "tablet",
+      "caption": "Before actual Home hold: launcher and on-screen Home control",
+      "sha256": "70815450e0ad74d54c00de0ace9be90bd5c974b562d0147976ab9bf8da355c78",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/tablet-before-home-hold-settings.png",
+      "origin": "artifacts/assistant47-final-tablet-v2/before-home-hold-settings.png",
+      "layout": "tablet",
+      "caption": "Before actual Home hold: Android Settings and on-screen Home control",
+      "sha256": "0acf095648db5bf11507feb26dce25f14078c412d08485fe9b1adcdb83fbc399",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/tablet-corner-left-home.png",
+      "origin": "artifacts/assistant47-final-tablet-v2/corner-left-home.png",
+      "layout": "tablet",
+      "caption": "Palette opened by actual left bottom-corner swipe from launcher",
+      "sha256": "3ddc8a461db33ea3d8dc74b7d5477836a337fd172870048a5929f53b6dc5b90f",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/tablet-corner-left-settings.png",
+      "origin": "artifacts/assistant47-final-tablet-v2/corner-left-settings.png",
+      "layout": "tablet",
+      "caption": "Palette opened by actual left bottom-corner swipe from Android Settings",
+      "sha256": "5c328c5f538824332605c4d78f44fbde8f456f267546e3011da6ae3b8ba3d0db",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/tablet-corner-right-home.png",
+      "origin": "artifacts/assistant47-final-tablet-v2/corner-right-home.png",
+      "layout": "tablet",
+      "caption": "Palette opened by actual right bottom-corner swipe from launcher",
+      "sha256": "835721c21d8ea16cb0b57f476147222dafc8b41162597ce949d64859fbab3d35",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/tablet-corner-right-settings.png",
+      "origin": "artifacts/assistant47-final-tablet-v2/corner-right-settings.png",
+      "layout": "tablet",
+      "caption": "Palette opened by actual right bottom-corner swipe from Android Settings",
+      "sha256": "5c328c5f538824332605c4d78f44fbde8f456f267546e3011da6ae3b8ba3d0db",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/tablet-home-hold-home.png",
+      "origin": "artifacts/assistant47-final-tablet-v2/home-hold-home.png",
+      "layout": "tablet",
+      "caption": "Palette opened by actual Home-button hold from launcher",
+      "sha256": "8beaf9d3135fa33e27004f375b0f78cb558dcb59970b20856e258f96d34bd32f",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/tablet-home-hold-settings.png",
+      "origin": "artifacts/assistant47-final-tablet-v2/home-hold-settings.png",
+      "layout": "tablet",
+      "caption": "Palette opened by actual Home-button hold from Android Settings",
+      "sha256": "caad031fc54c8326fb232186161110cf181303d5836e3d1439e1a86b8367e157",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/tablet-home-instructions.png",
+      "origin": "artifacts/assistant47-final-tablet-v2/home-instructions.png",
+      "layout": "tablet",
+      "caption": "After: inline Home-hold setup and OEM mapping limitations",
+      "sha256": "5fb7b489e764b623496918d1ae28e6f7e00eee0c09f5310df53a087566ee9f56",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/tablet-navigation-settings.png",
+      "origin": "artifacts/assistant47-final-tablet-v2/navigation-settings.png",
+      "layout": "tablet",
+      "caption": "Android navigation settings opened from the real link",
+      "sha256": "b478f7c8456fe5cb9735b0f857903ff8a97c645749deb4ab814fc39d0e3eac16",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/tablet-navigation-unavailable.png",
+      "origin": "artifacts/assistant47-final-tablet-v2/navigation-unavailable.png",
+      "layout": "tablet",
+      "caption": "Controlled rejected Settings launch: readable manual recovery",
+      "sha256": "5ce246c545405b5c95934cc4ae54e59d0a46ad4ebe22f50a8d5e6f34447235c0",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/tablet-root-settings-fallback.png",
+      "origin": "artifacts/assistant47-final-tablet-v2/root-settings-fallback.png",
+      "layout": "tablet",
+      "caption": "Controlled unavailable navigation page: actual Android Settings fallback",
+      "sha256": "00ba162432135450d142b0861e30493e6226648ac5e515d7f8b209bd66a493e4",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/tablet-swipe-instructions.png",
+      "origin": "artifacts/assistant47-final-tablet-v2/swipe-instructions.png",
+      "layout": "tablet",
+      "caption": "After: inline bottom-corner swipe setup",
+      "sha256": "5fb7b489e764b623496918d1ae28e6f7e00eee0c09f5310df53a087566ee9f56",
+      "width": 1920,
+      "height": 1200,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/phone-before-home-hold-home.png",
+      "origin": "artifacts/assistant47-final-phone-v2/before-home-hold-home.png",
+      "layout": "phone",
+      "caption": "Before actual Home hold: launcher and on-screen Home control",
+      "sha256": "e55a83737435780cd1c04e9f21363f73bd5b45409b7d11e381019bd3b49ac9a8",
+      "width": 1080,
+      "height": 2340,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/phone-before-home-hold-settings.png",
+      "origin": "artifacts/assistant47-final-phone-v2/before-home-hold-settings.png",
+      "layout": "phone",
+      "caption": "Before actual Home hold: Android Settings and on-screen Home control",
+      "sha256": "dda45d54365d277781fc79d946dabb32033db964202aa8e771a4ec2b226cbd9f",
+      "width": 1080,
+      "height": 2340,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/phone-corner-left-home.png",
+      "origin": "artifacts/assistant47-final-phone-v2/corner-left-home.png",
+      "layout": "phone",
+      "caption": "Palette opened by actual left bottom-corner swipe from launcher",
+      "sha256": "9c59ac2fba0783a1522a5e230ada2188681e67d8e350acf9ef12943c81ea9198",
+      "width": 1080,
+      "height": 2340,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/phone-corner-left-settings.png",
+      "origin": "artifacts/assistant47-final-phone-v2/corner-left-settings.png",
+      "layout": "phone",
+      "caption": "Palette opened by actual left bottom-corner swipe from Android Settings",
+      "sha256": "8f998b581e70a3bb65c5471bf002e1d7c6890e4fbdfc5d10ac6451ef31db0225",
+      "width": 1080,
+      "height": 2340,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/phone-corner-right-home.png",
+      "origin": "artifacts/assistant47-final-phone-v2/corner-right-home.png",
+      "layout": "phone",
+      "caption": "Palette opened by actual right bottom-corner swipe from launcher",
+      "sha256": "9c59ac2fba0783a1522a5e230ada2188681e67d8e350acf9ef12943c81ea9198",
+      "width": 1080,
+      "height": 2340,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/phone-corner-right-settings.png",
+      "origin": "artifacts/assistant47-final-phone-v2/corner-right-settings.png",
+      "layout": "phone",
+      "caption": "Palette opened by actual right bottom-corner swipe from Android Settings",
+      "sha256": "8f998b581e70a3bb65c5471bf002e1d7c6890e4fbdfc5d10ac6451ef31db0225",
+      "width": 1080,
+      "height": 2340,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/phone-home-hold-home.png",
+      "origin": "artifacts/assistant47-final-phone-v2/home-hold-home.png",
+      "layout": "phone",
+      "caption": "Palette opened by actual Home-button hold from launcher",
+      "sha256": "b9a227d3513db2679fdc4c4fb961a06d66743ddbc8ef538414e58c0c05e41506",
+      "width": 1080,
+      "height": 2340,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/phone-home-hold-settings.png",
+      "origin": "artifacts/assistant47-final-phone-v2/home-hold-settings.png",
+      "layout": "phone",
+      "caption": "Palette opened by actual Home-button hold from Android Settings",
+      "sha256": "7ef0b75c7598d3a9d39a94d2095ff3b92809315655679541c27cecb8e6a0f49d",
+      "width": 1080,
+      "height": 2340,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/phone-home-instructions.png",
+      "origin": "artifacts/assistant47-final-phone-v2/home-instructions.png",
+      "layout": "phone",
+      "caption": "After: inline Home-hold setup and OEM mapping limitations",
+      "sha256": "1d617339a728c888424290cf7999ad82677e0f7e60b961bcbd82dea1b97ee3fc",
+      "width": 1080,
+      "height": 2340,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/phone-navigation-settings.png",
+      "origin": "artifacts/assistant47-final-phone-v2/navigation-settings.png",
+      "layout": "phone",
+      "caption": "Android navigation settings opened from the real link",
+      "sha256": "84f2a339a94b33814fe100f937c9f885eeac79d28a2605c2c57eef036da2747f",
+      "width": 1080,
+      "height": 2340,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/phone-navigation-unavailable.png",
+      "origin": "artifacts/assistant47-final-phone-v2/navigation-unavailable.png",
+      "layout": "phone",
+      "caption": "Controlled rejected Settings launch: readable manual recovery",
+      "sha256": "4635e68e0697d1e453f50d689a86f7de2bdb2a204c3593be358fce7eb65a96e3",
+      "width": 1080,
+      "height": 2340,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/phone-root-settings-fallback.png",
+      "origin": "artifacts/assistant47-final-phone-v2/root-settings-fallback.png",
+      "layout": "phone",
+      "caption": "Controlled unavailable navigation page: actual Android Settings fallback",
+      "sha256": "8da717db0f210f14af1cbcb9e545b6168f490e2ee5f626f35fafe49224817a8b",
+      "width": 1080,
+      "height": 2340,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    },
+    {
+      "path": "docs/screenshots/parity-assistant-touch/phone-swipe-instructions.png",
+      "origin": "artifacts/assistant47-final-phone-v2/swipe-instructions.png",
+      "layout": "phone",
+      "caption": "After: inline bottom-corner swipe setup",
+      "sha256": "1d617339a728c888424290cf7999ad82677e0f7e60b961bcbd82dea1b97ee3fc",
+      "width": 1080,
+      "height": 2340,
+      "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025"
+    }
+  ],
+  "xml": [
+    {
+      "path": "artifacts/assistant47-before/tablet.xml",
+      "sha256": "31dd3197615fe53d373b0373204be618b13e48fd70b0ff0425cca649febfa5ef",
+      "screenshot": "docs/screenshots/parity-assistant-touch/before-tablet.png",
+      "node_count": 61,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-before/phone.xml",
+      "sha256": "6738ac656f419567407dfe4b01b034936fdf438cf640d8211e9d6cd6d53011e3",
+      "screenshot": "docs/screenshots/parity-assistant-touch/before-phone.png",
+      "node_count": 62,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/before-home-hold-home.xml",
+      "sha256": "9071a71a703e6d48807a4e659eda7257291f38b707a79139124ae083e1d0f4ed",
+      "screenshot": "docs/screenshots/parity-assistant-touch/tablet-before-home-hold-home.png",
+      "node_count": 86,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/before-home-hold-settings.xml",
+      "sha256": "db25060f79cf19255d7898212b7c95ed73c271e11afd4d80c5d43f9c03af2580",
+      "screenshot": "docs/screenshots/parity-assistant-touch/tablet-before-home-hold-settings.png",
+      "node_count": 108,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/corner-left-home.xml",
+      "sha256": "0d4d6bf3f943aa616e126cc28140e3ade2d7ae7e2ced7d4a683c6aabc5d0ea1e",
+      "screenshot": "docs/screenshots/parity-assistant-touch/tablet-corner-left-home.png",
+      "node_count": 54,
+      "palette_expected": true,
+      "palette_edit_text_present": true
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/corner-left-settings.xml",
+      "sha256": "8fcf951c818236989373e59584f05f9d8cecde288e6362d69b2bedccbc9b46d8",
+      "screenshot": "docs/screenshots/parity-assistant-touch/tablet-corner-left-settings.png",
+      "node_count": 0,
+      "palette_expected": true,
+      "palette_edit_text_present": false
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/corner-right-home.xml",
+      "sha256": "0d4d6bf3f943aa616e126cc28140e3ade2d7ae7e2ced7d4a683c6aabc5d0ea1e",
+      "screenshot": "docs/screenshots/parity-assistant-touch/tablet-corner-right-home.png",
+      "node_count": 54,
+      "palette_expected": true,
+      "palette_edit_text_present": true
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/corner-right-settings.xml",
+      "sha256": "41791e3fea776aed2a7efe132b3206f06b9ba58e07fcdf4423e16832266fe396",
+      "screenshot": "docs/screenshots/parity-assistant-touch/tablet-corner-right-settings.png",
+      "node_count": 26,
+      "palette_expected": true,
+      "palette_edit_text_present": false
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/home-hold-home.xml",
+      "sha256": "3082733f22072b1279a97071a2541b8330cc948620c27c939e9063a10b9fa2b8",
+      "screenshot": "docs/screenshots/parity-assistant-touch/tablet-home-hold-home.png",
+      "node_count": 54,
+      "palette_expected": true,
+      "palette_edit_text_present": true
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/home-hold-settings.xml",
+      "sha256": "8fcf951c818236989373e59584f05f9d8cecde288e6362d69b2bedccbc9b46d8",
+      "screenshot": "docs/screenshots/parity-assistant-touch/tablet-home-hold-settings.png",
+      "node_count": 0,
+      "palette_expected": true,
+      "palette_edit_text_present": false
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/home-instructions.xml",
+      "sha256": "448d9bab04a23fd3d03802c782ebb4da5cce1aca57b084d0997c01571b0201a6",
+      "screenshot": "docs/screenshots/parity-assistant-touch/tablet-home-instructions.png",
+      "node_count": 88,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/navigation-settings.xml",
+      "sha256": "1094bf59f71f74f636c6d97f77df205f30296bff6b57bb5a59390eb6f9c51613",
+      "screenshot": "docs/screenshots/parity-assistant-touch/tablet-navigation-settings.png",
+      "node_count": 75,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/navigation-unavailable.xml",
+      "sha256": "2bb44370b09e932fdb7c81eadd41b28ef85fc52c680456ba26f0173850d83c26",
+      "screenshot": "docs/screenshots/parity-assistant-touch/tablet-navigation-unavailable.png",
+      "node_count": 89,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/root-settings-fallback.xml",
+      "sha256": "e0f521d624b5376d919fcdfb41070a6951149537d06d4c46aca537b1d3e02ef6",
+      "screenshot": "docs/screenshots/parity-assistant-touch/tablet-root-settings-fallback.png",
+      "node_count": 90,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/swipe-instructions.xml",
+      "sha256": "448d9bab04a23fd3d03802c782ebb4da5cce1aca57b084d0997c01571b0201a6",
+      "screenshot": "docs/screenshots/parity-assistant-touch/tablet-swipe-instructions.png",
+      "node_count": 88,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/before-home-hold-home.xml",
+      "sha256": "0bfc6007d1276efbb047f870f4f7fea65f380f2c2ed9838f48bfb1a8b5378c8a",
+      "screenshot": "docs/screenshots/parity-assistant-touch/phone-before-home-hold-home.png",
+      "node_count": 84,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/before-home-hold-settings.xml",
+      "sha256": "d9c1ca9703843b27b80a23bea3e0a56fdc9c872dc5aeeb88bd4b0ac585dfe828",
+      "screenshot": "docs/screenshots/parity-assistant-touch/phone-before-home-hold-settings.png",
+      "node_count": 107,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/corner-left-home.xml",
+      "sha256": "8fcf951c818236989373e59584f05f9d8cecde288e6362d69b2bedccbc9b46d8",
+      "screenshot": "docs/screenshots/parity-assistant-touch/phone-corner-left-home.png",
+      "node_count": 0,
+      "palette_expected": true,
+      "palette_edit_text_present": false
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/corner-left-settings.xml",
+      "sha256": "f1265d19e6a88765114630083e3589d423c1a93ce96107460f5c2ba56b377522",
+      "screenshot": "docs/screenshots/parity-assistant-touch/phone-corner-left-settings.png",
+      "node_count": 172,
+      "palette_expected": true,
+      "palette_edit_text_present": false
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/corner-right-home.xml",
+      "sha256": "8fcf951c818236989373e59584f05f9d8cecde288e6362d69b2bedccbc9b46d8",
+      "screenshot": "docs/screenshots/parity-assistant-touch/phone-corner-right-home.png",
+      "node_count": 0,
+      "palette_expected": true,
+      "palette_edit_text_present": false
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/corner-right-settings.xml",
+      "sha256": "16cf2929ea36db037cdc775eb1675cd5cc58dbc79060c06347cfb678786bb8c3",
+      "screenshot": "docs/screenshots/parity-assistant-touch/phone-corner-right-settings.png",
+      "node_count": 224,
+      "palette_expected": true,
+      "palette_edit_text_present": true
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/home-hold-home.xml",
+      "sha256": "8fcf951c818236989373e59584f05f9d8cecde288e6362d69b2bedccbc9b46d8",
+      "screenshot": "docs/screenshots/parity-assistant-touch/phone-home-hold-home.png",
+      "node_count": 0,
+      "palette_expected": true,
+      "palette_edit_text_present": false
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/home-hold-settings.xml",
+      "sha256": "597ff04a831739e06649981fe5334bf0b3d1a6b61a7b815a0650e8fd99c1b2d9",
+      "screenshot": "docs/screenshots/parity-assistant-touch/phone-home-hold-settings.png",
+      "node_count": 225,
+      "palette_expected": true,
+      "palette_edit_text_present": true
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/home-instructions.xml",
+      "sha256": "6cf8159128618c022bf100288fd4a8b4db3a8564ace9dd9e4ebca550030226f2",
+      "screenshot": "docs/screenshots/parity-assistant-touch/phone-home-instructions.png",
+      "node_count": 77,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/navigation-settings.xml",
+      "sha256": "7bb072f0f1ae3ffcb85abbeb908bddfe668b83b68f81955803292f455500405b",
+      "screenshot": "docs/screenshots/parity-assistant-touch/phone-navigation-settings.png",
+      "node_count": 75,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/navigation-unavailable.xml",
+      "sha256": "45d3b400b4400ddc88bfe7674c534d0f281d667a1f0930e7ac5462f893ac4340",
+      "screenshot": "docs/screenshots/parity-assistant-touch/phone-navigation-unavailable.png",
+      "node_count": 80,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/root-settings-fallback.xml",
+      "sha256": "dd711dc12df4ad74378d9052f9f3832809e565b5b1660a0a450aec0bd1bda415",
+      "screenshot": "docs/screenshots/parity-assistant-touch/phone-root-settings-fallback.png",
+      "node_count": 73,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/swipe-instructions.xml",
+      "sha256": "40ab8876466622a13917225e5496e9c9c2bb2bac1c97049bf0e9041a989649b8",
+      "screenshot": "docs/screenshots/parity-assistant-touch/phone-swipe-instructions.png",
+      "node_count": 77,
+      "palette_expected": false,
+      "palette_edit_text_present": null
+    }
+  ],
+  "touch_events": [
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/corner-left-home-touch.json",
+      "sha256": "71ac5a89e55d4d709b65ba2b7d6aa38eae5e5d79382cf1ef9e08c6b31702ed55",
+      "layout": "tablet",
+      "events": {
+        "from_x": 3,
+        "from_y": 1197,
+        "to_x": 195,
+        "to_y": 1005,
+        "steps": 70,
+        "source": "UiDevice touchscreen swipe"
+      }
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/corner-left-settings-touch.json",
+      "sha256": "71ac5a89e55d4d709b65ba2b7d6aa38eae5e5d79382cf1ef9e08c6b31702ed55",
+      "layout": "tablet",
+      "events": {
+        "from_x": 3,
+        "from_y": 1197,
+        "to_x": 195,
+        "to_y": 1005,
+        "steps": 70,
+        "source": "UiDevice touchscreen swipe"
+      }
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/corner-right-home-touch.json",
+      "sha256": "f3f17938de493c5bd85b638a9f5fb9d7f872e920feb694940c700064ee015f09",
+      "layout": "tablet",
+      "events": {
+        "from_x": 1917,
+        "from_y": 1197,
+        "to_x": 1725,
+        "to_y": 1005,
+        "steps": 70,
+        "source": "UiDevice touchscreen swipe"
+      }
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/corner-right-settings-touch.json",
+      "sha256": "f3f17938de493c5bd85b638a9f5fb9d7f872e920feb694940c700064ee015f09",
+      "layout": "tablet",
+      "events": {
+        "from_x": 1917,
+        "from_y": 1197,
+        "to_x": 1725,
+        "to_y": 1005,
+        "steps": 70,
+        "source": "UiDevice touchscreen swipe"
+      }
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/home-hold-home-touch.json",
+      "sha256": "b78df5fc8ada10163fa57111ee62dffcabc535aeb97d3373438a942b5240cebb",
+      "layout": "tablet",
+      "events": {
+        "x": 1560,
+        "y": 1098,
+        "held_ms": 1321,
+        "source": "touchscreen",
+        "down_injected": true,
+        "up_injected": true,
+        "render_frames": 26
+      }
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/home-hold-settings-touch.json",
+      "sha256": "fc5693ac46157aa1a6a3d8a06c64608b0197d7e5238dfdd34d2ce1cc3f0aa804",
+      "layout": "tablet",
+      "events": {
+        "x": 1560,
+        "y": 1158,
+        "held_ms": 1227,
+        "source": "touchscreen",
+        "down_injected": true,
+        "up_injected": true,
+        "render_frames": 36
+      }
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/corner-left-home-touch.json",
+      "sha256": "92117c23097692a4371070233539212c534d51f9b6211a5c448c5e9559cba890",
+      "layout": "phone",
+      "events": {
+        "from_x": 3,
+        "from_y": 2337,
+        "to_x": 339,
+        "to_y": 2001,
+        "steps": 70,
+        "source": "UiDevice touchscreen swipe"
+      }
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/corner-left-settings-touch.json",
+      "sha256": "92117c23097692a4371070233539212c534d51f9b6211a5c448c5e9559cba890",
+      "layout": "phone",
+      "events": {
+        "from_x": 3,
+        "from_y": 2337,
+        "to_x": 339,
+        "to_y": 2001,
+        "steps": 70,
+        "source": "UiDevice touchscreen swipe"
+      }
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/corner-right-home-touch.json",
+      "sha256": "427a264ccf89bfb658dae75e6de84af16972485fb0a72412194f0abe07dc49ff",
+      "layout": "phone",
+      "events": {
+        "from_x": 1077,
+        "from_y": 2337,
+        "to_x": 741,
+        "to_y": 2001,
+        "steps": 70,
+        "source": "UiDevice touchscreen swipe"
+      }
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/corner-right-settings-touch.json",
+      "sha256": "427a264ccf89bfb658dae75e6de84af16972485fb0a72412194f0abe07dc49ff",
+      "layout": "phone",
+      "events": {
+        "from_x": 1077,
+        "from_y": 2337,
+        "to_x": 741,
+        "to_y": 2001,
+        "steps": 70,
+        "source": "UiDevice touchscreen swipe"
+      }
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/home-hold-home-touch.json",
+      "sha256": "dfb1f48edd5843d44cb4d09c85af2fe6bd4b3b1102b82ba74e4cc7eac05f3a71",
+      "layout": "phone",
+      "events": {
+        "x": 539,
+        "y": 2277,
+        "held_ms": 1219,
+        "source": "touchscreen",
+        "down_injected": true,
+        "up_injected": true,
+        "render_frames": 50
+      }
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/home-hold-settings-touch.json",
+      "sha256": "1bef9a989a9e2f0dd62d058ab58108396927340601a9341a7b629cda9f65fb42",
+      "layout": "phone",
+      "events": {
+        "x": 539,
+        "y": 2277,
+        "held_ms": 1227,
+        "source": "touchscreen",
+        "down_injected": true,
+        "up_injected": true,
+        "render_frames": 62
+      }
+    }
+  ],
+  "home_controls": [
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/before-home-hold-home-control.json",
+      "sha256": "8c89ed93849b8b0692006136b27f39ad98a78dc4e1a81163e6e79cf01be88605",
+      "layout": "tablet",
+      "control": {
+        "resource": "com.google.android.apps.nexuslauncher:id/home",
+        "left": 1527,
+        "top": 1065,
+        "right": 1593,
+        "bottom": 1131,
+        "home_exposed_in_xml": true
+      }
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet-v2/before-home-hold-settings-control.json",
+      "sha256": "5d3b360f0bd2519812b2fa97579af2122195527a508072ed27b010c23251e3ae",
+      "layout": "tablet",
+      "control": {
+        "resource": "com.google.android.apps.nexuslauncher:id/home",
+        "left": 1527,
+        "top": 1125,
+        "right": 1593,
+        "bottom": 1191,
+        "home_exposed_in_xml": true
+      }
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/before-home-hold-home-control.json",
+      "sha256": "104544d969c734c9e56161444e70bb295a82e9df6370ed744e591c871ad73e47",
+      "layout": "phone",
+      "control": {
+        "resource": "com.google.android.apps.nexuslauncher:id/home",
+        "left": 434,
+        "top": 2219,
+        "right": 644,
+        "bottom": 2335,
+        "home_exposed_in_xml": true
+      }
+    },
+    {
+      "path": "artifacts/assistant47-final-phone-v2/before-home-hold-settings-control.json",
+      "sha256": "104544d969c734c9e56161444e70bb295a82e9df6370ed744e591c871ad73e47",
+      "layout": "phone",
+      "control": {
+        "resource": "com.google.android.apps.nexuslauncher:id/home",
+        "left": 434,
+        "top": 2219,
+        "right": 644,
+        "bottom": 2335,
+        "home_exposed_in_xml": true
+      }
+    }
+  ],
+  "source_sha256": {
+    "app/src/main/java/dev/tinycast/android/AssistantActivation.kt": "b5855f87a029362bd06a63136dea7a1572fff716d0c302056f2a3647d9d95560",
+    "app/src/main/java/dev/tinycast/android/SettingsActivity.kt": "825e9a13c38a8a33bff7b0cea7ff443dec075e51b52c531b0d2e9b015795ec70",
+    "app/src/main/java/dev/tinycast/android/SettingsUi.kt": "c92e6577ffb2cbcf3c3a5771a52d6820531d7e22e4064a1e73ba9ec2ae7ae185",
+    "app/src/androidTest/java/dev/tinycast/android/AssistantTouchDeviceTest.kt": "bd626c2d62ae325845d5d8f89dfbcfdbf0c467d330a4f2d5ae2466a85828cd4a",
+    "app/src/androidTest/java/dev/tinycast/android/AssistantDeviceTest.kt": "1ecebcf20fe9aa7aa63701c81500195eddd1ae88618d89f31105fecc58189b6b",
+    "scripts/test-assistant-touch.py": "58609ca0a20bb06ac9a993a5c65a9f060dea78370e8e2fc924b668b7e14d81da",
+    "app/src/androidTest/java/dev/tinycast/android/SettingsDeviceTest.kt": "41d422c05a95534db94c05b1317f9ea74ecabeef1634a05515d5ae93ab4f17e5"
+  },
+  "apk_sha256": "a4870145a7f21ec52f28adc02a76aabadac73da16b423bbdddbc80f456f69025",
+  "test_apk_sha256": "4c9775be18ed72c5e5be37b68eafd3de14c67db042b9f0c653d023ccaf3190c4",
+  "jvm": {
+    "tests": 89,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "Error": 0,
+    "Warning": 42
+  },
+  "build_log": {
+    "path": "artifacts/assistant47-final-build-v2.log",
+    "sha256": "83174112d7c432058a7b1baa48cb56555fc73c4d9aeb1528d82790133b607817"
+  },
+  "unchanged_assets": {
+    "assets/COPYING": "14609801e0e520dac851e75d993ca4c75c3842a3be468f6f7f04a16c03c824db",
+    "assets/REACT-LICENSE": "da6d3703ed11cbe42bd212c725957c98da23cbff1998c05fa4b3d976d1a58e93",
+    "assets/RaycastRuntime.generated.js": "b306b45453cc8507037ff2822066475aae17def757a8ef72d4a4fc64c6494bb7",
+    "assets/android-runtime.js": "562172a16bf690e69d7100dca3fd74fbb7879fcdb702971c81d9e8244fe99fc6",
+    "assets/GEMOJI-LICENSE": "7ea1d1fd0602e6623b9a65e791499a0ea5a2f5f60f91bfad78cbaeee19da26e6",
+    "assets/NOTICE.md": "c263e44ea9a845c4e4ec564eeca46ae0fc343f63ffd10685afbf74586647e0f6",
+    "assets/emoji-catalog.tsv": "e49f1cc09c6f487a6e7b55590ecc171dcff390f720a9ce3820fe2038810d5d66"
+  },
+  "excluded": [
+    {
+      "path": "artifacts/assistant47-final-phone",
+      "passes": 23,
+      "expected": 26,
+      "reason": "All new touch cases passed; three existing Settings fixtures assumed shortcut controls were already onscreen. Explicit scrolling added; no product change."
+    },
+    {
+      "path": "artifacts/assistant47-final-tablet",
+      "passes": 26,
+      "reason": "Earlier test APK before phone scroll-fixture correction; superseded by final v2 runs."
+    },
+    {
+      "path": "artifacts/assistant47-touch-tablet-initial",
+      "passes": 4,
+      "expected": 6,
+      "reason": "Fixture assumptions: taskbar Home absent from dump; navigation heading not a text node. Product unchanged."
+    },
+    {
+      "path": "artifacts/assistant47-focused-tablet",
+      "passes": 2,
+      "reason": "Focused correction check, excluded from final 26-case totals."
+    }
+  ],
+  "limitations": [
+    "CI inactive; local validation only",
+    "Physical Lenovo/ZUXOS and other APIs unverified",
+    "Home control may be absent in pre-hold XML; live bounds and injected actual touch are recorded separately",
+    "Seven post-gesture XML dumps omit the pictured palette; rely on live pre-capture native EditText/focus assertions and real PNG, not those XMLs, for these states",
+    "No latency, endurance, TalkBack or large-font certification",
+    "No claim of a production assistant lifecycle fix; exploratory launch experiments reverted"
+  ]
+}

@@ -56,6 +56,7 @@ class SettingsDeviceTest {
         assertEquals("Settings fills the entire safe viewport", viewport, frame)
         assertEquals("Settings uses the tablet/phone width", device.displayWidth.toFloat(), frame.width, 1f)
         compose.onAllNodes(isDialog()).assertCountEquals(0)
+        compose.onNodeWithTag("settings-edit-global").performScrollTo().assertIsDisplayed()
         evidence("general", "Global shortcut")
         compose.onNodeWithTag("settings-workspace").performSemanticsAction(SemanticsActions.RequestFocus)
         key(KeyEvent.KEYCODE_F, KeyEvent.META_CTRL_ON)
@@ -95,7 +96,7 @@ class SettingsDeviceTest {
         evidence("filtered-commands", "Ctrl + Alt + W")
     }
     @Test fun inlineRecorderPreservesBackwardFocusAndActivationKeys() {
-        compose.onNodeWithTag("settings-edit-global").performClick()
+        compose.onNodeWithTag("settings-edit-global").performScrollTo().assertIsDisplayed().performClick()
         val keys = listOf(KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER, KeyEvent.KEYCODE_DPAD_CENTER)
             .flatMap { listOf(it to 0, it to KeyEvent.META_SHIFT_ON) }
         keys.forEachIndexed { index, (activation, meta) ->
@@ -227,7 +228,7 @@ class SettingsDeviceTest {
         compose.waitUntil(5000) { compose.activityRule.scenario.state == androidx.lifecycle.Lifecycle.State.DESTROYED }
     }
     @Test fun backgroundCancelsInlineRecordingAndKeepsPriorChord() {
-        compose.onNodeWithTag("settings-edit-global").performClick()
+        compose.onNodeWithTag("settings-edit-global").performScrollTo().assertIsDisplayed().performClick()
         key(KeyEvent.KEYCODE_Z, ctrlAlt)
         assertNotNull(ShortcutRuntime.recordingOwner)
         device.pressHome()
