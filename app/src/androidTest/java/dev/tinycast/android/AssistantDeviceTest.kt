@@ -31,7 +31,9 @@ class AssistantDeviceTest {
     private fun shell(command: String) = device.executeShellCommand(command).trim()
     private fun roles() = shell("cmd role get-role-holders android.app.role.ASSISTANT").lineSequence().filter { it.isNotBlank() }.toList()
     @Before fun setup() {
-        Assume.assumeTrue("Dedicated emulator only", shell("getprop ro.kernel.qemu") == "1")
+        Assume.assumeTrue("Dedicated emulator only", shell("getprop ro.kernel.qemu") == "1" && shell("getprop ro.boot.qemu.avd_name") ==
+            InstrumentationRegistry.getArguments().getString("dedicatedAvd", "Tinycast_Tablet_API_36"))
+        assertTrue(shell("id").startsWith("uid=2000"))
         originalRoles = roles()
         originalServices = shell("settings get secure enabled_accessibility_services")
         originalEnabled = shell("settings get secure accessibility_enabled")
@@ -102,7 +104,8 @@ class AssistantDeviceTest {
             assertTrue(device.wait(Until.gone(By.pkg(context.packageName)), 5000))
             if (destination == "warm-settings") shell("input keycombination 117 29") // Meta+A, the stock Android assistant shortcut.
             else device.pressKeyCode(KeyEvent.KEYCODE_ASSIST)
-            assertTrue("System assistant must launch from $destination", device.wait(Until.hasObject(By.pkg(context.packageName)), 10000))
+            compose.waitForIdle()
+            compose.waitUntil(10000) { device.hasObject(By.pkg(context.packageName).clazz("android.widget.EditText")) }
             assertTrue(device.wait(Until.hasObject(By.text("Search for apps and commands…")), 5000))
             assertFalse(shell("settings get secure enabled_accessibility_services").contains(context.packageName))
             capture("assistant-$destination")

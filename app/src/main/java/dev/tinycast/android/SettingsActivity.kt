@@ -146,6 +146,14 @@ class SettingsActivity : ComponentActivity() {
     fun chooseAssistant() {
         runCatching { chooseAssistantRole.launch(AssistantActivation.selectionIntent()) }.onFailure { store.message = "Assistant selection is unavailable on this device. Use the app icon or Quick Settings tile." }
     }
+    fun openNavigationSettings() = navigationFeedback(AssistantActivation.openNavigationSettings(::startActivity))
+    internal fun navigationFeedback(result: AssistantActivation.NavigationLaunch) {
+        when (result) {
+            AssistantActivation.NavigationLaunch.NAVIGATION -> Unit
+            AssistantActivation.NavigationLaunch.ANDROID_SETTINGS -> store.message = "Open System → Gestures or Navigation mode. Labels vary by device."
+            AssistantActivation.NavigationLaunch.UNAVAILABLE -> store.message = "Navigation settings could not open. Open Android Settings → System → Gestures or Navigation mode manually."
+        }
+    }
     fun enableService() = openAndroidSettings(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
     fun openAppInfo() = openAndroidSettings(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:$packageName")))
     private fun openAndroidSettings(intent: Intent) {
