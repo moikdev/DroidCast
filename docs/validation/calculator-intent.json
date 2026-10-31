@@ -1,9 +1,9 @@
 {
   "base": "7bec1523b017037a3d23811ed7fee06dbe468259",
-  "apk_sha256": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
-  "test_apk_sha256": "dad26d4b20f14162d37b1f196714d48dc803807951f1c31af0daf76c496a3909",
+  "apk_sha256": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
+  "test_apk_sha256": "843556b031b9ec833111c14a8e9fd1eb0eefe164c7b8cc9b8ee0b6eeed8cfda8",
   "jvm": {
-    "tests": 87,
+    "tests": 89,
     "failures": 0,
     "errors": 0,
     "skipped": 0
@@ -13,8 +13,8 @@
     "Warning": 42
   },
   "native": {
-    "tablet": 13,
-    "phone": 13
+    "tablet": 14,
+    "phone": 14
   },
   "records": {
     "before-tablet": {
@@ -68,13 +68,13 @@
       "avd": "Droidcast_PR48_Tablet_API_36_27caf3",
       "api": "36",
       "abi": "arm64-v8a",
-      "apk_sha256": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
-      "test_apk_sha256": "dad26d4b20f14162d37b1f196714d48dc803807951f1c31af0daf76c496a3909",
+      "apk_sha256": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
+      "test_apk_sha256": "843556b031b9ec833111c14a8e9fd1eb0eefe164c7b8cc9b8ee0b6eeed8cfda8",
       "completed": true,
-      "installed_sha256": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "installed_sha256": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "size": "Physical size: 1920x1200",
       "density": "Physical density: 240",
-      "passes": 13,
+      "passes": 14,
       "failures": 0,
       "palette_preferences_restored": true,
       "settings_unchanged": true,
@@ -90,13 +90,13 @@
       "avd": "Droidcast_PR48_Tablet_API_36_27caf3",
       "api": "36",
       "abi": "arm64-v8a",
-      "apk_sha256": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
-      "test_apk_sha256": "dad26d4b20f14162d37b1f196714d48dc803807951f1c31af0daf76c496a3909",
+      "apk_sha256": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
+      "test_apk_sha256": "843556b031b9ec833111c14a8e9fd1eb0eefe164c7b8cc9b8ee0b6eeed8cfda8",
       "completed": true,
-      "installed_sha256": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "installed_sha256": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "size": "Physical size: 1920x1200\nOverride size: 1080x2340",
       "density": "Physical density: 240\nOverride density: 420",
-      "passes": 13,
+      "passes": 14,
       "failures": 0,
       "palette_preferences_restored": true,
       "settings_unchanged": true,
@@ -126,24 +126,63 @@
       "restored_density": "Physical density: 240",
       "adbd": "uid=2000(shell) gid=2000(shell)",
       "app_uid": "uid=10213(u0_a213) gid=10213(u0_a213)"
+    },
+    "constant-negative": {
+      "mode": "audit-negative",
+      "layout": "tablet",
+      "serial": "emulator-5590",
+      "avd": "Droidcast_PR48_Tablet_API_36_27caf3",
+      "api": "36",
+      "abi": "arm64-v8a",
+      "apk_sha256": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "test_apk_sha256": "843556b031b9ec833111c14a8e9fd1eb0eefe164c7b8cc9b8ee0b6eeed8cfda8",
+      "completed": true,
+      "installed_sha256": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "size": "Physical size: 1920x1200",
+      "density": "Physical density: 240",
+      "passes": 0,
+      "failures": 1,
+      "palette_preferences_restored": true,
+      "settings_unchanged": true,
+      "restored_size": "Physical size: 1920x1200",
+      "restored_density": "Physical density: 240",
+      "adbd": "uid=2000(shell) gid=2000(shell)",
+      "app_uid": "uid=10213(u0_a213) gid=10213(u0_a213)"
     }
   },
   "record_paths": {
     "before-tablet": "artifacts/calculator-baseline-tablet-v2/record.json",
     "before-phone": "artifacts/calculator-baseline-phone/record.json",
-    "tablet": "artifacts/calculator-final-tablet-v2/record.json",
-    "phone": "artifacts/calculator-final-phone/record.json",
-    "negative": "artifacts/calculator-negative-tablet/record.json"
+    "tablet": "artifacts/calculator-audit-final-tablet-v3/record.json",
+    "phone": "artifacts/calculator-audit-final-phone/record.json",
+    "negative": "artifacts/calculator-negative-tablet/record.json",
+    "constant-negative": "artifacts/calculator-constant-negative-tablet-v3/record.json"
   },
   "build_logs": [
-    "artifacts/calculator-build.log",
-    "artifacts/calculator-test-capture-build.log"
+    "artifacts/calculator-constant-build.log"
   ],
+  "audit_regression": {
+    "previous_head": "750ed45c0b0eceed1e2b502b35bdb10cda5381b5",
+    "jvm_negative_xml": "artifacts/calculator-constant-negative-jvm.xml",
+    "jvm_negative_log": "artifacts/calculator-constant-negative-jvm.log",
+    "native_negative": "artifacts/calculator-constant-negative-tablet-v3/tests.log",
+    "focused_positive": "artifacts/calculator-constant-focused-tablet/record.json"
+  },
+  "historical_validation": {
+    "previous_head_jvm": 87,
+    "previous_head_tablet": 13,
+    "previous_head_phone": 13,
+    "previous_app_sha256": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+    "previous_records": [
+      "artifacts/calculator-final-tablet-v2/record.json",
+      "artifacts/calculator-final-phone/record.json"
+    ]
+  },
   "source_sha256": {
-    "app/src/main/java/dev/tinycast/android/CommandEngine.kt": "4a62f8afd3440566f77487078d54c1893c08d82b47ce47a9d8402183eb2467f6",
+    "app/src/main/java/dev/tinycast/android/CommandEngine.kt": "75c368d09c942931b3bf9fc0d105a01c7201c156fa2dc3d45c10a56da2d3b07b",
     "app/src/main/java/dev/tinycast/android/PaletteStore.kt": "3e84e711524074f0b3ece62bf0dc325fc5328774218ea135fbe48919f39eefb8",
-    "app/src/test/java/dev/tinycast/android/CommandEngineTest.kt": "b4bb7e05d0e8b5be05ffdddd253016fb9685e507ae633c015b0dd48496515752",
-    "app/src/androidTest/java/dev/tinycast/android/CalculatorIntentDeviceTest.kt": "94d64a46af5078e6a3325fba3e4bdf03b5bd3e9658c3fabcb644634e80b0af5b"
+    "app/src/test/java/dev/tinycast/android/CommandEngineTest.kt": "65d9d198e8e1a188e4dcfd5551ced8f558f87a106f42b1d02a1432e8d6b7c234",
+    "app/src/androidTest/java/dev/tinycast/android/CalculatorIntentDeviceTest.kt": "892424dd7db8d4df975bc6acdd800857ba3ea3c4ce57fa8a9a9b89d1f675a6c9"
   },
   "unchanged_packaged_asset_count": 7,
   "screenshots": [
@@ -231,23 +270,36 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/tablet-back-to-search.png",
-      "source": "artifacts/calculator-final-tablet-v2/back-to-search.png",
-      "sha256": "9e273b59a7431c04f41c027d2e58cfd791887bdd07fc2070aaf688f507285436",
+      "source": "artifacts/calculator-audit-final-tablet-v3/back-to-search.png",
+      "sha256": "6fabe4c1e99b8cbecb2a8387f3238d2d7f4c341d494abab7031b8306c997e61c",
       "width": 1920,
       "height": 1200,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "12",
       "markers": [
         "Search the web"
       ]
     },
     {
-      "path": "docs/screenshots/parity-calculator-intent/tablet-decimal-search.png",
-      "source": "artifacts/calculator-final-tablet-v2/decimal-search.png",
-      "sha256": "0922854c2bca2da286075c91790f877c03470d73b53948f3a007273ed5aa2881",
+      "path": "docs/screenshots/parity-calculator-intent/tablet-constant-multiplication.png",
+      "source": "artifacts/calculator-audit-final-tablet-v3/constant-multiplication.png",
+      "sha256": "89e1523085317042ebcdc17a7e13b4e5717234ec838aed226e020a4aac7f46e5",
       "width": 1920,
       "height": 1200,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
+      "query": "= 2xpix3",
+      "markers": [
+        "= 2 \u00d7 pi \u00d7 3",
+        "18.8495559215"
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-calculator-intent/tablet-decimal-search.png",
+      "source": "artifacts/calculator-audit-final-tablet-v3/decimal-search.png",
+      "sha256": "c2d13501b22314bd0a75c7a9f792608c1c02582bafd832b2e1149633ef32b7a2",
+      "width": 1920,
+      "height": 1200,
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "12.5",
       "markers": [
         "Search the web"
@@ -255,11 +307,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/tablet-explicit-calculator.png",
-      "source": "artifacts/calculator-final-tablet-v2/explicit-calculator.png",
-      "sha256": "12f1abcdc91e01e4688d9ef8d57e7a6b19df26e5cf3e345a6d18ed3345842a2a",
+      "source": "artifacts/calculator-audit-final-tablet-v3/explicit-calculator.png",
+      "sha256": "f46e34fb7b6eef65ff05346a81afd208508c34901cea173d5e15c80d69b0ab9b",
       "width": 1920,
       "height": 1200,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "= 123",
       "markers": [
         "123",
@@ -269,11 +321,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/tablet-keyboard-x.png",
-      "source": "artifacts/calculator-final-tablet-v2/keyboard-x.png",
-      "sha256": "25167aed152e34b59fc28e0181a9cbf801ab258196fcaa4a3f42132e35f07e72",
+      "source": "artifacts/calculator-audit-final-tablet-v3/keyboard-x.png",
+      "sha256": "664c8617ed6d20b7f14cf35edd4ec4c77e09c5920e57573e8a1e455da5211c4a",
       "width": 1920,
       "height": 1200,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "6x7",
       "markers": [
         "6 \u00d7 7",
@@ -282,11 +334,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/tablet-number-search.png",
-      "source": "artifacts/calculator-final-tablet-v2/number-search.png",
-      "sha256": "e6cf4cffc27f1260f4d66f2728afba1bc3aa9b16a449c93f846b33e992c6e54b",
+      "source": "artifacts/calculator-audit-final-tablet-v3/number-search.png",
+      "sha256": "7d10dd40ed9de8f51bf647596ee70e2d3710b517ecfb41bb454a80de77f9a8b0",
       "width": 1920,
       "height": 1200,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "123",
       "markers": [
         "123 Reference"
@@ -294,11 +346,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/tablet-precedence.png",
-      "source": "artifacts/calculator-final-tablet-v2/precedence.png",
-      "sha256": "bd2b3472e3e927782a8c80de848a0fbf846c96eb814511d25132f76b30ab1bcf",
+      "source": "artifacts/calculator-audit-final-tablet-v3/precedence.png",
+      "sha256": "6cd4042fb8c969a93d35f5cad5b5b7872c8954405587856bc26879f2e69ab485",
       "width": 1920,
       "height": 1200,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "(2+3)x4",
       "markers": [
         "(2+3) \u00d7 4",
@@ -307,11 +359,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/tablet-star-multiplication.png",
-      "source": "artifacts/calculator-final-tablet-v2/star-multiplication.png",
-      "sha256": "d548faa329729fca723dcf01aca0b3b3cd46203977c5842ef51d4f24312df341",
+      "source": "artifacts/calculator-audit-final-tablet-v3/star-multiplication.png",
+      "sha256": "c47aecc2d070881c73a437c8b5d9c8904a8436efbde701ec770b4f5c83e73848",
       "width": 1920,
       "height": 1200,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "12*3",
       "markers": [
         "12 \u00d7 3",
@@ -322,11 +374,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/tablet-unit-conversion.png",
-      "source": "artifacts/calculator-final-tablet-v2/unit-conversion.png",
-      "sha256": "a7a9cf86dc2f0bb27fad593b48b3728e71796fb386d05ac46dddc379bd3ed02a",
+      "source": "artifacts/calculator-audit-final-tablet-v3/unit-conversion.png",
+      "sha256": "9b5a437520cc7dfaa90a2d0d10395bb630eb09ee120d1751e24582d2c314a8bb",
       "width": 1920,
       "height": 1200,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "10 km to mi",
       "markers": [
         "10 km",
@@ -335,11 +387,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/tablet-word-search.png",
-      "source": "artifacts/calculator-final-tablet-v2/word-search.png",
-      "sha256": "b4cf71e5c8d6525974541079901a7d288e7b9b6c759c2388561846edc89c9b99",
+      "source": "artifacts/calculator-audit-final-tablet-v3/word-search.png",
+      "sha256": "bba6239b2a9d9397128bf4e9d00211dad9fcbfc740960bd25ad3fe370d2882f5",
       "width": 1920,
       "height": 1200,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "box12",
       "markers": [
         "Search the web"
@@ -347,11 +399,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/tablet-x-multiplication.png",
-      "source": "artifacts/calculator-final-tablet-v2/x-multiplication.png",
-      "sha256": "819bbf99904c385772580a95fdbaf4a4b079ac0857a8ac9ebe1c19d58c8f9c3d",
+      "source": "artifacts/calculator-audit-final-tablet-v3/x-multiplication.png",
+      "sha256": "36312ef9e8cb9986a88bf798a35943d53b713b41e3f8fcfa4440df51b5cd6146",
       "width": 1920,
       "height": 1200,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "12x3",
       "markers": [
         "12 \u00d7 3",
@@ -362,23 +414,36 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/phone-back-to-search.png",
-      "source": "artifacts/calculator-final-phone/back-to-search.png",
-      "sha256": "84aaf71e0ff4a26488c127afd5c92fc166b97210a1ba059517d38e15db6a0465",
+      "source": "artifacts/calculator-audit-final-phone/back-to-search.png",
+      "sha256": "52be0fcae8e6e411fc13f897c72f82b8d28d8cae006de97e3d4b4db57765c0a0",
       "width": 1080,
       "height": 2340,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "12",
       "markers": [
         "Search the web"
       ]
     },
     {
-      "path": "docs/screenshots/parity-calculator-intent/phone-decimal-search.png",
-      "source": "artifacts/calculator-final-phone/decimal-search.png",
-      "sha256": "10cd264aa3235f42e432a5b7545c7d63cedc4955abd8f0fab2252257c8ae892e",
+      "path": "docs/screenshots/parity-calculator-intent/phone-constant-multiplication.png",
+      "source": "artifacts/calculator-audit-final-phone/constant-multiplication.png",
+      "sha256": "bd7ff71e20358c4d0d58e86b12dad9dc459ab96ca50eaf5238deaa495b1b9ee4",
       "width": 1080,
       "height": 2340,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
+      "query": "= 2xpix3",
+      "markers": [
+        "= 2 \u00d7 pi \u00d7 3",
+        "18.8495559215"
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-calculator-intent/phone-decimal-search.png",
+      "source": "artifacts/calculator-audit-final-phone/decimal-search.png",
+      "sha256": "777b0dbe84b34797e73038bc87ebcf488b07caa86f3986dbe6c5f0412b3ca6a7",
+      "width": 1080,
+      "height": 2340,
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "12.5",
       "markers": [
         "Search the web"
@@ -386,11 +451,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/phone-explicit-calculator.png",
-      "source": "artifacts/calculator-final-phone/explicit-calculator.png",
-      "sha256": "9ddd5acd28f967f4c76a951702306f12df9d51c7c5dd8338f4ccce0ca3ec1172",
+      "source": "artifacts/calculator-audit-final-phone/explicit-calculator.png",
+      "sha256": "6fe263f7a4cc00f4b9a2ef73ce6e6582377782637f1726ee8e3a1ac36e608b0e",
       "width": 1080,
       "height": 2340,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "= 123",
       "markers": [
         "123",
@@ -400,11 +465,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/phone-keyboard-x.png",
-      "source": "artifacts/calculator-final-phone/keyboard-x.png",
-      "sha256": "cea3afbcd301f9620cf1b9fa54055f9e54352524ff82e77dc5b5482f6504c4b7",
+      "source": "artifacts/calculator-audit-final-phone/keyboard-x.png",
+      "sha256": "4ef281e99bd5cebcd05bf4c574ef3926b13331305fdcb18436a5ec4dc13fa92d",
       "width": 1080,
       "height": 2340,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "6x7",
       "markers": [
         "6 \u00d7 7",
@@ -413,11 +478,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/phone-number-search.png",
-      "source": "artifacts/calculator-final-phone/number-search.png",
-      "sha256": "4d5e06251b908f2381f52464d3f948ef5027006a5b748fedb7e7f25742024c58",
+      "source": "artifacts/calculator-audit-final-phone/number-search.png",
+      "sha256": "26d247f4fe67e8e6ada8cdcfad071c965792acd80012954b30f14b21e3da64c3",
       "width": 1080,
       "height": 2340,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "123",
       "markers": [
         "123 Reference"
@@ -425,11 +490,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/phone-precedence.png",
-      "source": "artifacts/calculator-final-phone/precedence.png",
-      "sha256": "7b07e691600e37c10bc54f9cee488304678bcfdeb6b15541583e31cdc209f993",
+      "source": "artifacts/calculator-audit-final-phone/precedence.png",
+      "sha256": "778f024e342804091a395736ad299fd70c89fe0a71234e5bfb3530d534b76ba6",
       "width": 1080,
       "height": 2340,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "(2+3)x4",
       "markers": [
         "(2+3) \u00d7 4",
@@ -438,11 +503,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/phone-star-multiplication.png",
-      "source": "artifacts/calculator-final-phone/star-multiplication.png",
-      "sha256": "ee1d3d223a273f3a2ae6b6758961de7ca48904a84cfb35a4031a5f93aacff172",
+      "source": "artifacts/calculator-audit-final-phone/star-multiplication.png",
+      "sha256": "25e4ce3f29771800460ffe1c5165c2a7799271c9623f9f58b94bf0570ef3b7cc",
       "width": 1080,
       "height": 2340,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "12*3",
       "markers": [
         "12 \u00d7 3",
@@ -453,11 +518,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/phone-unit-conversion.png",
-      "source": "artifacts/calculator-final-phone/unit-conversion.png",
-      "sha256": "ae7173174ccfff2b545a9af953101f987e95c4a69254c2595bae6e3405d34765",
+      "source": "artifacts/calculator-audit-final-phone/unit-conversion.png",
+      "sha256": "eefc410d8016f92b5ebe113b93274dff6d61cbebe4bb4aa69409042633b300b6",
       "width": 1080,
       "height": 2340,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "10 km to mi",
       "markers": [
         "10 km",
@@ -466,11 +531,11 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/phone-word-search.png",
-      "source": "artifacts/calculator-final-phone/word-search.png",
-      "sha256": "1a5ced66a6ddaa9700b613457fb07e59755d7c39293250e37d9bc406b52b8634",
+      "source": "artifacts/calculator-audit-final-phone/word-search.png",
+      "sha256": "19333fc13cba899e9601d69de8bcaa4593007e90fb3363fb000aebd4afad19f3",
       "width": 1080,
       "height": 2340,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "box12",
       "markers": [
         "Search the web"
@@ -478,17 +543,29 @@
     },
     {
       "path": "docs/screenshots/parity-calculator-intent/phone-x-multiplication.png",
-      "source": "artifacts/calculator-final-phone/x-multiplication.png",
-      "sha256": "4f2eaab245885424e191646a556fdacd74e62c726d3aa5335c02b10c6d2376fd",
+      "source": "artifacts/calculator-audit-final-phone/x-multiplication.png",
+      "sha256": "936c68bd14eb0dea112858b7714eefd9e31063769d9c9d48b16e1e87e270f1c6",
       "width": 1080,
       "height": 2340,
-      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "build": "ee9a4d7822666ee717ef2fb5babacc4db7f2a8797fbc586e0754af54432a8294",
       "query": "12x3",
       "markers": [
         "12 \u00d7 3",
         "36",
         "Expression",
         "Result"
+      ]
+    },
+    {
+      "path": "docs/screenshots/parity-calculator-intent/constant-negative-constant-before.png",
+      "source": "artifacts/calculator-constant-negative-tablet-v3/constant-before.png",
+      "sha256": "597ddb5816ed64f90129f459b8caca39b30c8c087c4786acb6b4ee5ce0438bcd",
+      "width": 1920,
+      "height": 1200,
+      "build": "317ac02342d251211d57cedfb7197aee0f8ab846e27f5e545fcd3850ff893d16",
+      "query": "pix2",
+      "markers": [
+        "Search the web"
       ]
     }
   ],
@@ -552,24 +629,33 @@
       ]
     },
     {
-      "path": "artifacts/calculator-final-tablet-v2/back-to-search.xml",
-      "sha256": "4c6caf4e131ae9ac122180a53030df4c820ca95d56d97a4ff314079e629f8d30",
+      "path": "artifacts/calculator-audit-final-tablet-v3/back-to-search.xml",
+      "sha256": "31ef72c2e2a66dfc847aa45b2b6ac21f9b97bf63bbca64edf48fe7d043fa2e7f",
       "query": "12",
       "markers": [
         "Search the web"
       ]
     },
     {
-      "path": "artifacts/calculator-final-tablet-v2/decimal-search.xml",
-      "sha256": "fb259a17fd71b3bb962aaffe08ad8c20331f2113ce52630ab4e3ba214b994dd3",
+      "path": "artifacts/calculator-audit-final-tablet-v3/constant-multiplication.xml",
+      "sha256": "0c518537dd1fb2e79b3a586a404070112ae869940fbe3f280661db443603f0c2",
+      "query": "= 2xpix3",
+      "markers": [
+        "= 2 \u00d7 pi \u00d7 3",
+        "18.8495559215"
+      ]
+    },
+    {
+      "path": "artifacts/calculator-audit-final-tablet-v3/decimal-search.xml",
+      "sha256": "95a9faddd2f2992289d651473586118260b918eb8072f3be9d54686ffadce0cb",
       "query": "12.5",
       "markers": [
         "Search the web"
       ]
     },
     {
-      "path": "artifacts/calculator-final-tablet-v2/explicit-calculator.xml",
-      "sha256": "35faf181e093478ecc8996691ec819fe35cb43858f29ed7c6ca5d1a5687b896f",
+      "path": "artifacts/calculator-audit-final-tablet-v3/explicit-calculator.xml",
+      "sha256": "54bdc2c807fdf5ef91165025499269335df78329a9fe515d57081fbc39492345",
       "query": "= 123",
       "markers": [
         "123",
@@ -578,8 +664,8 @@
       ]
     },
     {
-      "path": "artifacts/calculator-final-tablet-v2/keyboard-x.xml",
-      "sha256": "5247ff9e5faf4b9e3b81dba3893d639339b0b1d98d859748918c07d18ec16ef3",
+      "path": "artifacts/calculator-audit-final-tablet-v3/keyboard-x.xml",
+      "sha256": "2e8f654ce85014ddeef1f52c26a69740b3e2f618c0c136388327f54bfcc1e52a",
       "query": "6x7",
       "markers": [
         "6 \u00d7 7",
@@ -587,16 +673,16 @@
       ]
     },
     {
-      "path": "artifacts/calculator-final-tablet-v2/number-search.xml",
-      "sha256": "d7f234a6590d473e78148f22b6569695f5d75f0a8bc60643d90486f95cbbabc0",
+      "path": "artifacts/calculator-audit-final-tablet-v3/number-search.xml",
+      "sha256": "451ca3f62c4b8d631ddc8eb440e333d72c5d665f57aac4d6fa0108fc99b366db",
       "query": "123",
       "markers": [
         "123 Reference"
       ]
     },
     {
-      "path": "artifacts/calculator-final-tablet-v2/precedence.xml",
-      "sha256": "fb256ea4c50ceccc23ce7b06044e540c626346fb15d4ebe1822ae1f41de0a6be",
+      "path": "artifacts/calculator-audit-final-tablet-v3/precedence.xml",
+      "sha256": "9de7448dd87ebf9abe6c9d3acf6fbadd7f13aa31566c3419dfa147b3faec3ce5",
       "query": "(2+3)x4",
       "markers": [
         "(2+3) \u00d7 4",
@@ -604,8 +690,8 @@
       ]
     },
     {
-      "path": "artifacts/calculator-final-tablet-v2/star-multiplication.xml",
-      "sha256": "946115a0a84180cc43b693499d6b6523fa14ee5f6264857d211fbf8838294fa5",
+      "path": "artifacts/calculator-audit-final-tablet-v3/star-multiplication.xml",
+      "sha256": "cd9d93d851e25ccd723ec0990d28ce6cd4db2d55b1f1e06292e34da4bbfe60d0",
       "query": "12*3",
       "markers": [
         "12 \u00d7 3",
@@ -615,8 +701,8 @@
       ]
     },
     {
-      "path": "artifacts/calculator-final-tablet-v2/unit-conversion.xml",
-      "sha256": "bafabca5b3f379cae8d106ce881ae95d3ea482d79938f9b1ae7a19289d4650c3",
+      "path": "artifacts/calculator-audit-final-tablet-v3/unit-conversion.xml",
+      "sha256": "bc0ecf7e0e7894923ee3812428e64fe9f4e4a12a7d40378b20f6d416e6ce5c71",
       "query": "10 km to mi",
       "markers": [
         "10 km",
@@ -624,16 +710,16 @@
       ]
     },
     {
-      "path": "artifacts/calculator-final-tablet-v2/word-search.xml",
-      "sha256": "4d516609898b4fe44efc143e7196f359ec8e2b190fe644f2e3cef33c00d769fc",
+      "path": "artifacts/calculator-audit-final-tablet-v3/word-search.xml",
+      "sha256": "c04edf04689bf301b0e2e71dac7719718cb5deea1f5f06748cd61a8328cebc43",
       "query": "box12",
       "markers": [
         "Search the web"
       ]
     },
     {
-      "path": "artifacts/calculator-final-tablet-v2/x-multiplication.xml",
-      "sha256": "71e21a7369d9ccad9aa68d3f0476433510be342e1a1bfbaf23ddcb136e5c0b21",
+      "path": "artifacts/calculator-audit-final-tablet-v3/x-multiplication.xml",
+      "sha256": "a4b09737cf0b55e2e8f74b86a8bbd40e701bfe9fd2722e40e299bd0500bc07a0",
       "query": "12x3",
       "markers": [
         "12 \u00d7 3",
@@ -643,24 +729,33 @@
       ]
     },
     {
-      "path": "artifacts/calculator-final-phone/back-to-search.xml",
-      "sha256": "b827f392c5f4e45976e6aa166fe8635bc2111024514a32bf04f3fa3b3c5b96b8",
+      "path": "artifacts/calculator-audit-final-phone/back-to-search.xml",
+      "sha256": "6a543f079f1f1f011903dd771146804a70b0e106bf97acc1402d6997fea92af6",
       "query": "12",
       "markers": [
         "Search the web"
       ]
     },
     {
-      "path": "artifacts/calculator-final-phone/decimal-search.xml",
-      "sha256": "e0a0ec7aa8de898d2ede0795ea0899bca33815a63ce82593b1ffaa09f72917e9",
+      "path": "artifacts/calculator-audit-final-phone/constant-multiplication.xml",
+      "sha256": "d4850f4e29f27a9bf7e6ad0d2fb4ce380c349b106e81c485501584b2f00b42fd",
+      "query": "= 2xpix3",
+      "markers": [
+        "= 2 \u00d7 pi \u00d7 3",
+        "18.8495559215"
+      ]
+    },
+    {
+      "path": "artifacts/calculator-audit-final-phone/decimal-search.xml",
+      "sha256": "ad737e5443ae8aa81b56a1d8dccd9ebfef300957299133d8a885cca1bcc248d3",
       "query": "12.5",
       "markers": [
         "Search the web"
       ]
     },
     {
-      "path": "artifacts/calculator-final-phone/explicit-calculator.xml",
-      "sha256": "7bc5af853b32c095ba276beab1e866bdcc9ba9b0cb4c3dc68dda989d2e2aaff5",
+      "path": "artifacts/calculator-audit-final-phone/explicit-calculator.xml",
+      "sha256": "d9f760874ecc0cc1aa653badffcffb1de430b5d766ef75a01c083790f93be3ba",
       "query": "= 123",
       "markers": [
         "123",
@@ -669,8 +764,8 @@
       ]
     },
     {
-      "path": "artifacts/calculator-final-phone/keyboard-x.xml",
-      "sha256": "647942b32b8b8d5be9808fcdc30b6d5a5e92a578990f2c25457088601ed5fb44",
+      "path": "artifacts/calculator-audit-final-phone/keyboard-x.xml",
+      "sha256": "74cdb9f7b6cea63b54c9decc307bc12fe60f1c3b623f594fc06937c228f28d98",
       "query": "6x7",
       "markers": [
         "6 \u00d7 7",
@@ -678,16 +773,16 @@
       ]
     },
     {
-      "path": "artifacts/calculator-final-phone/number-search.xml",
-      "sha256": "58d12343d09741f1fdc39f0256a4463da6a68302a194f6ef4c1540c00ec02a92",
+      "path": "artifacts/calculator-audit-final-phone/number-search.xml",
+      "sha256": "a7ed71ff9deddf46c3b6106eba22f04f69609f9bed42a194570aaf7b468bed4e",
       "query": "123",
       "markers": [
         "123 Reference"
       ]
     },
     {
-      "path": "artifacts/calculator-final-phone/precedence.xml",
-      "sha256": "fe806408ec2f90abdd349557ccef7ceb2eb47183562262d7f73cfbe0b9b9f5c2",
+      "path": "artifacts/calculator-audit-final-phone/precedence.xml",
+      "sha256": "35003a529b39b0ee2185e77ac20c76fdf6797e8e20d87a1a8304c2fccadb903e",
       "query": "(2+3)x4",
       "markers": [
         "(2+3) \u00d7 4",
@@ -695,8 +790,8 @@
       ]
     },
     {
-      "path": "artifacts/calculator-final-phone/star-multiplication.xml",
-      "sha256": "013eca6045011bd88153ab3cd3089907de13555fff2ece2175307f9e7396a1b0",
+      "path": "artifacts/calculator-audit-final-phone/star-multiplication.xml",
+      "sha256": "d5343a1a826976ba5024c4e6005c9d0963b9aed5e3da996c747c8ca7f6fa79eb",
       "query": "12*3",
       "markers": [
         "12 \u00d7 3",
@@ -706,8 +801,8 @@
       ]
     },
     {
-      "path": "artifacts/calculator-final-phone/unit-conversion.xml",
-      "sha256": "075a18fd29eb99c7dce2d9e463676147671895ef48ead59fc65313f2e1b33c22",
+      "path": "artifacts/calculator-audit-final-phone/unit-conversion.xml",
+      "sha256": "a97e1ce9267c97d7c9422eb8698395b55b84ad3955e65c6f791e08b91f3ada8d",
       "query": "10 km to mi",
       "markers": [
         "10 km",
@@ -715,22 +810,30 @@
       ]
     },
     {
-      "path": "artifacts/calculator-final-phone/word-search.xml",
-      "sha256": "298bb58e2161c3108bd5b8abf65f5fa6a4cac6a3fb128c81b19d4de81d2ea733",
+      "path": "artifacts/calculator-audit-final-phone/word-search.xml",
+      "sha256": "e4776beeefb642fe1e2605b335dd7a2ed244cc4ff54e90c20869579465990df1",
       "query": "box12",
       "markers": [
         "Search the web"
       ]
     },
     {
-      "path": "artifacts/calculator-final-phone/x-multiplication.xml",
-      "sha256": "8ba0fa8a2236838240ed5e6879cc300c4565283bb40d44afdf1770e7981ace99",
+      "path": "artifacts/calculator-audit-final-phone/x-multiplication.xml",
+      "sha256": "39a0a34df886a575e1224533f63c6b35042c65adc02010d3b9fbb9b0369b3d2b",
       "query": "12x3",
       "markers": [
         "12 \u00d7 3",
         "36",
         "Expression",
         "Result"
+      ]
+    },
+    {
+      "path": "artifacts/calculator-constant-negative-tablet-v3/constant-before.xml",
+      "sha256": "3c5bf56174bdc8efa45a0003f83c5a27de01701bf609a50ae082ee665bde6e21",
+      "query": "pix2",
+      "markers": [
+        "Search the web"
       ]
     }
   ],
@@ -742,6 +845,14 @@
     {
       "path": "artifacts/calculator-final-tablet",
       "reason": "13/13 tests, but transient offline ADB truncated artifact archive and host cleanup was unverified. Excluded from final validation; same running emulator recovered without restart."
+    },
+    {
+      "path": "artifacts/calculator-audit-final-tablet",
+      "reason": "13/14: constant arithmetic and copy succeeded, but short word search ex had its web fallback below the viewport. Fixture now scrolls to the web row before asserting its visibility; no product change."
+    },
+    {
+      "path": "artifacts/calculator-audit-final-tablet-v2",
+      "reason": "13/14: scroll fixture used merged semantics where the results container is unmerged. Finder corrected, no product change."
     }
   ],
   "limitations": [

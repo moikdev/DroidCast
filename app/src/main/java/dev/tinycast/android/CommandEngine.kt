@@ -95,7 +95,6 @@ object Calculator {
             require(converted.isFinite())
             Calculation(input, "${format(converted)} $to", "Unit conversion · computed on device")
         } else {
-            require(text.any(Char::isDigit) || text in listOf("pi", "e"))
             val parser = Parser(text.replace('÷', '/').replace('−', '-'))
             val value = parser.parse()
             require(value.isFinite())
@@ -122,6 +121,16 @@ object Calculator {
             hasOperation = true
             return true
         }
+        private fun constant(name: String): Boolean {
+            if (!text.startsWith(name, pos)) return false
+            val end = pos + name.length
+            // x can directly follow a known constant, as in pix2 or ex2.
+            // Other letters belong to an identifier; unknown identifiers and
+            // any invalid remainder still fail the complete parse.
+            if (end < text.length && text[end].isLetter() && text[end] != 'x') return false
+            pos = end
+            return true
+        }
         fun parse(): Double { val v = sum(); spaces(); require(pos == text.length); return v }
         private fun sum(): Double {
             var v = product()
@@ -136,12 +145,12 @@ object Calculator {
         private fun atom(): Double {
             if (take('(')) { val v = sum(); require(take(')')); return v }
             spaces()
+            if (constant("pi")) return PI
+            if (constant("e")) return E
             val start = pos
             if (pos < text.length && text[pos].isLetter()) {
                 while (pos < text.length && text[pos].isLetter()) pos++
                 val name = text.substring(start, pos)
-                if (name == "pi") return PI
-                if (name == "e") return E
                 require(take('(')); hasOperation = true; val v = sum(); require(take(')'))
                 return when (name) { "sqrt" -> sqrt(v); "abs" -> abs(v); "sin" -> sin(v); "cos" -> cos(v); "tan" -> tan(v); "ln" -> ln(v); "log" -> log10(v); "round" -> round(v); else -> error("Unknown function") }
             }

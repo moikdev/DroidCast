@@ -58,11 +58,12 @@ abstract class CalculatorDeviceFixture {
             compose.onNodeWithTag("result-result").assertTextContains(expression, substring = true)
         }
     }
-    protected fun normalSearch(query: String) {
+    protected fun normalSearch(query: String, scrollToWeb: Boolean = false) {
         search(query)
         assertEquals(query, store.query)
         assertTrue(store.results().none { it.kind == Kind.CALC })
         compose.onNodeWithTag("result-result").assertDoesNotExist()
+        if (scrollToWeb) compose.onNodeWithTag("results", useUnmergedTree = true).performScrollToNode(hasTestTag("result-web"))
         compose.onNodeWithTag("result-web").assertIsDisplayed()
         assertEquals("https://www.google.com/search?q=${android.net.Uri.encode(query)}", store.results().single { it.id == "web" }.payload)
     }
@@ -123,6 +124,19 @@ class CalculatorBaselineDeviceTest : CalculatorDeviceFixture() {
 
 @RunWith(AndroidJUnit4::class)
 class CalculatorIntentDeviceTest : CalculatorDeviceFixture() {
+    @Test fun constantOperandsSupportXInAutomaticAndExplicitCalculatorModes() {
+        if (InstrumentationRegistry.getArguments().getString("calculatorConstantNegative") == "true") {
+            normalSearch("pix2")
+            capture("constant-before", "result-web", "pix2", "Search the web")
+        }
+        result("pix2", "6.2831853072", "pi × 2")
+        result("ex2", "5.4365636569", "e × 2")
+        result("= 2xpix3", "18.8495559215", "= 2 × pi × 3")
+        capture("constant-multiplication", "result-result", "= 2xpix3", "= 2 × pi × 3", "18.8495559215")
+        key(KeyEvent.KEYCODE_ENTER)
+        assertClipboard("18.8495559215")
+        for (query in listOf("pixel2", "extra12", "example2", "pie2", "ex", "pix", "exp(2)")) normalSearch(query, scrollToWeb = true)
+    }
     @Test fun bareNumbersRemainSearchableAndCanFindSavedItems() {
         var id = ""
         compose.activityRule.scenario.onActivity { id = it.store.save("notes", "123 Reference", "Numeric search fixture") }

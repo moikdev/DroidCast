@@ -58,6 +58,22 @@ class CommandEngineTest {
             assertNotNull(it, Calculator.evaluateSearch(it))
         }
     }
+    @Test fun constantsCanImmediatelyPrecedeAsciiMultiplication() {
+        mapOf("pix2" to "6.2831853072", "ex2" to "5.4365636569", "2xpix3" to "18.8495559215",
+            "= 2xpix3" to "18.8495559215", "piX2" to "6.2831853072").forEach { (query, expected) ->
+            assertEquals(query, expected, Calculator.evaluateSearch(query)?.result)
+        }
+        assertEquals("= 2 × pi × 3", Calculator.evaluateSearch("= 2xpix3")?.expression)
+    }
+    @Test fun knownConstantOperandsDoNotNeedADecimalDigitAndWordsStillFail() {
+        mapOf("pixpi" to "9.8696044011", "pi*pi" to "9.8696044011", "expi" to "8.5397342227",
+            "sqrt(pi)" to "1.7724538509").forEach { (query, expected) ->
+            assertEquals(query, expected, Calculator.evaluateSearch(query)?.result)
+        }
+        listOf("pixel2", "extra12", "example2", "pie2", "ex", "pix", "exp(2)").forEach {
+            assertNull(it, Calculator.evaluateSearch(it))
+        }
+    }
     @Test fun convertsLength() { assertEquals("6.2137119224 mi", result("10 km to mi")); assertEquals("30.48 cm", result("1 ft in cm")) }
     @Test fun convertsTemperature() { assertEquals("0 c", result("32 f to c")); assertEquals("212 f", result("100 c to f")); assertEquals("273.15 k", result("0 c to k")) }
     @Test fun convertsTimeAndData() { assertEquals("90 min", result("1.5 h to min")); assertEquals("1024 mib", result("1 gib to mib")) }

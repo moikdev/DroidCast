@@ -13,7 +13,7 @@ p = argparse.ArgumentParser()
 p.add_argument('--serial', required=True)
 p.add_argument('--avd', required=True)
 p.add_argument('--layout', choices=['tablet', 'phone'], required=True)
-p.add_argument('--mode', choices=['baseline', 'negative', 'final'], required=True)
+p.add_argument('--mode', choices=['baseline', 'negative', 'audit-negative', 'audit-focused', 'final'], required=True)
 p.add_argument('--apk', type=Path, required=True)
 p.add_argument('--test-apk', type=Path, required=True)
 p.add_argument('--output', type=Path, required=True)
@@ -78,6 +78,9 @@ try:
         classes = ','.join(prefix + 'CalculatorIntentDeviceTest#' + method for method in (
             'bareNumbersRemainSearchableAndCanFindSavedItems', 'multiplicationVariantsShowTimesSignAndCopyOnlyTheNumber'))
         expected = 2
+    elif a.mode in ('audit-negative', 'audit-focused'):
+        classes = prefix + 'CalculatorIntentDeviceTest#constantOperandsSupportXInAutomaticAndExplicitCalculatorModes'
+        expected = 1
     else:
         classes = ','.join((prefix + 'CalculatorIntentDeviceTest',
             prefix + 'PaletteDeviceTest#calculatorResultCopiesToSystemClipboard',
@@ -85,9 +88,10 @@ try:
             prefix + 'ShortcutDeviceTest#calculatorShortcutTogglesItsExistingPaletteMode',
             prefix + 'PaletteOverlayTest#typingAndSelectionUpdateWithoutAnimatedScrollOrMovingSearchFrame',
             prefix + 'EmojiDeviceTest#typingAndFourWayNavigationWorkImmediatelyWithoutTab'))
-        expected = 13
+        expected = 14
     command = adb + ['shell', 'am', 'instrument', '-w', '-r', '-e', 'dedicatedAvd', a.avd,
-        '-e', 'calculatorBaseline', str(a.mode == 'baseline').lower(), '-e', 'class', classes,
+        '-e', 'calculatorBaseline', str(a.mode == 'baseline').lower(),
+        '-e', 'calculatorConstantNegative', str(a.mode == 'audit-negative').lower(), '-e', 'class', classes,
         pkg + '.test/androidx.test.runner.AndroidJUnitRunner']
     with (a.output / 'tests.log').open('wb') as log:
         subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, check=True)
@@ -106,7 +110,7 @@ try:
     record['passes'] = statuses.count(0)
     record['failures'] = statuses.count(-2)
     assert statuses.count(1) == expected, statuses
-    if a.mode == 'negative':
+    if a.mode in ('negative', 'audit-negative'):
         assert f'Tests run: {expected},  Failures: {expected}' in log and record['failures'] == expected
     else:
         assert f'OK ({expected} test' in log and 'FAILURES!!!' not in log
