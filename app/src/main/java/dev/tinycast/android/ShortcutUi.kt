@@ -63,7 +63,7 @@ internal fun ShortcutDialogs(store: PaletteStore, enabled: Boolean, enable: () -
                 Button(onClick = { store.beginShortcutRecording(ShortcutRules.PALETTE) }, modifier = Modifier.testTag("shortcut-global-record")) { Text("Change global shortcut") }
                 TextButton(onClick = { runCatching { store.setShortcut(ShortcutRules.PALETTE, ShortcutConfiguration().bindings.getValue(ShortcutRules.PALETTE)) }.onFailure { store.shortcutError = it.message } }) { Text("Restore default") }
             }
-            Text(if (enabled) "Keyboard service enabled. Bindings work from other apps." else "Bindings work in the main palette. Enable the optional keyboard service to use them from other apps.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 14.dp))
+            Text(if (enabled) "Android approval is enabled. Check service connection and delivery in Settings → General." else "Bindings work in the main palette. Enable the optional keyboard service to use them from other apps.", fontSize = 12.sp, color = PaletteTheme.secondary, modifier = Modifier.padding(top = 14.dp))
             TextButton(onClick = enable, modifier = Modifier.testTag("shortcut-enable-service")) { Text(if (enabled) "Manage keyboard service" else "Open accessibility settings") }
             HorizontalDivider(color = PaletteTheme.separator, modifier = Modifier.padding(vertical = 14.dp))
             Text("COMMAND BINDINGS", fontSize = 11.sp, color = PaletteTheme.secondary)

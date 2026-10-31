@@ -35,9 +35,9 @@ The live backlog is [GitHub issue #1](https://github.com/moikdev/droidcast/issue
 
 ## Active slice
 
-Rigid typing/keyboard layout and immediate emoji navigation [#49](https://github.com/moikdev/droidcast/issues/49), [#46](https://github.com/moikdev/droidcast/issues/46): keep command and emoji search origins steady when the IME opens, avoid repositioning already visible selections, reset query results in the next layout, preserve selected commands during caret edits, and keep selected results fully visible after the keyboard shrinks the measured viewport. Cached results also observe retained folder-index changes, so expired pinned files disappear from blank All/Pinned views. See [validation](validation/rigid-palette.md) for negative controls and bounded local evidence. Audit/merge state is recorded on the implementation PR and live issue #1.
+Keyboard-readiness onboarding [#39](https://github.com/moikdev/droidcast/issues/39): distinguish the saved global chord, Android approval and live service connection; provide restricted-settings help and exact App info/Accessibility links; offer an inline delivery check with explicit local scope and timeout. No application code enables approval or retrieves screen content. Lenovo/ZUXOS remains user-reported, with separate emulator evidence. Two independent audits and expected-head merge are still required for this slice.
 
-Queued user requests: inline keyboard readiness [#39](https://github.com/moikdev/droidcast/issues/39), explicit corner-swipe/Home-hold assistant setup and actual gesture verification [#47](https://github.com/moikdev/droidcast/issues/47), and double-tap Ctrl [#26](https://github.com/moikdev/droidcast/issues/26). Readiness WIP is preserved on its own branch; these are not claimed as part of the movement fix.
+Queued user requests: calculator trigger/multiplication refinement [#51](https://github.com/moikdev/droidcast/issues/51), explicit corner-swipe/Home-hold assistant setup and actual gesture verification [#47](https://github.com/moikdev/droidcast/issues/47), and double-tap Ctrl [#26](https://github.com/moikdev/droidcast/issues/26).
 
 ## Completed slices
 
@@ -52,6 +52,9 @@ Raycast-style settings, scoped folders, assistant activation and immediate searc
 Fullscreen tablet Settings merged in [PR #43](https://github.com/moikdev/droidcast/pull/43), closing #42 after both audits cleared `0ac6689`: 66 JVM tests, 16 targeted tests per layout and eight screenshots. The palette stays floating. [Nightly r2](https://github.com/moikdev/droidcast/releases/tag/nightly-2026-10-31-r2) is the released checkpoint for that source.
 
 Offline Emoji & Symbols merged in [PR #45](https://github.com/moikdev/droidcast/pull/45), closing #11 after both audits cleared `679c69e`; merge `b974ff0`. Final evidence: 71 JVM, 11 native tests per layout and 25 screenshots, build/lint, exact Unicode copying and persistence. [Nightly r3](https://github.com/moikdev/droidcast/releases/tag/nightly-2026-10-31-r3) is the published checkpoint. Advanced emoji parity remains in [#44](https://github.com/moikdev/droidcast/issues/44).
+
+
+Rigid typing and immediate emoji navigation merged in [PR #48](https://github.com/moikdev/droidcast/pull/48), closing #46/#49 after both sol/high audits cleared `a101671`; merge `703ddb0`. Final local scope: 71 JVM, 27 tablet and 24 phone cases, lint 0 errors/41 warnings and 42 real screenshots. Viewport and retained-index audit findings were resolved with old-head negative controls. [Nightly r4](https://github.com/moikdev/droidcast/releases/tag/nightly-2026-10-31-r4) publishes that tested APK. Physical/OEM/latency/TalkBack and full parity remain unclaimed.
 
 ## Additional upstream gaps
 

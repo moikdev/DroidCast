@@ -17,14 +17,16 @@ from pathlib import Path
 parser = argparse.ArgumentParser()
 parser.add_argument("--adb", default=os.environ.get("ADB", "adb"))
 parser.add_argument("--serial", default="emulator-5580")
+parser.add_argument("--avd", default="Tinycast_Tablet_API_36", help="Exact dedicated emulator name; required when using an isolated clone")
 parser.add_argument("--rounds", type=int, default=3)
 parser.add_argument("--alt-q-only", action="store_true", help="Verify the reported Alt+Q activation chord from other apps")
+parser.add_argument("--readiness", action="store_true", help="Also verify the inline settings check with real service-filtered Alt+Q")
 args = parser.parse_args()
 assert 1 <= args.rounds <= 10
 base = [args.adb, "-s", args.serial]
 APP = "dev.tinycast.android"
 SERVICE = APP + "/" + APP + ".PaletteShortcutService"
-output = Path(__file__).resolve().parents[1] / "artifacts" / "shortcut-hardware"
+output = Path(__file__).resolve().parents[1] / "artifacts" / ("shortcut-readiness-hardware" if args.readiness else "shortcut-hardware")
 output.mkdir(parents=True, exist_ok=True)
 results = {"device": args.serial, "app_requires_root": False, "injection": "dedicated emulator Linux qwerty2 device", "cases": []}
 
@@ -110,7 +112,8 @@ def prefs():
 
 
 assert adb("shell", "getprop", "ro.kernel.qemu") == "1", "Use an emulator"
-assert adb("emu", "avd", "name").splitlines()[0] == "Tinycast_Tablet_API_36", "Use the dedicated AVD"
+assert "uid=2000" in adb("shell", "id"), "Start with unprivileged adbd"
+assert adb("emu", "avd", "name").splitlines()[0] == args.avd, "Use the specified dedicated AVD"
 instrumentation_state = adb("shell", "dumpsys", "activity", "processes")
 assert "Unknown command" not in instrumentation_state, "Cannot verify instrumentation state"
 assert "ActiveInstrumentation{" not in instrumentation_state, "Finish instrumentation before hardware trials"
@@ -184,9 +187,51 @@ def set_services(services):
         adb("shell", "settings", "delete", "secure", "enabled_accessibility_services")
 
 
+def check_button():
+    # Dump before arming: UiAutomator may temporarily suppress accessibility services.
+    found = None
+    for _ in range(7):
+        hierarchy = tree()
+        for item in hierarchy.iter("node"):
+            if item.get("resource-id") == "settings-shortcut-test":
+                bounds = list(map(int, re.findall(r"\d+", item.get("bounds"))))
+                if len(bounds) == 4 and bounds[2] > bounds[0] and bounds[3] > bounds[1]:
+                    found = item
+                    break
+        if found is not None:
+            break
+        # Scroll inside the current app viewport, which excludes a visible IME.
+        # Fixed screen coordinates can swipe-type into Gboard instead.
+        viewport = next(item for item in hierarchy.iter("node") if item.get("resource-id") == "settings-viewport")
+        left, top, right, bottom = map(int, re.findall(r"\d+", viewport.get("bounds")))
+        x = left + (right - left) * 3 // 4
+        start = bottom - 24
+        end = max(top + 80, start - 500)
+        assert start > end
+        adb("shell", "input", "swipe", str(x), str(start), str(x), str(end), "250")
+    assert found is not None, "Inline shortcut check was not reachable"
+    wait(bound, "Keyboard service must reconnect after the hierarchy dump")
+    wait(lambda: "InputFilterEnabled: true" in adb("shell", "dumpsys", "input"), "Input filter did not reconnect")
+    time.sleep(.25)  # Let the connected callback render the enabled button.
+    return found
+
+
+def check_snapshot(name, marker):
+    # This verification dump can suppress the service. It verifies the retained
+    # result, not post-rebind connection state; the later PNG is labelled separately.
+    hierarchy = tree()
+    text = " ".join(item.get("text", "") for item in hierarchy.iter("node"))
+    assert marker in text, "Inline result was not rendered: " + marker
+    (output / (name + "-verification.xml")).write_bytes(ET.tostring(hierarchy))
+    wait(bound, "Keyboard service must reconnect after result verification")
+    time.sleep(.25)
+    (output / (name + "-after-rebind.png")).write_bytes(raw("exec-out", "screencap", "-p"))
+
+
 try:
-    adb("root"); adb("wait-for-device")
+    # Also unroot if the transport drops during the root/reconnect attempt.
     rooted = True
+    adb("root"); adb("wait-for-device")
     assert "uid=0" in adb("shell", "id"), "Dedicated image must support test-only root injection"
     enabled_services = ":".join(dict.fromkeys(initial + [SERVICE]))
     adb("shell", "am", "force-stop", APP)
@@ -199,7 +244,7 @@ try:
     assert match, "Dedicated qwerty2 device not found"
     keyboard = match.group(1)
 
-    if args.alt_q_only:
+    if args.alt_q_only or args.readiness:
         palette("Keyboard shortcuts")
         adb("shell", "input", "keyevent", "KEYCODE_ENTER")
         click("Reset shortcuts…"); click("Reset shortcuts")
@@ -234,6 +279,63 @@ try:
         wait(lambda: APP + "/" in focused(), "Alt+Q failed after reconnect")
         palette_snapshot("alt-q-reconnected")
         passed("Alt + Q persists across service disable and reconnect")
+        if args.readiness:
+            type_text("Droidcast preferences")
+            adb("shell", "input", "keyevent", "KEYCODE_ENTER")
+            wait(lambda: ".SettingsActivity" in focused(), "Settings workspace did not open")
+            button = check_button()
+            tap(button)
+            time.sleep(.15)
+            chord(16, (56,))
+            time.sleep(.3)
+            assert ".SettingsActivity" in focused(), "Inline check must not open a second palette"
+            check_snapshot("received-alt-q", "Received Alt + Q in Settings")
+            passed("inline check receives real filtered Alt + Q without leaving Settings")
+
+            button = check_button()
+            tap(button)
+            # Do not attach UiAutomation while listening: it could disconnect the
+            # service and correctly cancel the check. Wait for the real deadline.
+            time.sleep(16)
+            check_snapshot("check-timeout", "Nothing received")
+            passed("inline check times out without claiming receipt")
+            chord(16, (56,))
+            wait(lambda: ".MainActivity" in focused(), "Expired check swallowed normal global activation")
+            palette_snapshot("activation-after-timeout")
+            passed("expired inline check does not intercept ordinary global activation")
+
+            # No hierarchy dump while a probe is armed: dumping could itself
+            # disconnect the service and hide the cancellation regression.
+            chord(30, (29,))  # Select any palette query before replacing it.
+            type_text("Droidcast preferences")
+            adb("shell", "input", "keyevent", "KEYCODE_ENTER")
+            wait(lambda: ".SettingsActivity" in focused(), "Settings workspace did not open")
+            button = check_button(); tap(button); time.sleep(.15)
+            chord(33, (29,))  # Ctrl+F enters Settings search while Alt+Q is global.
+            type_text("backup")
+            chord(16, (56,))
+            wait(lambda: ".MainActivity" in focused(), "Hidden Settings search probe swallowed Alt+Q")
+            palette_snapshot("activation-after-settings-search")
+            passed("Settings search cancels the hidden check and Alt+Q activates normally")
+
+            chord(30, (29,))
+            type_text("Droidcast preferences")
+            adb("shell", "input", "keyevent", "KEYCODE_ENTER")
+            wait(lambda: ".SettingsActivity" in focused(), "Settings workspace did not open")
+            click("Change")  # General's global-hotkey action arms its inline recorder.
+            node("Record a shortcut"); chord(33, (29,)); node("Ctrl + F"); click("Save shortcut")
+            wait(lambda: json.loads(prefs()["shortcuts"])["bindings"]["global:palette"] == {"keyCode": 34, "modifiers": 1}, "Ctrl+F was not persisted")
+            click("General")
+            chord(33, (29,))
+            hierarchy = tree()
+            assert any(item.get("resource-id") == "settings-search" and item.get("focused") == "true" for item in hierarchy.iter("node")), "Unarmed Ctrl+F lost Settings navigation"
+            passed("configured Ctrl+F retains normal Settings navigation when no check is armed")
+            click("General")  # Clear search focus and dismiss its IME before arming.
+            button = check_button(); tap(button); time.sleep(.15)
+            chord(33, (29,))
+            assert ".SettingsActivity" in focused(), "Armed Ctrl+F check must stay in Settings"
+            check_snapshot("received-navigation-ctrl-f", "Received Ctrl + F in Settings")
+            passed("explicitly armed Ctrl+F reaches the filtered check instead of Settings navigation")
     else:
         palette("Keyboard shortcuts")
         adb("shell", "input", "keyevent", "KEYCODE_ENTER")
@@ -375,7 +477,7 @@ finally:
     if rooted:
         try:
             if keyboard:
-                emit([(1, code, 0) for code in (1, 16, 17, 25, 29, 33, 42, 44, 46, 49, 56, 57, 125)] + [(0, 0, 0)])
+                emit([(1, code, 0) for code in (1, 16, 17, 25, 29, 30, 33, 42, 44, 46, 49, 56, 57, 125)] + [(0, 0, 0)])
             set_services(other_services)
             adb("shell", "am", "force-stop", APP)
             adb("shell", "run-as", APP, "rm", "-f", "shared_prefs/palette.xml.bak")

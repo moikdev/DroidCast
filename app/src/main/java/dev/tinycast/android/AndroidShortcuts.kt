@@ -69,6 +69,7 @@ object ShortcutRuntime {
     const val TOKEN = "dev.droidcast.shortcut_token"
     val requests = ShortcutInvocationQueue { android.os.SystemClock.elapsedRealtime() }
     @Volatile var recordingOwner: Any? = null
+    val keyboardConnection = KeyboardServiceConnection()
     private var foreground = WeakReference<MainActivity>(null)
     private var settings = WeakReference<SettingsActivity>(null)
     private var settingsWorkspace = WeakReference<SettingsActivity>(null)
@@ -90,7 +91,11 @@ object ShortcutRuntime {
     fun passesSettingsNavigation(event: KeyEvent): Boolean {
         val chord = event.asChord()
         val commandModifier = chord.modifiers in setOf(ShortcutRules.CTRL, ShortcutRules.META, ShortcutRules.CTRL or ShortcutRules.SHIFT, ShortcutRules.META or ShortcutRules.SHIFT)
-        if (!commandModifier) return false
+        if (!commandModifier || (event.keyCode != KeyEvent.KEYCODE_COMMA && (event.keyCode != KeyEvent.KEYCODE_F || event.isShiftPressed))) return false
+        // An explicitly armed check owns only its configured navigation chord.
+        // Normal Settings navigation regains priority immediately after receipt.
+        val workspace = settings.get()?.takeUnless { it.isFinishing || it.isDestroyed }
+        if (workspace?.isShortcutProbeArmed(chord) == true) return false
         val settingsVisible = settings.get()?.let { !it.isFinishing && !it.isDestroyed } == true
         val paletteVisible = foreground.get()?.let { !it.isFinishing && !it.isDestroyed } == true
         return (event.keyCode == KeyEvent.KEYCODE_COMMA && (settingsVisible || paletteVisible)) ||
@@ -99,6 +104,7 @@ object ShortcutRuntime {
     fun resumed(activity: MainActivity) { foreground = WeakReference(activity) }
     fun paused(activity: MainActivity) { if (foreground.get() === activity) foreground.clear() }
     fun dispatch(context: Context, target: String, chord: KeyChord) {
+        if (settings.get()?.receiveShortcutProbe(target, chord) == true) return
         val token = requests.issue(target, chord)
         val activity = foreground.get()?.takeUnless { it.isFinishing || it.isDestroyed }
         if (activity != null) activity.acceptShortcut(token, toggleExisting = true)
@@ -109,6 +115,7 @@ object ShortcutRuntime {
 
 class PaletteShortcutService : AccessibilityService(), InputManager.InputDeviceListener {
     private val engine = ShortcutEngine()
+    private val connectionOwner = Any()
     private val preferences by lazy { getSharedPreferences("palette", Context.MODE_PRIVATE) }
     private var configuration = ShortcutConfiguration()
     private val changed = SharedPreferences.OnSharedPreferenceChangeListener { prefs, key -> if (key == null || key == "shortcuts") configuration = ShortcutCodec.load(prefs.getString("shortcuts", null)).first }
@@ -118,7 +125,14 @@ class PaletteShortcutService : AccessibilityService(), InputManager.InputDeviceL
         preferences.registerOnSharedPreferenceChangeListener(changed)
         getSystemService(InputManager::class.java).registerInputDeviceListener(this, null)
     }
-    override fun onServiceConnected() { configuration = ShortcutCodec.load(preferences.getString("shortcuts", null)).first }
+    override fun onServiceConnected() {
+        configuration = ShortcutCodec.load(preferences.getString("shortcuts", null)).first
+        ShortcutRuntime.keyboardConnection.connect(connectionOwner)
+    }
+    override fun onUnbind(intent: Intent?): Boolean {
+        ShortcutRuntime.keyboardConnection.disconnect(connectionOwner); engine.clear()
+        return super.onUnbind(intent)
+    }
     override fun onAccessibilityEvent(event: AccessibilityEvent?) = Unit
     override fun onInterrupt() = Unit
     override fun onKeyEvent(event: KeyEvent): Boolean {
@@ -131,6 +145,7 @@ class PaletteShortcutService : AccessibilityService(), InputManager.InputDeviceL
     override fun onInputDeviceChanged(deviceId: Int) = Unit
     override fun onInputDeviceRemoved(deviceId: Int) { engine.clearDevice(deviceId) }
     override fun onDestroy() {
+        ShortcutRuntime.keyboardConnection.disconnect(connectionOwner)
         preferences.unregisterOnSharedPreferenceChangeListener(changed)
         getSystemService(InputManager::class.java).unregisterInputDeviceListener(this)
         engine.clear(); super.onDestroy()

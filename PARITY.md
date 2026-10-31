@@ -12,7 +12,7 @@ Droidcast reproduces the central summon → search → run → dismiss workflow.
 | --- | --- | --- |
 | Floating palette | Working Android adaptation | Native Compose palette, transparent surroundings, outside-tap/Escape dismissal, contextual actions. Uses Tinycast geometry/tokens; macOS material and fonts are not reproduced. |
 | App search and launch | Partial | Fuzzy search, aliases, pins and usage ranking work. No running-app indicators, focus/hide toggles or quit-all behavior. |
-| Global activation | Partial | Configurable ordinary chord (default Ctrl+Space) through an opt-in key-filter service; icon, assistant intent and Quick Settings tile. Advanced modifier taps/Fn/Hyper remain open in #26. Universal OEM delivery is not established. |
+| Global activation | Partial | Configurable ordinary chord (default Ctrl+Space) through an opt-in key-filter service; icon, assistant intent and Quick Settings tile. Saved chord, Android approval and live service connection are distinct, with restricted-settings help and a bounded inline delivery check. Advanced modifier taps/Fn/Hyper remain open in #26; OEM delivery is not established. |
 | Per-app / per-command hotkeys | Partial | Record, clear/reset and conflict-check ordinary command/app/item chords; result keycaps and existing execution paths. Advanced upstream hotkeys remain open in #26. |
 | File search | Partial | System picker, searchable recent documents, opt-in bounded filename/path index for selected folder trees, type filters, persisted read grants and external viewers. No content index/preview or certified cloud-provider behavior; remaining validation is tracked in #5. |
 | Dictionary lookup | Missing | No dictionary command, dataset or definition view. |
