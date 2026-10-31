@@ -1,6 +1,6 @@
 # Keyboard shortcuts
 
-Development builds add configurable global and command bindings. The tagged 0.4.0-preview predates this feature.
+Current nightly builds include configurable global and command bindings. The in-app version remains 0.4.0-preview; the release tag identifies the checkpoint.
 
 Search **Keyboard shortcuts** to change the default **Ctrl + Space** summon/toggle chord. Select any stable command, app or saved item, open **Actions → Set keyboard shortcut**, press a chord, then save. Result rows display assigned keycaps. The dedicated Settings → Shortcuts workspace can change or clear bindings, including bindings whose commands are no longer available. It also edits available commands’ aliases inline. Search commands or use the Assigned filter. Reset all requires confirmation and restores the global default without changing collections or Android consent.
 
@@ -16,6 +16,17 @@ Modifier-only/double-tap, sided modifiers, Hyper, Fn/Globe, app-specific key int
 
 ## Enabling global activation for a downloaded APK
 
+Settings → General separates the saved global shortcut, Android approval and live service connection. Saving a chord does not grant Android approval, and approval alone does not establish that the service is connected.
+
 Open Droidcast Settings → General → Enable service, then select **Droidcast keyboard shortcuts** under Android Accessibility's Installed/Downloaded apps and enable it. The published 2026-10-30 checkpoint still uses the older “DroidCast” label.
 
 If Android says access was denied or the setting is restricted, open **Android Settings → Apps → Droidcast → ⋮ → Allow restricted settings**, then return to Accessibility. Only approve this for an APK whose source you trust; see [Google's instructions](https://support.google.com/android/answer/12623953?hl=en). This is user-controlled Android consent, not an app permission Droidcast can grant itself. Without it, use the app icon or Quick Settings tile. Lenovo/OEM labels may differ.
+
+
+## Check shortcut delivery
+
+With a global chord saved, Android approval enabled and the service connected, Settings → General offers **Check shortcut** inline. Press the configured chord within 15 seconds. The service reports only a matching palette-shortcut identity; the check does not capture typing or unrelated key events. A received result means delivery was observed in this Settings screen. Switch to another app and try the shortcut there to verify global activation on your keyboard.
+
+The check cancels when Settings loses focus, backgrounds, changes pages, or the chord/approval/connection changes. A timeout says no shortcut was received; it does not claim that the keyboard or Android configuration is working. This diagnostic never enables consent. App info and Google's setup instructions remain available beside the restricted-settings explanation, and the app icon, Open palette button, Quick Settings tile and optional system assistant remain alternatives.
+
+Component names in Android's approval list are parsed as full or shortened `ComponentName` values, with the master accessibility switch checked separately. A service instance can only clear its own live connection, so a late old-instance disconnect cannot erase a replacement binding. Lenovo/ZUXOS delivery remains user-reported; emulator evidence is not a physical-device certification.

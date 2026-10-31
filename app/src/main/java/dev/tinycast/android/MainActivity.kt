@@ -73,8 +73,7 @@ class MainActivity : ComponentActivity() {
         super.onResume()
         ShortcutRuntime.resumed(this)
         store.folderSearch.revalidate()
-        shortcutEnabled = Settings.Secure.getString(contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
-            ?.split(':')?.any { it == ComponentName(this, PaletteShortcutService::class.java).flattenToString() } == true
+        shortcutEnabled = KeyboardServiceConsent.read(this) == KeyboardConsent.APPROVED
     }
     override fun onPause() { ShortcutRuntime.paused(this); super.onPause() }
     override fun onStop() { if (!isChangingConfigurations) store.cancelShortcutRecording(); super.onStop() }

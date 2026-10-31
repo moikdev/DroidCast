@@ -85,7 +85,7 @@ Store searches/downloads contact Raycast. Running third-party code can make HTTP
 | Ctrl + S / Ctrl + Enter | Save editor |
 | Escape | Close dialog, clear search/back, then dismiss palette |
 
-Configure global and per-command chords in **Keyboard shortcuts**. Enable global use through **Open accessibility settings → Droidcast keyboard shortcuts**. The service does not retrieve screen content or record keystrokes. In-app shortcuts do not require it. Global key delivery can vary with other accessibility services and OEM shortcuts.
+Configure global and per-command chords in **Keyboard shortcuts**. Enable global use through **Open accessibility settings → Droidcast keyboard shortcuts**. The service does not retrieve screen content or record keystrokes. In-app shortcuts do not require it. Settings → General separates the saved chord, Android approval and live service connection, with restricted-settings help and an optional inline delivery check. Receipt in Settings is distinct from testing activation in another app. Global key delivery can vary with other accessibility services and OEM shortcuts.
 
 ## Verify
 

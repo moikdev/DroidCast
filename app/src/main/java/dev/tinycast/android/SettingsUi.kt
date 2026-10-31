@@ -33,6 +33,7 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -210,6 +211,14 @@ private fun SettingsPreferenceRow(title: String, detail: String, controls: @Comp
 @Composable
 private fun SettingsGeneral(activity: SettingsActivity) {
     val store = activity.store
+    val chord = store.shortcutConfiguration.bindings[ShortcutRules.PALETTE]
+    val connection = ShortcutRuntime.keyboardConnection.connected
+    val readiness = ShortcutReadiness(chord, activity.serviceConsent, connection)
+    val probe = activity.shortcutProbe
+    var showSetup by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(chord, activity.serviceConsent, connection) {
+        if (probe.status == ShortcutProbeStatus.LISTENING && (!readiness.ready || probe.expected != chord)) activity.cancelShortcutProbe()
+    }
     SettingsScrollPane("General", "Make Droidcast fit the way you work.") {
         SettingsSectionLabel("Activation")
         SettingsCard {
@@ -227,11 +236,44 @@ private fun SettingsGeneral(activity: SettingsActivity) {
                 OutlinedButton(onClick = { activity.configure(ShortcutRules.PALETTE, "hotkey") }, contentPadding = PaddingValues(12.dp, 4.dp), modifier = Modifier.heightIn(min = 36.dp).testTag("settings-edit-global")) { Text("Change", fontSize = 12.sp) }
             }
             HorizontalDivider(color = PaletteTheme.separator, modifier = Modifier.padding(vertical = 8.dp))
-            SettingsPreferenceRow("Keyboard service", if (activity.serviceEnabled) "Enabled · shortcuts work outside Droidcast." else "Optional · required for custom hotkeys such as Alt + Q in other apps.") {
+            SettingsPreferenceRow("Android approval", when (activity.serviceConsent) {
+                KeyboardConsent.APPROVED -> "Approved in Android Accessibility settings."
+                KeyboardConsent.OFF -> "Not enabled · required for custom hotkeys in other apps."
+                KeyboardConsent.UNKNOWN -> "Could not read approval. Reopen Android Accessibility settings."
+            }) {
                 TextButton(onClick = activity::enableService, contentPadding = PaddingValues(8.dp), modifier = Modifier.testTag("settings-service")) { Text(if (activity.serviceEnabled) "Manage service" else "Enable service", fontSize = 12.sp) }
             }
+            SettingsPreferenceRow("Service connection", "Live connection reported by the keyboard service.") {
+                Text(if (connection) "Connected" else "Not connected", fontSize = 12.sp,
+                    color = if (connection) PaletteTheme.accent else PaletteTheme.secondary, modifier = Modifier.testTag("settings-service-connection"))
+            }
+            HorizontalDivider(color = PaletteTheme.separator, modifier = Modifier.padding(vertical = 8.dp))
+            Text(readiness.title, fontSize = 14.sp, fontWeight = FontWeight.Medium, modifier = Modifier.testTag("settings-shortcut-readiness"))
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Text("Check delivery in this Settings screen.", fontSize = 11.sp, color = PaletteTheme.secondary, modifier = Modifier.weight(1f))
+                OutlinedButton(onClick = activity::beginShortcutProbe, enabled = readiness.ready && probe.status != ShortcutProbeStatus.LISTENING,
+                    modifier = Modifier.testTag("settings-shortcut-test")) { Text(if (probe.status == ShortcutProbeStatus.LISTENING) "Listening…" else "Check shortcut", fontSize = 12.sp) }
+            }
+            Text(when (probe.status) {
+                ShortcutProbeStatus.IDLE -> "After checking here, switch to another app and press your saved shortcut to test global activation."
+                ShortcutProbeStatus.LISTENING -> "Press ${probe.expected?.label()} now. Waiting up to 15 seconds."
+                ShortcutProbeStatus.RECEIVED -> "Received ${probe.expected?.label()} in Settings. Now try it from another app."
+                ShortcutProbeStatus.EXPIRED -> "Nothing received. Check the service connection and your tablet’s keyboard mappings."
+            }, fontSize = 11.sp, lineHeight = 16.sp, color = PaletteTheme.secondary,
+                modifier = Modifier.padding(top = 6.dp).semantics { liveRegion = androidx.compose.ui.semantics.LiveRegionMode.Polite }.testTag("settings-shortcut-test-result"))
+            if (readiness.ready) TextButton(onClick = { showSetup = !showSetup }, modifier = Modifier.testTag("settings-shortcut-help")) { Text(if (showSetup) "Hide setup steps" else "Setup steps", fontSize = 12.sp) }
+            if (!readiness.ready || showSetup) {
+                Text("1. Save a global shortcut with Change above (for example Alt + Q).\n\n2. If Android blocks access, open App info → ⋮ → Allow restricted settings, when available. Only approve an APK you trust. If that menu is missing, use Android Settings → Apps → Droidcast; tablet labels may differ.\n\n3. Open Accessibility, choose Droidcast keyboard shortcuts under Installed / Downloaded apps and enable it.\n\n4. Check delivery here, then try the shortcut from another app.",
+                    color = PaletteTheme.secondary, fontSize = 11.sp, lineHeight = 17.sp, modifier = Modifier.testTag("settings-shortcut-steps"))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    TextButton(onClick = activity::openAppInfo, modifier = Modifier.testTag("settings-shortcut-app-info")) { Text("App info", fontSize = 12.sp) }
+                    TextButton(onClick = { activity.command(Command("web", "Android help", "", payload = "https://support.google.com/android/answer/12623953?hl=en")) }) { Text("Android’s instructions", fontSize = 12.sp) }
+                }
+            }
         }
-        Text("The keyboard service filters matching key pairs. It does not retrieve screen content or save keystrokes. Android controls this permission.", color = PaletteTheme.tertiary, fontSize = 11.sp, lineHeight = 17.sp, modifier = Modifier.padding(start = 2.dp, bottom = 18.dp))
+        Text("The keyboard service filters matching key pairs. The inline check observes only your configured palette shortcut. It does not retrieve screen content or save keystrokes. Android controls approval.", color = PaletteTheme.tertiary, fontSize = 11.sp, lineHeight = 17.sp, modifier = Modifier.padding(start = 2.dp, bottom = 12.dp))
+        Text("Without keyboard approval, open the app icon or choose Droidcast as your Android assistant above. You can also add Droidcast search from Quick Settings → Edit tiles.", color = PaletteTheme.secondary, fontSize = 11.sp, lineHeight = 17.sp, modifier = Modifier.padding(bottom = 6.dp).testTag("settings-shortcut-alternatives"))
+        TextButton(onClick = activity::returnToPalette, modifier = Modifier.testTag("settings-shortcut-open-palette")) { Text("Open palette", fontSize = 12.sp) }
         SettingsSectionLabel("Settings navigation")
         SettingsCard {
             listOf("Open settings" to "Ctrl / Meta + ,", "Configure selected command" to "Ctrl / Meta + Shift + ,", "Search settings" to "Ctrl / Meta + F").forEachIndexed { index, (title, chord) ->

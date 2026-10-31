@@ -1,0 +1,551 @@
+{
+  "base": "703ddb0849addc2df55e1c8e00ec925eea182a57",
+  "package": "dev.tinycast.android",
+  "version": "0.4.0-preview (5)",
+  "apk_sha256": "d84b62fd49df2af798a7054f716428c807293df0cd02caab4e611937b5b0429a",
+  "test_apk_sha256": "32cff1e4968bad2a07855319046997506a9278e96549de202b6d39641f84b0ac",
+  "installed_apk_matches": true,
+  "jvm": {
+    "tests": 78,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": {
+    "Error": 0,
+    "Warning": 42
+  },
+  "build_log": "artifacts/shortcut-readiness-build.log",
+  "emulator": {
+    "name": "Droidcast_PR48_Tablet_API_36_27caf3",
+    "serial": "emulator-5590",
+    "api": "36",
+    "abi": "arm64-v8a",
+    "tablet": "1920x1200 / 240dpi",
+    "phone": "1080x2340 / 420dpi"
+  },
+  "baseline": {
+    "source": "a101671ba5ee23ddb5085910f2eaf2689ec8ea30",
+    "base": "703ddb0849addc2df55e1c8e00ec925eea182a57",
+    "apk_sha256": "8c426dbab06bca09c053c1522b362e8261a311e918702a944a1a978278de1c57",
+    "screenshot_sha256": "672ee77b9534725829f44e026f1db6489d65921b7a9e82f97791a81896c77a24",
+    "serial": "emulator-5590",
+    "avd": "Droidcast_PR48_Tablet_API_36_27caf3"
+  },
+  "instrumentation": {
+    "tablet": {
+      "readiness": 7,
+      "regressions": 27,
+      "total": 34,
+      "logs": [
+        "artifacts/shortcut-readiness-tablet/tests.log",
+        "artifacts/shortcut-readiness-regressions-tablet.log"
+      ],
+      "restoration": {
+        "before": {
+          "enabled_accessibility_services": "null",
+          "accessibility_enabled": "0"
+        },
+        "after": {
+          "enabled_accessibility_services": "null",
+          "accessibility_enabled": "0"
+        },
+        "equal": true,
+        "adbd": "uid=2000(shell) gid=2000(shell) groups=2000(shell),1004(input),1007(log),1011(adb),1015(sdcard_rw),1028(sdcard_r),1078(ext_data_rw),1079(ext_obb_rw),3001(net_bt_admin),3002(net_bt),3003(inet),3006(net_bw_stats),3009(readproc),3011(uhid),3012(readtracefs) context=u:r:shell:s0",
+        "size": "Physical size: 1920x1200",
+        "density": "Physical density: 240"
+      },
+      "regression_restoration": {
+        "before": {
+          "enabled_accessibility_services": "null",
+          "accessibility_enabled": "0"
+        },
+        "after": {
+          "enabled_accessibility_services": "null",
+          "accessibility_enabled": "0"
+        },
+        "equal": true,
+        "adbd": "uid=2000(shell) gid=2000(shell) groups=2000(shell),1004(input),1007(log),1011(adb),1015(sdcard_rw),1028(sdcard_r),1078(ext_data_rw),1079(ext_obb_rw),3001(net_bt_admin),3002(net_bt),3003(inet),3006(net_bw_stats),3009(readproc),3011(uhid),3012(readtracefs) context=u:r:shell:s0",
+        "size": "Physical size: 1920x1200",
+        "density": "Physical density: 240"
+      }
+    },
+    "phone": {
+      "readiness": 7,
+      "regressions": 27,
+      "total": 34,
+      "logs": [
+        "artifacts/shortcut-readiness-phone/tests.log",
+        "artifacts/shortcut-readiness-regressions-phone.log"
+      ],
+      "restoration": {
+        "before": {
+          "enabled_accessibility_services": "null",
+          "accessibility_enabled": "0"
+        },
+        "after": {
+          "enabled_accessibility_services": "null",
+          "accessibility_enabled": "0"
+        },
+        "equal": true,
+        "adbd": "uid=2000(shell) gid=2000(shell) groups=2000(shell),1004(input),1007(log),1011(adb),1015(sdcard_rw),1028(sdcard_r),1078(ext_data_rw),1079(ext_obb_rw),3001(net_bt_admin),3002(net_bt),3003(inet),3006(net_bw_stats),3009(readproc),3011(uhid),3012(readtracefs) context=u:r:shell:s0",
+        "size": "Physical size: 1920x1200",
+        "density": "Physical density: 240"
+      },
+      "regression_restoration": {
+        "before": {
+          "enabled_accessibility_services": "null",
+          "accessibility_enabled": "0"
+        },
+        "after": {
+          "enabled_accessibility_services": "null",
+          "accessibility_enabled": "0"
+        },
+        "equal": true,
+        "adbd": "uid=2000(shell) gid=2000(shell) groups=2000(shell),1004(input),1007(log),1011(adb),1015(sdcard_rw),1028(sdcard_r),1078(ext_data_rw),1079(ext_obb_rw),3001(net_bt_admin),3002(net_bt),3003(inet),3006(net_bw_stats),3009(readproc),3011(uhid),3012(readtracefs) context=u:r:shell:s0",
+        "size": "Physical size: 1920x1200",
+        "density": "Physical density: 240"
+      }
+    }
+  },
+  "hardware": {
+    "device": "emulator-5590",
+    "app_requires_root": false,
+    "injection": "dedicated emulator Linux qwerty2 device",
+    "cases": [
+      {
+        "name": "record and persist Alt + Q",
+        "passed": true
+      },
+      {
+        "name": "Alt + Q summons and dismisses from Settings",
+        "passed": true
+      },
+      {
+        "name": "Alt + Q summons and dismisses from Home",
+        "passed": true
+      },
+      {
+        "name": "Alt + Q cannot activate globally without service consent",
+        "passed": true
+      },
+      {
+        "name": "Alt + Q persists across service disable and reconnect",
+        "passed": true
+      },
+      {
+        "name": "inline check receives real filtered Alt + Q without leaving Settings",
+        "passed": true
+      },
+      {
+        "name": "inline check times out without claiming receipt",
+        "passed": true
+      },
+      {
+        "name": "expired inline check does not intercept ordinary global activation",
+        "passed": true
+      }
+    ],
+    "original_service_consent_restored": true,
+    "original_preferences_restored": true,
+    "unroot_command_exit_code": 0,
+    "adbd_unprivileged": true,
+    "app_process": [
+      "u0_a213      dev.tinycast.android"
+    ],
+    "app_unprivileged": true
+  },
+  "hardware_identity": {
+    "post_hardware_installed_apk_sha256": "d84b62fd49df2af798a7054f716428c807293df0cd02caab4e611937b5b0429a",
+    "no_intervening_app_install": true,
+    "root_only_for_linux_test_injection": true
+  },
+  "screenshots": [
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/before-tablet.png",
+      "sha256": "672ee77b9534725829f44e026f1db6489d65921b7a9e82f97791a81896c77a24",
+      "width": 1920,
+      "height": 1200,
+      "phase": "before",
+      "raw": "artifacts/shortcut-readiness-before/before-tablet.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/hardware-activation-after-timeout.png",
+      "sha256": "2d45d4be3557008928c5a9dfa8eba81b48344a48af60f657d62d753c2ecfbfb4",
+      "width": 1920,
+      "height": 1200,
+      "phase": "hardware",
+      "raw": "artifacts/shortcut-readiness-hardware/activation-after-timeout.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/hardware-alt-q-from-home.png",
+      "sha256": "9a4477ac644c676bc178e12bb037e829eb3528b90a2e76138e8e64c10842c4f9",
+      "width": 1920,
+      "height": 1200,
+      "phase": "hardware",
+      "raw": "artifacts/shortcut-readiness-hardware/alt-q-from-home.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/hardware-check-timeout-after-rebind.png",
+      "sha256": "d9e9dbc837bcb75e7d9cf97671690a2c42f018d9307328eb3813dad4ca95d60c",
+      "width": 1920,
+      "height": 1200,
+      "phase": "hardware after rebind",
+      "raw": "artifacts/shortcut-readiness-hardware/check-timeout-after-rebind.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/hardware-received-alt-q-after-rebind.png",
+      "sha256": "4a4170686587f91209b42e0a1ccc324fc75fd2932db604272ce680c28dd69f4b",
+      "width": 1920,
+      "height": 1200,
+      "phase": "hardware after rebind",
+      "raw": "artifacts/shortcut-readiness-hardware/received-alt-q-after-rebind.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/phone-accessibility.png",
+      "sha256": "a56b8fe3742e16d681894e32f60fc60d60d641f0b4fecffbb8633c92169775ee",
+      "width": 1080,
+      "height": 2340,
+      "phase": "native phone",
+      "raw": "artifacts/shortcut-readiness-phone/accessibility.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/phone-alternatives.png",
+      "sha256": "249f0ec3c0f8ea794575352746347cd6eaa27f4c49748cdb097f2071c612f57d",
+      "width": 1080,
+      "height": 2340,
+      "phase": "native phone",
+      "raw": "artifacts/shortcut-readiness-phone/alternatives.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/phone-app-info.png",
+      "sha256": "a8af5798adaf23bb5929cc5e751c2ca68bff691ced6fa6325a261482eeb914d6",
+      "width": 1080,
+      "height": 2340,
+      "phase": "native phone",
+      "raw": "artifacts/shortcut-readiness-phone/app-info.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/phone-approval-off.png",
+      "sha256": "5a608d0f46931fb2a6ca95f7fa9d37c4feaca136342e8bb62cc44f3d7b1c2184",
+      "width": 1080,
+      "height": 2340,
+      "phase": "native phone",
+      "raw": "artifacts/shortcut-readiness-phone/approval-off.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/phone-connected.png",
+      "sha256": "5e712596b55d594d8d81434e1bf98b7237b147745a6ea0f6f6b50138cefb20f9",
+      "width": 1080,
+      "height": 2340,
+      "phase": "native phone",
+      "raw": "artifacts/shortcut-readiness-phone/connected.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/phone-disconnected.png",
+      "sha256": "9b1941376f983901b315edd918428cbcb3b8933012718613d32d26ad0ccb4026",
+      "width": 1080,
+      "height": 2340,
+      "phase": "native phone",
+      "raw": "artifacts/shortcut-readiness-phone/disconnected.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/phone-listening.png",
+      "sha256": "a178ee96be38665a631459868dc88589a0cf408d18efc2be0494fca7f1a882df",
+      "width": 1080,
+      "height": 2340,
+      "phase": "native phone",
+      "raw": "artifacts/shortcut-readiness-phone/listening.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/phone-palette-fallback.png",
+      "sha256": "99cd574091639727e00df9e385372af22761cf2d3ac7cfb82860283691936f99",
+      "width": 1080,
+      "height": 2340,
+      "phase": "native phone",
+      "raw": "artifacts/shortcut-readiness-phone/palette-fallback.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/phone-reconnected-short-name.png",
+      "sha256": "5e712596b55d594d8d81434e1bf98b7237b147745a6ea0f6f6b50138cefb20f9",
+      "width": 1080,
+      "height": 2340,
+      "phase": "native phone",
+      "raw": "artifacts/shortcut-readiness-phone/reconnected-short-name.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/phone-setup-steps.png",
+      "sha256": "58cd2b2a5acfb51360543d7d1f8ed1c09503cf9ad46e4dee0dad6d71e4351967",
+      "width": 1080,
+      "height": 2340,
+      "phase": "native phone",
+      "raw": "artifacts/shortcut-readiness-phone/setup-steps.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/phone-timeout.png",
+      "sha256": "8ccf45686eeb08eb2c19497983f556625bc1fa647d012df5954dc8725286814a",
+      "width": 1080,
+      "height": 2340,
+      "phase": "native phone",
+      "raw": "artifacts/shortcut-readiness-phone/timeout.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/phone-unassigned.png",
+      "sha256": "83b800eae75c7b1ea267bb727ccc27a2558ac14fd10fb5f534524edda44b0d35",
+      "width": 1080,
+      "height": 2340,
+      "phase": "native phone",
+      "raw": "artifacts/shortcut-readiness-phone/unassigned.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/tablet-accessibility.png",
+      "sha256": "bbe897efc346e2d4a745d7ae3ab5fba2add3e04a7903c88248bcfe49b591d6d4",
+      "width": 1920,
+      "height": 1200,
+      "phase": "native tablet",
+      "raw": "artifacts/shortcut-readiness-tablet/accessibility.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/tablet-alternatives.png",
+      "sha256": "9a665355a9af4345600f24dddb41b4298214112a3525977f2f8d2f9b8c7c6874",
+      "width": 1920,
+      "height": 1200,
+      "phase": "native tablet",
+      "raw": "artifacts/shortcut-readiness-tablet/alternatives.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/tablet-app-info.png",
+      "sha256": "45c6b6c7f0d59846e59a6420b4f14cc8862ae1cab2d24d9e0e9b2a81833d65f3",
+      "width": 1920,
+      "height": 1200,
+      "phase": "native tablet",
+      "raw": "artifacts/shortcut-readiness-tablet/app-info.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/tablet-approval-off.png",
+      "sha256": "e57f813c394b381e0b98ec717ad9ab8e6753fd270d72d087cb56a7c71956e553",
+      "width": 1920,
+      "height": 1200,
+      "phase": "native tablet",
+      "raw": "artifacts/shortcut-readiness-tablet/approval-off.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/tablet-connected.png",
+      "sha256": "475ec3410f40b4f1c04e3686af897a39039bdd484dd7583b9d6078efe80ad50b",
+      "width": 1920,
+      "height": 1200,
+      "phase": "native tablet",
+      "raw": "artifacts/shortcut-readiness-tablet/connected.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/tablet-disconnected.png",
+      "sha256": "4f538da9e254b684fabf9188f925a2de5f532985de30214ad087bf2746fc6cf2",
+      "width": 1920,
+      "height": 1200,
+      "phase": "native tablet",
+      "raw": "artifacts/shortcut-readiness-tablet/disconnected.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/tablet-listening.png",
+      "sha256": "98c6debf279c61f1a8f9b9808ab82ae2bef7f176f1f426406f610a2884a19b28",
+      "width": 1920,
+      "height": 1200,
+      "phase": "native tablet",
+      "raw": "artifacts/shortcut-readiness-tablet/listening.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/tablet-palette-fallback.png",
+      "sha256": "e8458c87fb1de5b4dd498424e2ebe13746c98ef652cb64e8d71f8f3fc0f034a0",
+      "width": 1920,
+      "height": 1200,
+      "phase": "native tablet",
+      "raw": "artifacts/shortcut-readiness-tablet/palette-fallback.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/tablet-reconnected-short-name.png",
+      "sha256": "12db4e4e98928a2bd325174e0fce73773fced2b5775b5e3658a6aff608759cef",
+      "width": 1920,
+      "height": 1200,
+      "phase": "native tablet",
+      "raw": "artifacts/shortcut-readiness-tablet/reconnected-short-name.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/tablet-setup-steps.png",
+      "sha256": "c49e26ce8d231065a2707455309d552c0b31825dbed2720e053b1a0b9666e063",
+      "width": 1920,
+      "height": 1200,
+      "phase": "native tablet",
+      "raw": "artifacts/shortcut-readiness-tablet/setup-steps.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/tablet-timeout.png",
+      "sha256": "0318ee639e81ed29767f09157fe6beb7944eeb0f7b72b71d43c2a26935a5e249",
+      "width": 1920,
+      "height": 1200,
+      "phase": "native tablet",
+      "raw": "artifacts/shortcut-readiness-tablet/timeout.png"
+    },
+    {
+      "path": "docs/screenshots/parity-shortcut-readiness/tablet-unassigned.png",
+      "sha256": "15250c25c0f2b4dce96c23c2bfc53bc260e5a43270971565d6ba42cbd35256a8",
+      "width": 1920,
+      "height": 1200,
+      "phase": "native tablet",
+      "raw": "artifacts/shortcut-readiness-tablet/unassigned.png"
+    }
+  ],
+  "native_xml": [
+    {
+      "path": "artifacts/shortcut-readiness-tablet/accessibility.xml",
+      "sha256": "8e6e510fa77e7e882aa07a955d2fcbf6817e6cc5c47e50275b128a4009b07f30",
+      "layout": "tablet"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-tablet/alternatives.xml",
+      "sha256": "8fcf951c818236989373e59584f05f9d8cecde288e6362d69b2bedccbc9b46d8",
+      "layout": "tablet"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-tablet/app-info.xml",
+      "sha256": "22592b6f5ca47dbfe5bf3a97af826dd69e1bbf134893ded89be673c2794555b6",
+      "layout": "tablet"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-tablet/approval-off.xml",
+      "sha256": "f3acad235caac7933c229bb18006376b85b7f7c600e11af147bf132de41458f3",
+      "layout": "tablet"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-tablet/connected.xml",
+      "sha256": "6b74e6b8bdc5636138cf8536b9234d2c297e94449ce407faf68d4ddc0fc7742e",
+      "layout": "tablet"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-tablet/disconnected.xml",
+      "sha256": "8fcf951c818236989373e59584f05f9d8cecde288e6362d69b2bedccbc9b46d8",
+      "layout": "tablet"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-tablet/listening.xml",
+      "sha256": "6ed39922b6fe6c1378fb3071ea529006b03f75f0c136a6f31fdfd553fbc93157",
+      "layout": "tablet"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-tablet/palette-fallback.xml",
+      "sha256": "31ab54234b17c8ce19bcfd3882e61682d3544188d70a63f23cc7254910273486",
+      "layout": "tablet"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-tablet/reconnected-short-name.xml",
+      "sha256": "9d64d4d38c0cf0bf3cc22ad16535e41c2fce76caf05efc05829c484f3b5d1706",
+      "layout": "tablet"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-tablet/setup-steps.xml",
+      "sha256": "f3acad235caac7933c229bb18006376b85b7f7c600e11af147bf132de41458f3",
+      "layout": "tablet"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-tablet/timeout.xml",
+      "sha256": "5866e9e760384d8fc11b1b9e7d3f8f266e488d94c0236691078e988bd2a1e2d5",
+      "layout": "tablet"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-tablet/unassigned.xml",
+      "sha256": "8fcf951c818236989373e59584f05f9d8cecde288e6362d69b2bedccbc9b46d8",
+      "layout": "tablet"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-phone/accessibility.xml",
+      "sha256": "444c737c88d6bda5ad44b1f4131d47e703187a1709b3e99f2306fb98de94b535",
+      "layout": "phone"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-phone/alternatives.xml",
+      "sha256": "5e68acb2a0ff1b4b981af97833bf65cceb0a8dc6d0749eec5362776d9a80101f",
+      "layout": "phone"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-phone/app-info.xml",
+      "sha256": "c5b2e2cd00b4f608f67f7292736d48a76f4b1e67bc0d18cf77fa54a473c7d4c3",
+      "layout": "phone"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-phone/approval-off.xml",
+      "sha256": "f03ac9fb9ef987c2da7e743ba51d1acab456821b9ec2eaa702c772e82640021c",
+      "layout": "phone"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-phone/connected.xml",
+      "sha256": "866f86d92e5e35919a2c4a274c804696ab7e7ad2008a5d829bf2c25b5a134cca",
+      "layout": "phone"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-phone/disconnected.xml",
+      "sha256": "64a501cf712e9db94013a3d1d1216f2526d6718bd4fcfb0a515bac2490214045",
+      "layout": "phone"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-phone/listening.xml",
+      "sha256": "34792886d1d0717a71952bda5f54d0766c24bb70f1df1a3b33cbf03f41a1bd94",
+      "layout": "phone"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-phone/palette-fallback.xml",
+      "sha256": "7d99060c713a847fbb8ba1981f2d13ce3f047fe0f2f6c15aaa8081d2c3ae8456",
+      "layout": "phone"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-phone/reconnected-short-name.xml",
+      "sha256": "866f86d92e5e35919a2c4a274c804696ab7e7ad2008a5d829bf2c25b5a134cca",
+      "layout": "phone"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-phone/setup-steps.xml",
+      "sha256": "c15313a9bb7fd294c6e23e81c9930e8baf807a0fb3c29221b8e09ea5b9b7c5ab",
+      "layout": "phone"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-phone/timeout.xml",
+      "sha256": "3ee3b0e1bdd1beb46afcec95f14a7e5b8445004df235216c89475cbfce27a8ae",
+      "layout": "phone"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-phone/unassigned.xml",
+      "sha256": "c3a4f9ea82e8a6034097d183861cc7010f919798ede5d6dfeed061ee6996922a",
+      "layout": "phone"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-hardware/check-timeout-verification.xml",
+      "sha256": "66865c4d35d5a0bbd0c6a419a0c26a390916b1cd88a648b326104c8a9a5484aa",
+      "scope": "hardware result before rebind PNG"
+    },
+    {
+      "path": "artifacts/shortcut-readiness-hardware/received-alt-q-verification.xml",
+      "sha256": "8f4a6ad22504885fa52d75df556ce0c7f4a2e10bd7c3dfb8470e593e9e17724d",
+      "scope": "hardware result before rebind PNG"
+    }
+  ],
+  "excluded_runs": [
+    {
+      "log": "artifacts/shortcut-readiness-initial-tablet/tests.log",
+      "tests": 7,
+      "passed": 5,
+      "note": "Scroll target assertion and Accessibility heading text selector needed refinement."
+    },
+    {
+      "log": "artifacts/shortcut-readiness-title-selector-tablet/tests.log",
+      "tests": 7,
+      "passed": 6,
+      "note": "PNG/XML showed correct Accessibility page; heading is a content description. Final assertions require specific page controls."
+    }
+  ],
+  "ci": "Inactive; local/android records local evidence",
+  "final_adbd": "uid=2000(shell) gid=2000(shell) groups=2000(shell),1004(input),1007(log),1011(adb),1015(sdcard_rw),1028(sdcard_r),1078(ext_data_rw),1079(ext_obb_rw),3001(net_bt_admin),3002(net_bt),3003(inet),3006(net_bw_stats),3009(readproc),3011(uhid),3012(readtracefs) context=u:r:shell:s0",
+  "final_size": "Physical size: 1920x1200",
+  "final_density": "Physical density: 240",
+  "final_consent": {
+    "enabled_accessibility_services": "null",
+    "accessibility_enabled": "0"
+  }
+}
