@@ -17,7 +17,7 @@ Droidcast reproduces the central summon → search → run → dismiss workflow.
 | File search | Partial | System picker, searchable recent documents, opt-in bounded filename/path index for selected folder trees, type filters, persisted read grants and external viewers. No content index/preview or certified cloud-provider behavior; remaining validation is tracked in #5. |
 | Dictionary lookup | Missing | No dictionary command, dataset or definition view. |
 | Clipboard | Partial | Explicitly saved text, shared/selected-text input, foreground clipboard access and copy actions. No automatic history, image collection or paste-back into another app. |
-| Calculator | Partial | Arithmetic, percentages, functions and a fixed set of unit conversions. No live currency/crypto rates, date/time arithmetic or built-in color card. The tested color extension is a separate capability. |
+| Calculator | Partial | Arithmetic, percentages, functions and a fixed set of unit conversions. Bare numbers remain search text; x/*/× multiplication displays ×. Explicit `=` mode accepts single numbers. No live currency/crypto rates, date/time arithmetic or built-in color card. The tested color extension is a separate capability. |
 | Quicklinks | Partial | HTTP/HTTPS links, aliases and one URL-encoded `{query}` value. No multi-argument editor, date/clipboard substitutions, file targets or general app deeplinks. |
 | Apple Shortcuts | Replacement | Apple's automation framework does not run here. An Android intent/automation command catalog has not been built. |
 | Snippet templates | Missing | Saved clips and notes are plain content, not variable-aware templates. No keyword expansion or nested snippets. |
