@@ -20,6 +20,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import kotlinx.coroutines.flow.collect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -124,6 +125,17 @@ fun TinycastApp(store: PaletteStore, globalEnabled: Boolean, run: (Command) -> U
             val item = layout.visibleItemsInfo.firstOrNull { it.index == index }
             val visible = item != null && item.offset >= layout.viewportStartOffset && item.offset + item.size <= layout.viewportEndOffset
             if (scrollHistory.update(store.query, store.category, resultIds, index, visible)) list.requestScrollToItem(index)
+        }
+        LaunchedEffect(list, scrollHistory) {
+            snapshotFlow {
+                val layout = list.layoutInfo
+                val index = store.selected.coerceIn(0, (layout.totalItemsCount - 1).coerceAtLeast(0))
+                val item = layout.visibleItemsInfo.firstOrNull { it.index == index }
+                val visible = item != null && item.offset >= layout.viewportStartOffset && item.offset + item.size <= layout.viewportEndOffset
+                Triple(layout.viewportEndOffset - layout.viewportStartOffset, index, visible)
+            }.collect { (height, index, visible) ->
+                if (scrollHistory.viewportMeasured(height, visible)) list.requestScrollToItem(index)
+            }
         }
         LaunchedEffect(store.message) { store.message?.let { snack.showSnackbar(it, duration=SnackbarDuration.Short); if (store.message == it) store.message=null } }
         PaletteViewport(Modifier.onPreviewKeyEvent { handleKey(it.nativeKeyEvent) }) { wide, top, paletteHeight ->

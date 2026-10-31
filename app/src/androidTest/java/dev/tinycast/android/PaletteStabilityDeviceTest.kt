@@ -147,6 +147,53 @@ class PaletteStabilityDeviceTest {
         capture("emoji-typing-settled")
         keyboard(false); assertOrigin(origin, "emoji-search")
     }
+    @Test fun selectedEmojiRemainsVisibleWhenKeyboardShrinksGrid() {
+        org.junit.Assume.assumeTrue("Tablet-only shrink fixture", compose.activity.resources.configuration.screenWidthDp >= 700)
+        compose.activityRule.scenario.onActivity { it.execute(Command("emoji", "Emoji", "")) }
+        compose.waitUntil(10000) { !compose.activity.store.emoji.loading }
+        keyboard(false)
+        val search = bounds("emoji-search")
+        device.pressKeyCode(KeyEvent.KEYCODE_DPAD_DOWN); compose.waitForIdle()
+        val index = compose.activity.store.emoji.selected
+        assertEquals("Tablet grid selects its second row", 10, index)
+        val entry = compose.activity.store.emoji.results()[index]
+        val tag = "emoji-cell-${entry.id}"
+        val fullHeight = bounds(tag).height
+        assertEquals(56f * compose.activity.resources.displayMetrics.density, fullHeight, 1f)
+        val viewportHeight = bounds("emoji-grid").height
+        capture("emoji-selection-before-keyboard")
+        keyboard(true)
+        capture("emoji-selection-after-keyboard")
+        assertTrue("Fixture must shrink the measured grid", bounds("emoji-grid").height < viewportHeight)
+        assertEquals(index, compose.activity.store.emoji.selected)
+        compose.onNodeWithTag(tag).assertIsSelected().assertIsDisplayed()
+        assertEquals("Selected cell must be fully visible after the measured shrink", fullHeight, bounds(tag).height, 1f)
+        assertOrigin(search, "emoji-search")
+    }
+    @Test fun selectedCommandRemainsVisibleWhenKeyboardShrinksList() {
+        org.junit.Assume.assumeTrue("Tablet-only shrink fixture", compose.activity.resources.configuration.screenWidthDp >= 700)
+        compose.activityRule.scenario.onActivity { it.store.filter("Apps") }
+        compose.waitForIdle()
+        compose.activityRule.scenario.onActivity { it.store.selected = 3 }
+        compose.waitForIdle()
+        val search = bounds("search")
+        val results = compose.activity.store.results()
+        val selected = results[3]
+        val tag = "result-${selected.id}"
+        compose.onNodeWithTag("result-${results[0].id}").assertIsDisplayed()
+        assertTrue("Fixture starts below the first row, not scrolled to the selection", bounds(tag).top > bounds("result-${results[0].id}").top)
+        val fullHeight = bounds(tag).height
+        assertEquals(PaletteTheme.row.value * compose.activity.resources.displayMetrics.density, fullHeight, 1f)
+        val viewportHeight = compose.onNodeWithTag("results", useUnmergedTree = true).fetchSemanticsNode().boundsInWindow.height
+        capture("command-selection-before-keyboard")
+        keyboard(true)
+        capture("command-selection-after-keyboard")
+        assertTrue("Fixture must shrink the measured list", compose.onNodeWithTag("results", useUnmergedTree = true).fetchSemanticsNode().boundsInWindow.height < viewportHeight)
+        assertEquals(3, compose.activity.store.selected)
+        compose.onNodeWithTag(tag).assertIsSelected().assertIsDisplayed()
+        assertEquals("Selected row must be fully visible after the measured shrink", fullHeight, bounds(tag).height, 1f)
+        assertOrigin(search, "search")
+    }
     @Test fun visibleArrowSelectionDoesNotShiftResults() {
         compose.onNodeWithTag("search").performTextReplacement("settings")
         val results = compose.activity.store.results()

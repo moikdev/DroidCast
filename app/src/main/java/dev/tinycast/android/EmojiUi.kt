@@ -12,6 +12,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import kotlinx.coroutines.flow.collect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -106,6 +107,17 @@ fun EmojiPicker(store: EmojiStore, close: () -> Unit, copy: (String) -> Unit) {
             val item = layout.visibleItemsInfo.firstOrNull { it.index == index }
             val visible = item != null && item.offset.y >= layout.viewportStartOffset && item.offset.y + item.size.height <= layout.viewportEndOffset
             if (scrollHistory.update(store.query, store.filter, resultIds, index, visible)) grid.requestScrollToItem(index)
+        }
+        LaunchedEffect(grid, scrollHistory) {
+            snapshotFlow {
+                val layout = grid.layoutInfo
+                val index = store.selected.coerceIn(0, (layout.totalItemsCount - 1).coerceAtLeast(0))
+                val item = layout.visibleItemsInfo.firstOrNull { it.index == index }
+                val visible = item != null && item.offset.y >= layout.viewportStartOffset && item.offset.y + item.size.height <= layout.viewportEndOffset
+                Triple(layout.viewportEndOffset - layout.viewportStartOffset, index, visible)
+            }.collect { (height, index, visible) ->
+                if (scrollHistory.viewportMeasured(height, visible)) grid.requestScrollToItem(index)
+            }
         }
         fun navigate(event: KeyEvent): Boolean {
             val plain = !event.isCtrlPressed && !event.isMetaPressed && !event.isAltPressed && !event.isShiftPressed

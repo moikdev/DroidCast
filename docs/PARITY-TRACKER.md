@@ -35,7 +35,7 @@ The live backlog is [GitHub issue #1](https://github.com/moikdev/droidcast/issue
 
 ## Active slice
 
-Rigid typing/keyboard layout and immediate emoji navigation [#49](https://github.com/moikdev/droidcast/issues/49), [#46](https://github.com/moikdev/droidcast/issues/46): keep command and emoji search origins steady when the IME opens, avoid repositioning already visible selections, reset query results in the next layout and preserve selected commands during caret edits. See [validation](validation/rigid-palette.md) for negative controls and bounded local evidence. Audit/merge state is recorded on the implementation PR and live issue #1.
+Rigid typing/keyboard layout and immediate emoji navigation [#49](https://github.com/moikdev/droidcast/issues/49), [#46](https://github.com/moikdev/droidcast/issues/46): keep command and emoji search origins steady when the IME opens, avoid repositioning already visible selections, reset query results in the next layout, preserve selected commands during caret edits, and keep selected results fully visible after the keyboard shrinks the measured viewport. See [validation](validation/rigid-palette.md) for negative controls and bounded local evidence. Audit/merge state is recorded on the implementation PR and live issue #1.
 
 Queued user requests: inline keyboard readiness [#39](https://github.com/moikdev/droidcast/issues/39), explicit corner-swipe/Home-hold assistant setup and actual gesture verification [#47](https://github.com/moikdev/droidcast/issues/47), and double-tap Ctrl [#26](https://github.com/moikdev/droidcast/issues/26). Readiness WIP is preserved on its own branch; these are not claimed as part of the movement fix.
 
